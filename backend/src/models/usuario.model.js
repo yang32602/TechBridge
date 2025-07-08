@@ -88,8 +88,20 @@ exports.usuarioContrasena = async (correo, contrasena) => {
     }
 }
 
-exports.usuarioVerificarCorreo = async (correo) => {
-    const sql = `SELECT correo FROM usuarios WHERE correo = ?`;
+exports.usuarioVerificarEstudiante = async (correo) => {
+    const sql = `SELECT correo FROM usuarios WHERE correo = ? AND tipo = 'estudiante'`;
+    
+    try {        
+        const [rows] = await db.query(sql, [correo]); // directamente el string
+        return rows.length >= 1; // true si existe
+    } catch(error) {
+        console.log('Error verificando el usuario:', error);
+        throw error;
+    }
+}
+
+exports.usuarioVerificarEmpresa = async (correo) => {
+    const sql = `SELECT correo FROM usuarios WHERE correo = ? AND tipo = 'empresa'`;
     
     try {        
         const [rows] = await db.query(sql, [correo]); // directamente el string
