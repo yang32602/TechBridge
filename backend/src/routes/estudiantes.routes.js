@@ -5,7 +5,7 @@ console.log('✅ Archivo estudiantes.routes.js cargado');
 
 // Ruta para obtener todos los estudiantes
 router.get('/', estudiantesController.getEstudiantes);
-//inserta el estudiante
+//registrar un estudiante
 router.post('/', estudiantesController.insertEstudiante)
 
 module.exports = router;

@@ -33,11 +33,33 @@ exports.insigniaUsuario = async (req, res) => {
 }
 
 
-exports.autenticacionUsuario = async(req, res) =>{
+exports.autenticacionEstudiante = async(req, res) =>{
     const {correo, contrasena} = req.body;
 
     try{
-        const correoExiste = await usuarioModel.usuarioVerificarCorreo(correo)
+        const correoExiste = await usuarioModel.usuarioVerificarEstudiante(correo)
+        if (!correoExiste){
+            return res.status(400).json({mensaje:'El correo no existe'});
+        }
+
+        const autenticacion = await usuarioModel.usuarioContrasena(correo, contrasena);
+
+        if(autenticacion){
+            return res.status(200).json({mensaje: 'Sesion Iniciada correctamente'})
+        }
+        else{
+            return res.status(400).json({mensaje:'El contrasena incorrecta'});
+        }
+    }catch(error){  
+           return res.status(500).json({error: `Error en la autenticacion`});
+    }
+}
+
+exports.autenticacionEmpresa = async(req, res) =>{
+    const {correo, contrasena} = req.body;
+
+    try{
+        const correoExiste = await usuarioModel.usuarioVerificarEmpresa(correo)
         if (!correoExiste){
             return res.status(400).json({mensaje:'El correo no existe'});
         }
