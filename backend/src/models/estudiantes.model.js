@@ -14,6 +14,7 @@ exports.getEstudiantes = async () =>{
 exports.insertEstudiante = async (estudianteData) => {
     const {nombre,apellido,fecha_nacimiento,cedula,id_usuario } = estudianteData;
 
+    //sql pa insertar
     const sql = `INSERT INTO estudiantes(nombre,apellido,fecha_nacimiento,cedula,id_usuario)    
                  VALUES (?, ?, ?, ?, ?)`;
     try{
