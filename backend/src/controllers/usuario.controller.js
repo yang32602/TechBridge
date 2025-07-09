@@ -4,12 +4,21 @@ import * as usuarioModel from '../models/usuario.model.js';
 // Obtener usuarios
 export const obtenerUsuarios = async (req, res) => {
     try {
-        const usuarios = await usuarioModel.getUsuarios();
+        const usuarios = await usuarioModel.getUsuariosEstudiantes();
         res.status(200).json(usuarios);
     } catch (error) {
-        res.status(500).json({ error: 'Error al obtener los usuarios' });
+        res.status(500).json({ error: 'Error al obtener los estudiantes' });
     }
 }; 
+
+export const obtenerEmpresas = async(req, res) =>{
+    try {
+        const empresas = await usuarioModel.getUsuariosEmpresas();
+        res.status(200).json(empresas)
+    } catch (error) {
+        res.status(500).json({mensaje:'Error al obtener las empresas'})
+    }
+}
 
 // Insertar nuevo usuario
 export const insertarUsuario = async (req, res) => {
