@@ -4,8 +4,11 @@ import * as usuarioController from '../controllers/usuario.controller.js';
 
 const router = express.Router();
 
+// Obtener todos los usuarios estudiantes [GET]
+router.get('/estudiantes', usuarioController.obtenerEstudiantes);
+
 // Obtener todos los usuarios [GET]
-router.get('/', usuarioController.obtenerUsuarios);
+router.get('/empresas', usuarioController.obtenerEmpresas);
 
 // Obtener insignias de un usuario [GET]
 router.get('/:id_usuario/insignias', usuarioController.insigniaUsuario);

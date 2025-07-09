@@ -1,14 +1,26 @@
 import db from '../config/db.js';
 
-export const getUsuarios = async () => {
+export const getUsuariosEstudiantes = async () => {
     try {
-        const [rows] = await db.query('SELECT * FROM usuarios');
+        const [rows] = await db.query(`SELECT * FROM usuarios WHERE tipo = 'estudiante'`);
         return rows;
     } catch (error) {
         console.error('Error al obtener los usuarios', error);
         throw error;
     }
 };
+
+export const getUsuariosEmpresas= async () => {
+    try {
+        const [rows] = await db.query(`SELECT * FROM usuarios WHERE tipo = 'empresa'`);
+        return rows;
+    } catch (error) {
+        console.error('Error al obtener los usuarios', error);
+        throw error;
+    }
+};
+
+
 
 //registrar usuaroi
 export const insertUsuario = async (usuarioData) => {
