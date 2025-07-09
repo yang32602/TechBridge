@@ -12,7 +12,7 @@ dotenv.config();
 
 const app = express();
 
-// Middlewares
+// Middleware
 app.use(express.json());
 
 // Rutas
