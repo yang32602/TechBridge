@@ -1,11 +1,14 @@
-const express = require('express');
+// src/routes/estudiantes.routes.js
+import express from 'express';
+import * as estudiantesController from '../controllers/estudiantes.controller.js';
+
 const router = express.Router();
-const estudiantesController = require('../controllers/estudiantes.controller');
-console.log('✅ Archivo estudiantes.routes.js cargado');
 
-// Ruta para obtener todos los estudiantes
+
+// Ruta para obtener todos los estudiantes [GET]
 router.get('/', estudiantesController.getEstudiantes);
-//registrar un estudiante
-router.post('/', estudiantesController.insertEstudiante)
 
-module.exports = router;
+// Registrar un estudiante [POSt]
+router.post('/', estudiantesController.insertEstudiante);
+
+export default router;

@@ -1,11 +1,16 @@
-const express = require('express');
-const router = express.Router();
-const empresaController = require('../controllers/empresa.controller');
+// src/routes/empresa.routes.js
+import express from 'express';
+import * as empresaController from '../controllers/empresa.controller.js';
 
-//para poder adquirir todos los datos de las empresas
+const router = express.Router();
+
+// Obtener todas las empresas [GET]
 router.get('/', empresaController.getEmpresas);
-// registrar una empresa
+
+// Registrar una nueva empresa [POSt]
 router.post('/register', empresaController.insertEmpresa);
-//para que la empresa pueda reclutar un estudiante
-router.post('/reclutar', empresaController.reclutarEstudiante); 
-module.exports = router;
+
+// Reclutar a un estudiante [POSt]
+router.post('/reclutar', empresaController.reclutarEstudiante);
+
+export default router;
