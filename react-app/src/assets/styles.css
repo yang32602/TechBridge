@@ -285,7 +285,7 @@ body {
 .auth-form-fields {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 5px;
 }
 
 .form-group {

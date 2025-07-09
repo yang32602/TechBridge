@@ -157,18 +157,6 @@ const Register = () => {
                     required
                   />
                 </div>
-
-                <div className="form-group">
-                  <label>RUC o NIT</label>
-                  <input
-                    type="text"
-                    name="ruc"
-                    value={formData.ruc}
-                    onChange={handleInputChange}
-                    placeholder="Ingrese su identificación empresarial"
-                    required
-                  />
-                </div>
               </>
             )}
 
