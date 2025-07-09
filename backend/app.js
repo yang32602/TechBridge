@@ -1,22 +1,25 @@
-const express = require('express');
+// app.js
+import express from 'express';
+import dotenv from 'dotenv';
+
+import usuarioRoutes from './src/routes/usuario.routes.js';
+import estudiantesRoutes from './src/routes/estudiantes.routes.js';
+import empresaRoutes from './src/routes/empresa.routes.js';
+import paymentRoutes from './src/routes/pago.routes.js'
+
+dotenv.config();
+
 const app = express();
-require('dotenv').config();
 
 // Middlewares
-app.use(express.json()); // Para leer JSON del body
+app.use(express.json());
 
 // Rutas
-const usuarioRoutes = require('./src/routes/usuario.routes');
 app.use('/api/usuarios', usuarioRoutes);
-
-// //ruta de los estudiantes
-const estudiantesRoutes = require('./src/routes/estudiantes.routes');
 app.use('/api/estudiantes', estudiantesRoutes);
-
-//ruta de la empresa
-const empresaRoutes = require('./src/routes/empresa.routes');
 app.use('/api/empresas', empresaRoutes);
 
+// Servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);

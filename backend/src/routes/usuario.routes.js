@@ -1,18 +1,25 @@
-const express = require('express');
-const router = express.Router();
-const usuarioController = require('../controllers/usuario.controller');
-const { route } = require('./empresa.routes');
+// src/routes/usuario.routes.js
+import express from 'express';
+import * as usuarioController from '../controllers/usuario.controller.js';
 
-// obtener los usuarios
+const router = express.Router();
+
+// Obtener todos los usuarios [GET]
 router.get('/', usuarioController.obtenerUsuarios);
-//obtiene la insignia de los usuarios
+
+// Obtener insignias de un usuario [GET]
 router.get('/:id_usuario/insignias', usuarioController.insigniaUsuario);
-//ruta para registrar el nuevo usuario
+
+// Registrar un nuevo usuario [POSt]
 router.post('/register', usuarioController.insertarUsuario);
-//ruta para el inicio de sesion del postulante
+
+// Inicio de sesión para postulante [POSt]
 router.post('/loginPostulante', usuarioController.autenticacionEstudiante);
-//ruta para el inicio de sension de la empresa
+
+// Inicio de sesión para empresa [POSt]
 router.post('/loginEmpresa', usuarioController.autenticacionEmpresa);
-//para cambiar la contrasena
+
+// Cambio de contraseña [POSt]
 router.post('/cambio', usuarioController.cambioContrasenaUsuario);
-module.exports = router;
+
+export default router;
