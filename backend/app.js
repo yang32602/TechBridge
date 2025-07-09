@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import usuarioRoutes from './src/routes/usuario.routes.js';
 import estudiantesRoutes from './src/routes/estudiantes.routes.js';
 import empresaRoutes from './src/routes/empresa.routes.js';
-import paymentRoutes from './src/routes/pago.routes.js'
+//import paymentRoutes from './src/routes/pago.routes.js'
 
 dotenv.config();
 
