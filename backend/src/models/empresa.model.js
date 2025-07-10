@@ -18,9 +18,9 @@ export const insertEmpresas = async (empresaData, id_usuario) => {
         VALUES (?, ?, ?)
     `;
     try {
-        const [resultado] = await db.query(sql, [nombre,ruc,id_usuario]);
+        const [result] = await db.query(sql, [nombre,ruc,id_usuario]);
         console.log('Empresa insertada');
-        return resultado.affectedRows > 0;
+        return result;
     } catch (error) {
         console.error('Error insertando la empresa');
         throw error;

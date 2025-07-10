@@ -36,7 +36,7 @@ export const insertarUsuarioEstudiante = async (req, res) => {
         const nuevoEstudiante = await estudianteModel.insertEstudiante(req.body, nuevoUsuario)
         
         if(nuevoEstudiante && nuevoUsuario){
-            res.json({ estado: 1, mensaje: 'Usuario registrado exitosamente', data: nuevoUsuario, nuevoEstudiante });
+            res.json({ estado: 1, mensaje: 'Usuario registrado exitosamente', dataa: nuevoUsuario, nuevoEstudiante });
         }
         
         res.status(400).json({error: 'error al insertar estudiante'})
