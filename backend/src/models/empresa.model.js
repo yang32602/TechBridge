@@ -11,14 +11,14 @@ export const getEmpresas = async () => {
     }
 };
 
-export const insertEmpresas = async (empresaData) => {
-    const { nombre, sector, logo_url, descripcion, correo, telefono, id_usuario } = empresaData;
+export const insertEmpresas = async (empresaData, id_usuario) => {
+    const { nombre, ruc} = empresaData;
     const sql = `
-        INSERT INTO empresas (nombre, sector, logo_url, descripcion, correo, telefono, id_usuario)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO empresas (nombre, ruc,id_usuario)
+        VALUES (?, ?, ?)
     `;
     try {
-        const [resultado] = await db.query(sql, [nombre, sector, logo_url, descripcion, correo, telefono, id_usuario]);
+        const [resultado] = await db.query(sql, [nombre,ruc,id_usuario]);
         console.log('Empresa insertada');
         return resultado.affectedRows > 0;
     } catch (error) {

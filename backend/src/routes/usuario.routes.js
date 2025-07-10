@@ -13,8 +13,11 @@ router.get('/empresas', usuarioController.obtenerEmpresas);
 // Obtener insignias de un usuario [GET]
 router.get('/:id_usuario/insignias', usuarioController.insigniaUsuario);
 
-// Registrar un nuevo usuario [POSt]
-router.post('/register', usuarioController.insertarUsuario);
+//registrar un nuevo usuario
+router.post('/registerPostulante', usuarioController.insertarUsuarioEstudiante);
+
+// Registrar un nuevo usuario Empresa[POSt]
+router.post('/registerEmpresa', usuarioController.insertarUsuarioEmpresa);
 
 // Inicio de sesión para postulante [POSt]
 router.post('/loginPostulante', usuarioController.autenticacionEstudiante);
