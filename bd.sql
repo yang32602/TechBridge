@@ -40,8 +40,7 @@ CONSTRAINT fk_insgnia_tecnologia FOREIGN KEY (id_tecnologia) REFERENCES tecnolog
 
 CREATE TABLE estudiantes(
 id INT AUTO_INCREMENT PRIMARY KEY,
-nombre VARCHAR(50) NOT NULL, 
-apellido VARCHAR(80) NOT NULL, 
+nombre_completo VARCHAR(50) NOT NULL,
 fecha_nacimiento DATE,
 cedula VARCHAR(20),
 id_usuario INT,
@@ -56,10 +55,10 @@ CONSTRAINT fk_estudiante_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id
 CREATE TABLE empresas(
 id INT AUTO_INCREMENT PRIMARY KEY,
 nombre VARCHAR(50) NOT NULL,
+ruc VARCHAR(50) NOT NULL,
 sector VARCHAR(100),
 logo_url VARCHAR(150),
 descripcion VARCHAR(1000),
-correo VARCHAR(100) CHECK (correo LIKE '%@%') UNIQUE NOT NULL,
 telefono VARCHAR(30),
 id_usuario INT,
 CONSTRAINT fk_empresa_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
@@ -164,3 +163,7 @@ CREATE TABLE experiencias (
   fecha_fin DATE,
   CONSTRAINT fk_experiencias_estudiante FOREIGN KEY (id_estudiante) REFERENCES estudiantes(id)
 );
+
+
+
+
