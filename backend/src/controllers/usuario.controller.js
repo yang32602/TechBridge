@@ -1,7 +1,5 @@
 // Importación del modelo de usuario usando ES6
 import * as usuarioModel from '../models/usuario.model.js';
-import * as empresaModel from '../models/empresa.model.js'
-import * as estudianteModel from '../models/estudiantes.model.js'
 
 // Obtener estudiantes
 export const obtenerEstudiantes = async (req, res) => {
@@ -24,38 +22,10 @@ export const obtenerEmpresas = async(req, res) => {
 };
 
 // Insertar nuevo usuario
-export const insertarUsuarioEstudiante = async (req, res) => {
-    const {correo} = req.body;
-        const existe = await usuarioModel.usuarioVerificarEstudiante(correo)
-            if (existe){
-                res.status(400).json({error: 'correo repetido'})
-            }
+export const insertarUsuario = async (req, res) => {
     try {
-
-        const nuevoUsuario = await usuarioModel.insertUsuarioEstudiante(req.body);
-        const nuevoEstudiante = await estudianteModel.insertEstudiante(req.body, nuevoUsuario)
-        
-        if(nuevoEstudiante && nuevoUsuario){
-            res.json({ estado: 1, mensaje: 'Usuario registrado exitosamente', data: nuevoUsuario, nuevoEstudiante });
-        }
-        
-        res.status(400).json({error: 'error al insertar estudiante'})
-    } catch (error) {
-        res.json({ estado: 0, mensaje: 'Error al registrar el usuario' });
-    }
-};
-
-// Insertar nuevo usuario
-export const insertarUsuarioEmpresa = async (req, res) => {
-        const {correo} = req.body;
-        const existe = await usuarioModel.usuarioVerificarEmpresa(correo)
-            if (existe){
-                res.status(400).json({error: 'correo repetido'})
-            }
-    try {
-        const nuevoUsuario = await usuarioModel.insertUsuarioEmpresa(req.body);
-        const nuevaEmpresa = await empresaModel.insertEmpresas(req.body, nuevoUsuario)
-        res.json({ estado: 1, mensaje: 'Usuario registrado exitosamente', data: nuevoUsuario, nuevaEmpresa });
+        const nuevoUsuario = await usuarioModel.insertUsuario(req.body);
+        res.json({ estado: 1, mensaje: 'Usuario registrado exitosamente', data: nuevoUsuario });
     } catch (error) {
         res.json({ estado: 0, mensaje: 'Error al registrar el usuario' });
     }

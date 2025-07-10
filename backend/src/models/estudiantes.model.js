@@ -11,14 +11,14 @@ export const getEstudiantes = async () => {
     }
 };
 
-export const insertEstudiante = async (estudianteData,id_usuario) => {
-    const { nombre} = estudianteData;
+export const insertEstudiante = async (estudianteData) => {
+    const { nombre, apellido, fecha_nacimiento, cedula, id_usuario } = estudianteData;
     const sql = `
-        INSERT INTO estudiantes (nombre_completo, id_usuario)
-        VALUES (?, ?)
+        INSERT INTO estudiantes (nombre, apellido, fecha_nacimiento, cedula, id_usuario)
+        VALUES (?, ?, ?, ?, ?)
     `;
     try {
-        const [result] = await db.query(sql, [nombre, id_usuario]);
+        const [result] = await db.query(sql, [nombre, apellido, fecha_nacimiento, cedula, id_usuario]);
         return result.affectedRows > 0;
     } catch (error) {
         console.error('Error al agregar el estudiante:', error);

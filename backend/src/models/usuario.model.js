@@ -22,34 +22,17 @@ export const getUsuariosEmpresas= async () => {
 
 
 
-export const insertUsuarioEstudiante = async (usuarioData) => {
-    const { correo, contrasena, biografia = null, foto_perfil = null, validado } = usuarioData;
-
-    const sql = `
-        INSERT INTO usuarios (tipo, correo, contrasena)
-        VALUES ('estudiante', ?, ?)
-    `;
-
-    try {
-        const [result] = await db.query(sql, [correo, contrasena]);
-        return result.insertId; // Retorna el ID insertado
-    } catch (error) {
-        console.error('Error al insertar el usuario:', error);
-        throw error;
-    }
-};
-
-//registrar usuaro
-export const insertUsuarioEmpresa = async (usuarioData) => {
+//registrar usuaroi
+export const insertUsuario = async (usuarioData) => {
     const { tipo, correo, contrasena, biografia = null, foto_perfil = null, validado } = usuarioData;
 
     const sql = `
-        INSERT INTO usuarios (tipo, correo, contrasena)
-        VALUES ('empresa', ?, ?)
+        INSERT INTO usuarios (tipo, correo, contrasena, biografia, foto_perfil, validado)
+        VALUES (?, ?, ?, ?, ?, ?)
     `;
 
     try {
-        const [result] = await db.query(sql, [correo, contrasena]);
+        const [result] = await db.query(sql, [tipo, correo, contrasena, biografia, foto_perfil, validado]);
         return result.insertId; // Retorna el ID insertado
     } catch (error) {
         console.error('Error al insertar el usuario:', error);
@@ -102,7 +85,7 @@ export const usuarioVerificarEstudiante = async (correo) => {
 
     try {
         const [rows] = await db.query(sql, [correo]);
-        return rows.length >= 1; 
+        return rows.length >= 1;
     } catch (error) {
         console.error('Error verificando el usuario:', error);
         throw error;
