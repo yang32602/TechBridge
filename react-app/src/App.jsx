@@ -4,6 +4,8 @@ import { Header, Footer } from "./components";
 import { Home, Login, Register } from "./pages";
 import "./assets/styles.css";
 
+/*hola*/
+
 function App() {
   return (
     <Router>
