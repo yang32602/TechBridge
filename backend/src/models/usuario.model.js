@@ -1,6 +1,6 @@
 import db from '../config/db.js';
 
-export const getUsuariosEstudiantes = async () => {
+export const getEstudiantes = async () => {
     try {
         const [rows] = await db.query(`SELECT * FROM usuarios WHERE tipo = 'estudiante'`);
         return rows;
@@ -10,7 +10,7 @@ export const getUsuariosEstudiantes = async () => {
     }
 };
 
-export const getUsuariosEmpresas= async () => {
+export const getEmpresas= async () => {
     try {
         const [rows] = await db.query(`SELECT * FROM usuarios WHERE tipo = 'empresa'`);
         return rows;
@@ -37,7 +37,7 @@ export const insertUsuarioEstudiante = async (usuarioData) => {
         console.error('Error al insertar el usuario:', error);
         throw error;
     }
-};
+}; 
 
 //registrar usuaro
 export const insertUsuarioEmpresa = async (usuarioData) => {
@@ -76,10 +76,10 @@ export const getUsuariosInsignia = async (id_estudiante) => {
 };
 
 export const usuarioContrasena = async (correo, contrasena) => {
-    const sql = `SELECT id, tipo, contrasena FROM usuarios WHERE correo = ?`;
+    const sql = `SELECT id, tipo, contrasena FROM usuarios WHERE contrasena = ?`;
 
     try {
-        const [rows] = await db.query(sql, [correo]);
+        const [rows] = await db.query(sql, [contrasena]);
 
         if (rows.length < 1) return false;
 
@@ -98,11 +98,11 @@ export const usuarioContrasena = async (correo, contrasena) => {
 };
 
 export const usuarioVerificarEstudiante = async (correo) => {
-    const sql = `SELECT correo FROM usuarios WHERE correo = ? AND tipo = 'estudiante'`;
+    const sql = `SELECT id FROM usuarios WHERE correo = ? AND tipo = 'estudiante'`;
 
     try {
         const [rows] = await db.query(sql, [correo]);
-        return rows.length >= 1; 
+        return rows.length > 0 ? rows[0].id : null;
     } catch (error) {
         console.error('Error verificando el usuario:', error);
         throw error;
@@ -110,16 +110,17 @@ export const usuarioVerificarEstudiante = async (correo) => {
 };
 
 export const usuarioVerificarEmpresa = async (correo) => {
-    const sql = `SELECT correo FROM usuarios WHERE correo = ? AND tipo = 'empresa'`;
+    const sql = `SELECT id FROM usuarios WHERE correo = ? AND tipo = 'empresa'`;
 
     try {
         const [rows] = await db.query(sql, [correo]);
-        return rows.length >= 1;
+        return rows.length > 0 ? rows[0].id : null;
     } catch (error) {
         console.error('Error verificando el usuario:', error);
         throw error;
     }
 };
+
 
 export const usuarioCambioContrasena = async (nuevaContrasena, correo) => {
     const sql = `UPDATE usuarios SET contrasena = ? WHERE correo = ?`;

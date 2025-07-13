@@ -19,7 +19,7 @@ export const insertEstudiante = async (estudianteData,id_usuario) => {
     `;
     try {
         const [result] = await db.query(sql, [nombre, id_usuario]);
-        return result;
+        return result.insertId;
     } catch (error) {
         console.error('Error al agregar el estudiante:', error);
         throw error;
