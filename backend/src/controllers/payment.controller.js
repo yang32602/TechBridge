@@ -34,7 +34,7 @@ export const createOrder = async (req, res) => {
   try{
     const response = await fetch(`${PAY_PAL_API}/v2/checkout/orders`,{
       method : "POST",
-      headers : {
+      headers : { 
         'Authorization': `Bearer ${await getAccessToken()}`,
         'Content-Type': 'application/json'
       },
@@ -46,6 +46,7 @@ export const createOrder = async (req, res) => {
   }catch(error){
     res.status(500).json({error: "error en la pasarela de pago"})
   }
+  
 };
 
 
