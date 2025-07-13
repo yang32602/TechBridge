@@ -20,7 +20,7 @@ export const insertEmpresas = async (empresaData, id_usuario) => {
     try {
         const [result] = await db.query(sql, [nombre,ruc,id_usuario]);
         console.log('Empresa insertada');
-        return result;
+        return result.insertId;
     } catch (error) {
         console.error('Error insertando la empresa');
         throw error;

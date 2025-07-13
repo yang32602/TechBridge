@@ -5,11 +5,11 @@ import dotenv from 'dotenv';
 import usuarioRoutes from './src/routes/usuario.routes.js';
 import estudiantesRoutes from './src/routes/estudiantes.routes.js';
 import empresaRoutes from './src/routes/empresa.routes.js';
-import paymentRoutes from './src/routes/pago.routes.js';
+import paymentRoutes from './src/routes/payment.routes.js';
 
 dotenv.config();
 
-const app = express();
+const app = express(); 
 
 const FEPORT = process.env.FEPORT || 5173
 
