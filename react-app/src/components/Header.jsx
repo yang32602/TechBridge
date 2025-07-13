@@ -11,18 +11,21 @@ const Header = () => {
         </Link>
 
         <nav className="nav-menu">
-          <a href="#" className="nav-item active">
+          <Link to='/' className="nav-item">
+            Inicio
+          </Link>
+          <Link to="/postulantes" className="nav-item">
             Postulantes
-          </a>
-          <a href="#" className="nav-item">
+          </Link>
+          <Link to="/vacantes" className="nav-item">
             Vacantes
-          </a>
-          <a href="#" className="nav-item">
+          </Link>
+          <Link to="/comunidad" className="nav-item">
             Comunidad
-          </a>
-          <a href="#" className="nav-item">
+          </Link>
+          <Link to="/contacto" className="nav-item">
             Contacto
-          </a>
+          </Link>
         </nav>
 
         <div className="header-buttons">
