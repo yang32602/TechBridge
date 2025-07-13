@@ -34,7 +34,6 @@ export const insertarUsuarioEstudiante = async (req, res) => {
 
         const nuevoUsuario = await usuarioModel.insertUsuarioEstudiante(req.body);
         const nuevoEstudiante = await estudianteModel.insertEstudiante(req.body, nuevoUsuario)
-        
         if(nuevoEstudiante && nuevoUsuario){
            return res.json({ estado: 1, mensaje: 'Usuario registrado exitosamente', data: nuevoUsuario, nuevoEstudiante });
         }
@@ -84,7 +83,7 @@ export const autenticacionEstudiante = async (req, res) => {
         const autenticacion = await usuarioModel.usuarioContrasena(correo, contrasena);
 
         if (autenticacion) {
-            return res.json({ estado: 1, mensaje: 'Inicio de sesión exitoso' });
+            return res.json({ estado: 1, mensaje: 'Inicio de sesión exitoso', id:correoExiste});
         } else {
             return res.json({ estado: 0, mensaje: 'La contraseña es incorrecta' });
         }
@@ -106,7 +105,7 @@ export const autenticacionEmpresa = async (req, res) => {
         const autenticacion = await usuarioModel.usuarioContrasena(correo, contrasena);
 
         if (autenticacion) {
-            return res.json({ estado: 1, mensaje: 'Sesión iniciada correctamente' });
+            return res.json({ estado: 1, mensaje: 'Sesión iniciada correctamente', id: correoExiste });
         } else {
             return res.json({ estado: 0, mensaje: 'La contraseña es incorrecta' });
         }
