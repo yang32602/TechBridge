@@ -35,6 +35,56 @@ body {
   color: var(--dark-gray);
 }
 
+/*agregado recientemente*/
+.postulante-card {
+  display: flex;
+  align-items: center;
+  background-color: #f4f7fb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+  gap: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.postulante-card:hover {
+  transform: translateY(-4px);
+}
+
+.postulante-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #0A5CB8;
+}
+
+.postulante-info h3 {
+  margin: 0 0 0.5rem 0;
+  color: #0A5CB8;
+}
+
+.postulante-info p {
+  margin: 0.2rem 0;
+}
+
+.btn.btn-primary {
+  background-color: #0A5CB8;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.btn.btn-primary:hover {
+  background-color: #084c9d;
+}
+ /*agregado recientemente*/
+
 .app {
   width: 100%;
   min-height: 100vh;
