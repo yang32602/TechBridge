@@ -1,4 +1,14 @@
 /* ProfileStudent - Scoped CSS to avoid conflicts */
+/* Logo Text Styles */
+.logo-text {
+  font-family: "League Spartan", sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  color: #0a5cb8;
+  text-align: center;
+  padding: 10px;
+}
+
 :root {
   --Color-White: #fff;
   --Neutrals-60: #7c8493;

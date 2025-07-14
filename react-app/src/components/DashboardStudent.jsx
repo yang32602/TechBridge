@@ -65,7 +65,10 @@ const DashboardStudent = () => {
               </div>
               <span>Proyectos</span>
             </div>
-            <div className="student-nav-item">
+            <div
+              className="student-nav-item"
+              onClick={() => navigate("/technical-tests")}
+            >
               <div className="student-nav-icon">
                 <HiClipboardList />
               </div>

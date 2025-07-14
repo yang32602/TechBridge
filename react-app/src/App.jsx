@@ -8,6 +8,9 @@ import {
   ProfileCompany,
   ProfileStudent,
   Dashboard,
+  TechnicalTests,
+  TechnicalTestQuiz,
+  TechnicalTestResult,
 } from "./pages";
 import { AuthProvider } from "./context/AuthContextProvider";
 import "./assets/styles.css";
@@ -39,6 +42,15 @@ function App() {
             <Route path="/profile-company" element={<ProfileCompany />} />
             <Route path="/profile-student" element={<ProfileStudent />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/technical-tests" element={<TechnicalTests />} />
+            <Route
+              path="/technical-test-quiz/:testId"
+              element={<TechnicalTestQuiz />}
+            />
+            <Route
+              path="/technical-test-result/:testId"
+              element={<TechnicalTestResult />}
+            />
           </Routes>
         </div>
       </Router>
