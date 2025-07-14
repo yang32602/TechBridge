@@ -62,6 +62,10 @@ const ProfileStudent = () => {
     navigate("/dashboard");
   };
 
+  const handleTechnicalTestsClick = () => {
+    navigate("/technical-tests");
+  };
+
   if (loading) {
     return (
       <div className="profile-student-container">
@@ -101,7 +105,10 @@ const ProfileStudent = () => {
               </div>
               <span>Proyectos</span>
             </div>
-            <div className="student-nav-item">
+            <div
+              className="student-nav-item"
+              onClick={handleTechnicalTestsClick}
+            >
               <div className="student-nav-icon">
                 <HiClipboardList />
               </div>
@@ -317,8 +324,8 @@ const ProfileStudent = () => {
                     <p className="student-description">
                       Desarrollo e implementación de funcionalidades clave para
                       plataformas digitales, incluyendo la creación de
-                      componentes reutilizables y librerías de UI que impulsaron
-                      la eficiencia del desarrollo.
+                      componentes reutilizables y librer��as de UI que
+                      impulsaron la eficiencia del desarrollo.
                     </p>
                   </div>
                 </div>
