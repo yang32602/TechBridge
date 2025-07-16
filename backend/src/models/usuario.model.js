@@ -15,7 +15,7 @@ export const getEstudiantes = async (id_empresa) => {
         JOIN estudiantes e ON u.id = e.id_usuario
         LEFT JOIN empresa_estudiante ee 
             ON ee.id_estudiante = e.id 
-            AND ee.id_empresa = 2
+            AND ee.id_empresa = ?
         WHERE u.tipo = 'estudiante'`
 
     try {
