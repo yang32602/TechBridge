@@ -5,8 +5,9 @@ import * as estudianteModel from '../models/estudiantes.model.js'
 
 // Obtener estudiantes
 export const obtenerEstudiantes = async (req, res) => {
+    const {id_empresa} = req.body
     try {
-        const usuarios = await usuarioModel.getUsuariosEstudiantes();
+        const usuarios = await usuarioModel.getEstudiantes(id_empresa);
         res.json({ estado: 1, mensaje: 'Estudiantes obtenidos correctamente', data: usuarios });
     } catch (error) {
         res.json({ estado: 0, mensaje: 'Error al obtener los estudiantes' });
@@ -26,7 +27,7 @@ export const obtenerEmpresas = async(req, res) => {
 // Insertar nuevo usuario
 export const insertarUsuarioEstudiante = async (req, res) => {
     const {correo} = req.body;
-        const existe = await usuarioModel.usuarioVerificarEstudiante(correo)
+        const existe = await usuarioModel.verificarCorreoEstudiante(correo)
             if (existe){
                 res.status(400).json({error: 'correo repetido'})
             }
@@ -46,7 +47,7 @@ export const insertarUsuarioEstudiante = async (req, res) => {
 // Insertar nuevo usuario
 export const insertarUsuarioEmpresa = async (req, res) => {
         const {correo} = req.body;
-        const existe = await usuarioModel.usuarioVerificarEmpresa(correo)
+        const existe = await usuarioModel.verificarCorreoEmpresa(correo)
             if (existe){
                 res.status(400).json({error: 'correo repetido'})
             }
@@ -75,7 +76,7 @@ export const autenticacionEstudiante = async (req, res) => {
     const { correo, contrasena } = req.body;
 
     try {
-        const correoExiste = await usuarioModel.usuarioVerificarEstudiante(correo);
+        const correoExiste = await usuarioModel.verificarCorreoEstudiante(correo);
         if (!correoExiste) {
             return res.json({ estado: 0, mensaje: 'El correo no existe' });
         }
@@ -97,7 +98,7 @@ export const autenticacionEmpresa = async (req, res) => {
     const { correo, contrasena } = req.body;
 
     try {
-        const correoExiste = await usuarioModel.usuarioVerificarEmpresa(correo);
+        const correoExiste = await usuarioModel.verificarCorreoEmpresa(correo);
         if (!correoExiste) {
             return res.json({ estado: 0, mensaje: 'El correo no existe' });
         }

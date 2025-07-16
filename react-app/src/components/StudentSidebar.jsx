@@ -13,7 +13,7 @@ import {
   HiLogout,
 } from "react-icons/hi";
 import logoImage from "../assets/Logo.png";
-import "../assets/profile-student.css";
+import "../assets/sidebar-common.css";
 
 const StudentSidebar = ({ activeSection = "" }) => {
   const { user, logout } = useAuth();

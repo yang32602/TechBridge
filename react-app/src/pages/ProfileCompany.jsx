@@ -2,34 +2,27 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import ApiService from "../services/api";
-import logoImage from "../assets/Logo.png";
+import { CompanySidebar } from "../components";
 import "../assets/styles.css";
 
 // React Icons
 import {
-  HiHome,
-  HiUser,
-  HiUsers,
-  HiClipboardList,
-  HiCog,
-  HiChat,
-  HiQuestionMarkCircle,
-  HiLogout,
   HiBell,
   HiPencil,
   HiPlus,
   HiEye,
   HiArrowRight,
-  HiOfficeBuilding,
   HiLocationMarker,
   HiMail,
   HiGlobe,
-  HiBriefcase,
+  HiCog,
+  HiOfficeBuilding,
+  HiUsers,
 } from "react-icons/hi";
 import { FaTwitter, FaFacebook, FaLinkedin } from "react-icons/fa";
 
 const ProfileCompany = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [companyDetails, setCompanyDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -50,19 +43,6 @@ const ProfileCompany = () => {
     fetchCompanyDetails();
   }, [user]);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
-
-  const handleLogoClick = () => {
-    navigate("/");
-  };
-
-  const handleDashboardClick = () => {
-    navigate("/dashboard");
-  };
-
   if (loading) {
     return (
       <div className="profile-company-page">
@@ -76,85 +56,7 @@ const ProfileCompany = () => {
   return (
     <div className="profile-company-page">
       {/* Sidebar */}
-      <aside className="company-sidebar">
-        <div className="sidebar-menu">
-          <div className="sidebar-logo" onClick={handleLogoClick}>
-            <img src={logoImage} alt="TechBridge" className="logo-image" />
-          </div>
-
-          <div className="main-menu">
-            <div className="menu-item" onClick={handleDashboardClick}>
-              <div className="menu-icon">
-                <HiHome />
-              </div>
-              <span>Dashboard</span>
-            </div>
-            <div className="menu-item">
-              <div className="menu-icon">
-                <HiChat />
-              </div>
-              <span>Mensajes</span>
-              <div className="notification-badge">1</div>
-            </div>
-            <div className="menu-item active">
-              <div className="menu-icon">
-                <HiOfficeBuilding />
-              </div>
-              <span>Perfil de empresa</span>
-            </div>
-            <div className="menu-item">
-              <div className="menu-icon">
-                <HiUsers />
-              </div>
-              <span>Solicitudes</span>
-            </div>
-            <div className="menu-item">
-              <div className="menu-icon">
-                <HiBriefcase />
-              </div>
-              <span>Vacantes</span>
-            </div>
-
-            <div className="menu-divider"></div>
-
-            <div className="menu-item">
-              <div className="menu-icon">
-                <HiCog />
-              </div>
-              <span>Configuracion</span>
-            </div>
-            <div className="menu-item">
-              <div className="menu-icon">
-                <HiQuestionMarkCircle />
-              </div>
-              <span>Centro de Ayuda</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="sidebar-profile">
-          <div className="profile-info">
-            <div className="profile-avatar">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/avatar"
-                alt="Profile"
-              />
-            </div>
-            <div className="profile-details">
-              <h4>{companyName}</h4>
-              <p>{user?.email}</p>
-            </div>
-          </div>
-          <div className="profile-dropdown">
-            <div className="dropdown-content">
-              <button className="logout-btn" onClick={handleLogout}>
-                <HiLogout />
-                Cerrar Sesión
-              </button>
-            </div>
-          </div>
-        </div>
-      </aside>
+      <CompanySidebar activeSection="company-profile" />
 
       {/* Main Content */}
       <main className="company-main-content">

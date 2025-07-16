@@ -10,8 +10,10 @@ import {
   HiCog,
   HiQuestionMarkCircle,
   HiLogout,
+  HiCurrencyDollar,
 } from "react-icons/hi";
 import logoImage from "../assets/Logo.png";
+import "../assets/sidebar-common.css";
 import "../assets/styles.css";
 
 const CompanySidebar = ({ activeSection = "dashboard" }) => {
@@ -65,6 +67,12 @@ const CompanySidebar = ({ activeSection = "dashboard" }) => {
       icon: HiBriefcase,
       label: "Vacantes",
       onClick: () => {},
+    },
+    {
+      id: "comprar-puntos",
+      icon: HiCurrencyDollar,
+      label: "Comprar Puntos",
+      onClick: () => navigate("/comprar-puntos"),
     },
   ];
 
