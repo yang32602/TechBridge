@@ -107,6 +107,9 @@
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .profile-student-container .student-nav-item:hover {
@@ -128,9 +131,18 @@
   background: var(--Primary-Blue);
 }
 
+.profile-student-container .student-nav-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
 .profile-student-container .student-nav-icon {
   font-size: 20px;
   width: 24px;
+  min-width: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
