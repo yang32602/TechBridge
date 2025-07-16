@@ -1,9 +1,9 @@
 {
   "credentials": {
-    "builderPublicKey": "78927aa7643b452c983d43db89dd8945",
-    "builderPrivateKey": "bpk-9cf2adc0d2a942bebea41150fd9b9e1e",
-    "spaceName": "freddy Pan Space",
+    "builderPublicKey": "5640c684b41945e99107f403a7d63ea8",
+    "builderPrivateKey": "bpk-3e47e256d81c4a3b810c7d0dca8d9c22",
+    "spaceName": "test",
     "userId": "OR6XZu1BbtZ1jWb0pXdAJqtILGL2",
-    "timestamp": "2025-07-06T17:52:02.884Z"
+    "timestamp": "2025-07-15T23:03:08.652Z"
   }
 }

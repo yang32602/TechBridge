@@ -1,139 +1,32 @@
 import React from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import logoImage from "../assets/Logo.png";
+import { CompanySidebar } from "./index";
 import "../assets/styles.css";
 
 // React Icons
 import {
-  HiHome,
-  HiChat,
-  HiOfficeBuilding,
-  HiUsers,
-  HiBriefcase,
-  HiQuestionMarkCircle,
-  HiLogout,
-  HiUser,
-  HiCog,
   HiChevronRight,
   HiPlus,
   HiBell,
   HiChevronDown,
+  HiBriefcase,
 } from "react-icons/hi";
 
 const DashboardCompany = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogoClick = () => {
     navigate("/");
   };
 
-  const handleProfileClick = () => {
-    navigate("/profile-company");
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
-
   const companyName = user?.realName || user?.name || "Maria Kelly";
-  const userEmail = user?.email || "MariaKlly@email.com";
 
   return (
     <div className="profile-company-page">
       {/* Sidebar */}
-      <aside className="company-sidebar">
-        <div className="sidebar-menu">
-          <div className="sidebar-logo" onClick={handleLogoClick}>
-            <img src={logoImage} alt="TechBridge" className="logo-image" />
-          </div>
-
-          <div className="main-menu">
-            {/* Dashboard - active */}
-            <div className="menu-item active">
-              <div className="menu-icon">
-                <HiHome />
-              </div>
-              <span>Dashboard</span>
-            </div>
-
-            {/* Mensajes */}
-            <div className="menu-item">
-              <div className="menu-icon">
-                <HiChat />
-              </div>
-              <span>Mensajes</span>
-              <div className="notification-badge">1</div>
-            </div>
-
-            {/* Perfil de empresa */}
-            <div className="menu-item" onClick={handleProfileClick}>
-              <div className="menu-icon">
-                <HiOfficeBuilding />
-              </div>
-              <span>Perfil de empresa</span>
-            </div>
-
-            {/* Solicitudes */}
-            <div className="menu-item">
-              <div className="menu-icon">
-                <HiUsers />
-              </div>
-              <span>Solicitudes</span>
-            </div>
-
-            {/* Vacantes */}
-            <div className="menu-item">
-              <div className="menu-icon">
-                <HiBriefcase />
-              </div>
-              <span>Vacantes</span>
-            </div>
-
-            <div className="menu-divider"></div>
-
-            <div className="menu-item">
-              <div className="menu-icon">
-                <HiCog />
-              </div>
-              <span>Contactanos</span>
-            </div>
-            <div className="menu-item">
-              <div className="menu-icon">
-                <HiQuestionMarkCircle />
-              </div>
-              <span>Centro de Ayuda</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="sidebar-profile">
-          <div className="profile-info">
-            <div className="profile-avatar">
-              <span>
-                {companyName
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </span>
-            </div>
-            <div className="profile-details">
-              <h4>{companyName}</h4>
-              <p>{userEmail}</p>
-            </div>
-          </div>
-          <div className="profile-dropdown">
-            <div className="dropdown-content">
-              <button className="logout-btn" onClick={handleLogout}>
-                <HiLogout />
-                Cerrar Sesión
-              </button>
-            </div>
-          </div>
-        </div>
-      </aside>
+      <CompanySidebar activeSection="dashboard" />
 
       {/* Main Content */}
       <div className="company-dashboard-main">
