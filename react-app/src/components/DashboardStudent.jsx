@@ -1,139 +1,32 @@
 import React from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import logoImage from "../assets/Logo.png";
+import { StudentSidebar } from "./index";
 import "../assets/profile-student.css";
 
 // React Icons
 import {
-  HiHome,
   HiCode,
   HiClipboardList,
   HiSearch,
   HiOfficeBuilding,
   HiUser,
-  HiChat,
-  HiQuestionMarkCircle,
-  HiLogout,
 } from "react-icons/hi";
 
 const DashboardStudent = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogoClick = () => {
     navigate("/");
   };
 
-  const handleProfileClick = () => {
-    navigate("/profile-student");
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
-
   const userName = user?.realName || user?.name || "Jake Gyll";
-  const userEmail = user?.email || "jakegyll@email.com";
 
   return (
     <div className="profile-student-container">
       {/* Sidebar */}
-      <aside className="student-dashboard-sidebar">
-        <div className="student-sidebar-header">
-          <div className="student-sidebar-logo" onClick={handleLogoClick}>
-            <img
-              src={logoImage}
-              alt="TechBridge"
-              className="student-logo-image"
-            />
-          </div>
-        </div>
-
-        <nav className="student-sidebar-nav">
-          <div className="student-nav-section">
-            <div className="student-nav-item active">
-              <div className="student-nav-icon">
-                <HiHome />
-              </div>
-              <span>Dashboard</span>
-            </div>
-            <div className="student-nav-item">
-              <div className="student-nav-icon">
-                <HiCode />
-              </div>
-              <span>Proyectos</span>
-            </div>
-            <div
-              className="student-nav-item"
-              onClick={() => navigate("/technical-tests")}
-            >
-              <div className="student-nav-icon">
-                <HiClipboardList />
-              </div>
-              <span>Pruebas Técnicas</span>
-            </div>
-            <div className="student-nav-item">
-              <div className="student-nav-icon">
-                <HiSearch />
-              </div>
-              <span>Explorar Vacantes</span>
-            </div>
-            <div className="student-nav-item">
-              <div className="student-nav-icon">
-                <HiOfficeBuilding />
-              </div>
-              <span>Vacantes Recomendadas</span>
-            </div>
-            <div className="student-nav-item" onClick={handleProfileClick}>
-              <div className="student-nav-icon">
-                <HiUser />
-              </div>
-              <span>Perfil Público</span>
-            </div>
-          </div>
-
-          <div className="student-nav-divider"></div>
-
-          <div className="student-nav-section">
-            <div className="student-nav-item">
-              <div className="student-nav-icon">
-                <HiChat />
-              </div>
-              <span>Contactanos</span>
-            </div>
-            <div className="student-nav-item">
-              <div className="student-nav-icon">
-                <HiQuestionMarkCircle />
-              </div>
-              <span>Centro de Ayuda</span>
-            </div>
-          </div>
-        </nav>
-
-        <div className="student-sidebar-footer">
-          <div className="student-user-profile">
-            <div className="student-user-avatar">
-              <span>
-                {userName
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </span>
-            </div>
-            <div className="student-user-info">
-              <div className="student-user-name">{userName}</div>
-              <div className="student-user-email">{userEmail}</div>
-            </div>
-            <div className="student-user-actions">
-              <button className="student-logout-btn" onClick={handleLogout}>
-                <HiLogout />
-              </button>
-            </div>
-          </div>
-        </div>
-      </aside>
+      <StudentSidebar activeSection="dashboard" />
 
       {/* Main Content */}
       <div className="student-dashboard-main">
