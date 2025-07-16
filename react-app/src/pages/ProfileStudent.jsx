@@ -2,20 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import ApiService from "../services/api";
-import logoImage from "../assets/Logo.png";
+import { StudentSidebar } from "../components";
 import "../assets/profile-student.css";
 
 // React Icons
 import {
-  HiHome,
-  HiCode,
-  HiClipboardList,
-  HiSearch,
-  HiOfficeBuilding,
-  HiUser,
-  HiChat,
-  HiQuestionMarkCircle,
-  HiLogout,
   HiPencil,
   HiPlus,
   HiLocationMarker,
@@ -28,7 +19,7 @@ import {
 import { FaGithub, FaTwitter, FaReddit } from "react-icons/fa";
 
 const ProfileStudent = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [studentDetails, setStudentDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -49,21 +40,8 @@ const ProfileStudent = () => {
     fetchStudentDetails();
   }, [user]);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
-
   const handleLogoClick = () => {
     navigate("/");
-  };
-
-  const handleDashboardClick = () => {
-    navigate("/dashboard");
-  };
-
-  const handleTechnicalTestsClick = () => {
-    navigate("/technical-tests");
   };
 
   if (loading) {
@@ -75,106 +53,12 @@ const ProfileStudent = () => {
   }
 
   const userName = studentDetails?.nombre_completo || user?.name || "Jake Gyll";
-  const userEmail = user?.email || "jakegyll@email.com";
+  const userEmail = user?.email || "usuario@email.com";
 
   return (
     <div className="profile-student-container">
       {/* Sidebar */}
-      <aside className="student-dashboard-sidebar">
-        <div className="student-sidebar-header">
-          <div className="student-sidebar-logo" onClick={handleLogoClick}>
-            <img
-              src={logoImage}
-              alt="TechBridge"
-              className="student-logo-image"
-            />
-          </div>
-        </div>
-
-        <nav className="student-sidebar-nav">
-          <div className="student-nav-section">
-            <div className="student-nav-item" onClick={handleDashboardClick}>
-              <div className="student-nav-icon">
-                <HiHome />
-              </div>
-              <span>Dashboard</span>
-            </div>
-            <div className="student-nav-item">
-              <div className="student-nav-icon">
-                <HiCode />
-              </div>
-              <span>Proyectos</span>
-            </div>
-            <div
-              className="student-nav-item"
-              onClick={handleTechnicalTestsClick}
-            >
-              <div className="student-nav-icon">
-                <HiClipboardList />
-              </div>
-              <span>Pruebas Técnicas</span>
-            </div>
-            <div className="student-nav-item">
-              <div className="student-nav-icon">
-                <HiSearch />
-              </div>
-              <span>Explorar Vacantes</span>
-            </div>
-            <div className="student-nav-item">
-              <div className="student-nav-icon">
-                <HiOfficeBuilding />
-              </div>
-              <span>Vacantes Recomendadas</span>
-            </div>
-            <div className="student-nav-item active">
-              <div className="student-nav-icon">
-                <HiUser />
-              </div>
-              <span>Perfil Público</span>
-            </div>
-          </div>
-
-          <div className="student-nav-divider"></div>
-
-          <div className="student-nav-section">
-            <div className="student-nav-item">
-              <div className="student-nav-icon">
-                <HiChat />
-              </div>
-              <span>Contactanos</span>
-            </div>
-            <div className="student-nav-item">
-              <div className="student-nav-icon">
-                <HiQuestionMarkCircle />
-              </div>
-              <span>Centro de Ayuda</span>
-            </div>
-          </div>
-        </nav>
-
-        <div className="student-sidebar-footer">
-          <div className="student-user-profile">
-            <div className="student-user-avatar">
-              <span className="user-initials">
-                {userName
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()
-                  .slice(0, 2)}
-              </span>
-            </div>
-            <div className="student-user-info">
-              <div className="student-user-name">{userName}</div>
-              <div className="student-user-email">{userEmail}</div>
-            </div>
-          </div>
-          <button className="student-logout-btn" onClick={handleLogout}>
-            <HiLogout />
-            Cerrar Sesión
-          </button>
-        </div>
-      </aside>
+      <StudentSidebar activeSection="profile" />
 
       {/* Main Content */}
       <main className="student-dashboard-main">

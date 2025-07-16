@@ -1,8 +1,25 @@
 import db from '../config/db.js';
 
-export const getEstudiantes = async () => {
+export const getEstudiantes = async (id_empresa) => {
+    const sql = ` SELECT 
+            u.id AS id_usuario,
+            u.correo,
+            u.foto_perfil,
+            u.biografia,
+            u.validado,
+            e.id AS id_estudiante,
+            e.nombre_completo,
+            e.pais,
+            ee.id AS desbloqueado
+        FROM usuarios u
+        JOIN estudiantes e ON u.id = e.id_usuario
+        LEFT JOIN empresa_estudiante ee 
+            ON ee.id_estudiante = e.id 
+            AND ee.id_empresa = 2
+        WHERE u.tipo = 'estudiante'`
+
     try {
-        const [rows] = await db.query(`SELECT * FROM usuarios WHERE tipo = 'estudiante'`);
+        const [rows] = await db.query(sql,id_empresa);
         return rows;
     } catch (error) {
         console.error('Error al obtener los usuarios', error);
@@ -97,7 +114,8 @@ export const usuarioContrasena = async (correo, contrasena) => {
     }
 };
 
-export const usuarioVerificarEstudiante = async (correo) => {
+//verifica si exite el correo
+export const verificarCorreoEstudiante = async (correo) => {
     const sql = `SELECT id FROM usuarios WHERE correo = ? AND tipo = 'estudiante'`;
 
     try {
@@ -109,7 +127,7 @@ export const usuarioVerificarEstudiante = async (correo) => {
     }
 };
 
-export const usuarioVerificarEmpresa = async (correo) => {
+export const verificarCorreoEmpresa = async (correo) => {
     const sql = `SELECT id FROM usuarios WHERE correo = ? AND tipo = 'empresa'`;
 
     try {

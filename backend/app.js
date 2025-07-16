@@ -6,6 +6,8 @@ import usuarioRoutes from './src/routes/usuario.routes.js';
 import estudiantesRoutes from './src/routes/estudiantes.routes.js';
 import empresaRoutes from './src/routes/empresa.routes.js';
 import paymentRoutes from './src/routes/payment.routes.js';
+import empresaEstudiante from './src/routes/empresaEstudiante.router.js';
+
 
 dotenv.config();
 
@@ -27,9 +29,11 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/estudiantes', estudiantesRoutes);
 app.use('/api/empresas', empresaRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/empresa-Estudiante', empresaEstudiante);
+
 
 // Servidor
 const PORT = process.env.PORT || 3000; 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-});
+}); 

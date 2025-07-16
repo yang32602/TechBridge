@@ -11,6 +11,7 @@ import {
   TechnicalTests,
   TechnicalTestQuiz,
   TechnicalTestResult,
+  ComprarPuntos,
 } from "./pages";
 import { AuthProvider } from "./context/AuthContextProvider";
 import "./assets/styles.css";
@@ -51,6 +52,7 @@ function App() {
               path="/technical-test-result/:testId"
               element={<TechnicalTestResult />}
             />
+            <Route path="/comprar-puntos" element={<ComprarPuntos />} />
           </Routes>
         </div>
       </Router>
