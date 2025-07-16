@@ -1,0 +1,233 @@
+/* 统一的Sidebar样式文件 */
+/* 避免在各个页面重复定义sidebar样式 */
+
+/* StudentSidebar 基础样式 */
+.student-dashboard-sidebar {
+  width: 272px;
+  min-width: 272px;
+  background: #ebf4ff;
+  box-shadow: 1px 0px 0px 0px #d3d6db;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px 0;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 100;
+}
+
+.student-sidebar-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.student-sidebar-logo {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.student-sidebar-logo:hover {
+  transform: scale(1.05);
+}
+
+.student-logo-image {
+  width: 115px;
+  height: 87px;
+}
+
+.student-sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.student-nav-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.student-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 32px;
+  color: #7c8493;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 160%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.student-nav-item:hover {
+  background: rgba(196, 223, 255, 0.5);
+}
+
+.student-nav-item.active {
+  background: #c2dfff;
+  color: var(--Primary-Blue);
+}
+
+.student-nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--Primary-Blue);
+}
+
+.student-nav-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.student-nav-icon {
+  font-size: 20px;
+  width: 24px;
+  min-width: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.student-nav-divider {
+  height: 1px;
+  background: #7c8493;
+  margin: 24px 0;
+}
+
+.student-sidebar-footer {
+  padding: 0 32px;
+}
+
+.student-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.student-user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--Primary-Blue), #4a90e2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.user-initials {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.student-user-info {
+  flex: 1;
+}
+
+.student-user-name {
+  color: #202430;
+  font-family: Epilogue;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 160%;
+  margin: 0;
+}
+
+.student-user-email {
+  color: #202430;
+  font-family: Epilogue;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 160%;
+  opacity: 0.5;
+  margin: 0;
+}
+
+.student-user-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.student-logout-btn {
+  width: 100%;
+  padding: 12px 24px;
+  background: #ff6550;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.student-logout-btn:hover {
+  background: #e55a47;
+}
+
+/* CompanySidebar 基础样式 */
+.company-sidebar {
+  width: 272px;
+  min-width: 272px;
+  background: #ebf4ff;
+  border-right: 1px solid #d3d6db;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 100;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .student-dashboard-sidebar,
+  .company-sidebar {
+    width: 100%;
+    position: fixed;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+}
+
+@media (max-width: 768px) {
+  .student-nav-item {
+    flex-shrink: 0;
+    overflow: visible;
+    white-space: normal;
+    padding: 8px 16px;
+  }
+
+  .student-nav-item.active::before {
+    display: none;
+  }
+
+  .student-nav-item.active {
+    border-bottom: 3px solid var(--Primary-Blue);
+    background: transparent;
+  }
+}
