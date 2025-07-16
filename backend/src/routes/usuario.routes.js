@@ -4,8 +4,8 @@ import * as usuarioController from '../controllers/usuario.controller.js';
 
 const router = express.Router();
 
-// Obtener todos los usuarios estudiantes [GET]
-router.get('/estudiantes', usuarioController.obtenerEstudiantes);
+// Obtener todos los usuarios estudiantes [POST]
+router.post('/estudiantes', usuarioController.obtenerEstudiantes);
 
 // Obtener todos los usuarios [GET]
 router.get('/empresas', usuarioController.obtenerEmpresas);
