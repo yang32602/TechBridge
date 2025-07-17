@@ -170,7 +170,7 @@ const Login = () => {
 
           <h1 className="auth-title">
             {activeTab === "postulantes"
-              ? "Bienvenido, Jake"
+              ? "Obten más oportunidades"
               : "Impulsa tu empresa"}
           </h1>
 
@@ -208,19 +208,19 @@ const Login = () => {
 
           <form onSubmit={handleSubmit} className="auth-form-fields">
             <div className="form-group">
-              <label htmlFor="email">Email address</label>
+              <label htmlFor="email">Correo</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="Ingresa tu email"
+                placeholder="Ingresa tu correo"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">Contraseña</label>
               <input
                 type="password"
                 id="password"

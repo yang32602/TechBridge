@@ -15,12 +15,9 @@ export default function RootLayout() {
       const token = await registerForPushNotificationsAsync();
       if (token) {
         console.log("Expo Push Token:", token);
-        // AQUI: Debes enviar este 'token' a tu backend.
-        // Lo ideal es que lo asocies con el 'userId' una vez que el usuario inicie sesión.
-        // Esto podría hacerse a través de un hook de autenticación o un contexto.
-        // Por ejemplo, una vez que sabes qué usuario está logueado, haces una llamada a tu API:
-        // api.sendPushToken(token, currentUserId, currentUserType);
-        // Asegúrate de manejar esto en tu flujo de inicio de sesión/registro.
+        // IMPORTANTE: NO ENVÍES EL TOKEN AL BACKEND AQUÍ.
+        // Esto se hace en tu pantalla de LOGIN (app/(tabs)/index.tsx)
+        // una vez que el usuario esté autenticado y sepas su userId y userType.
       }
 
       // 2. Configurar listeners para notificaciones
@@ -50,6 +47,9 @@ export default function RootLayout() {
         {/* Las rutas dentro de (tabs) se manejan con su propio _layout.tsx */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
+        {/* ¡¡¡AÑADE ESTA LÍNEA PARA RECONOCER LA RUTA /signup!!! */}
+        <Stack.Screen name="signup" options={{ headerShown: false }} />
+        
         {/* Ruta para el manejo de "no encontrado" */}
         <Stack.Screen name="+not-found" />
 
