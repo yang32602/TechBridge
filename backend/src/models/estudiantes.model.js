@@ -43,7 +43,7 @@ export const actualizarCampoEstudiante = async (id, campo, valor) => {
         throw new Error(`El campo "${campo}" no está permitido para actualizar.`);
     }
 
-    const sql = `UPDATE estudiantes SET ${campo} = ? WHERE id = ?`;
+    const sql = `UPDATE estudiantes SET ${campo} = ? WHERE id_usuario = ?`;
     const [resultado] = await db.query(sql, [valor, id]);
     return resultado;
 };
