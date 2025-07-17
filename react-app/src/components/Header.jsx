@@ -78,6 +78,15 @@ const Header = () => {
     return user?.userType === "postulantes" ? "Estudiante" : "Empresa";
   };
 
+  const getGreetingName = () => {
+    const displayName = getDisplayName();
+    if (displayName && !["Estudiante", "Empresa"].includes(displayName)) {
+      const firstName = displayName.split(" ")[0];
+      return `Hola, ${firstName}`;
+    }
+    return displayName;
+  };
+
   return (
     <header className="header">
       <div className="header-content">
@@ -110,7 +119,7 @@ const Header = () => {
               >
                 {getInitials(getDisplayName())}
               </div>
-              <span className="user-name">{getDisplayName()}</span>
+              <span className="user-name">{getGreetingName()}</span>
               <button
                 onClick={handleLogout}
                 className="btn btn-text logout-btn"

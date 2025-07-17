@@ -89,12 +89,19 @@ class ApiService {
 
   async getStudentByUserId(userId) {
     try {
-      const students = await this.getStudents();
-      if (students && Array.isArray(students)) {
-        // Match by id_usuario field in estudiantes endpoint
-        const student = students.find(
-          (student) => student.id_usuario === userId,
-        );
+      console.log("getStudentByUserId called with userId:", userId);
+      const response = await this.request("/estudiantes", {
+        method: "POST",
+        body: JSON.stringify({ id_usuario: userId }),
+      });
+
+      console.log("getStudentByUserId response:", response);
+
+      // TODO: 将来在后端添加更多字段时，在此处同步添加新字段处理
+      // 例如: linkedin, telefono, portafolio_url, direccion, habilidades_adicionales 等
+      if (response && response.data && Array.isArray(response.data)) {
+        const student = response.data.length > 0 ? response.data[0] : null;
+        console.log("getStudentByUserId returning:", student);
         return student;
       }
       return null;
@@ -106,12 +113,19 @@ class ApiService {
 
   async getCompanyByUserId(userId) {
     try {
-      const companies = await this.getCompanies();
-      if (companies && Array.isArray(companies)) {
-        // Match by id_usuario field in empresas endpoint
-        const company = companies.find(
-          (company) => company.id_usuario === userId,
-        );
+      console.log("getCompanyByUserId called with userId:", userId);
+      const response = await this.request("/empresas", {
+        method: "POST",
+        body: JSON.stringify({ id_usuario: userId }),
+      });
+
+      console.log("getCompanyByUserId response:", response);
+
+      // TODO: 将来在后端添加更多字段时，在此处同步添加新字段处理
+      // 例如: linkedin, telefono, sitio_web, direccion, tamaño_empresa 等
+      if (response && response.data && Array.isArray(response.data)) {
+        const company = response.data.length > 0 ? response.data[0] : null;
+        console.log("getCompanyByUserId returning:", company);
         return company;
       }
       return null;
