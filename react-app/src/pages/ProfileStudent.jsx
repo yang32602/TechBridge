@@ -15,6 +15,8 @@ import {
   HiPhone,
   HiTranslate,
   HiDownload,
+  HiIdentification,
+  HiCalendar,
 } from "react-icons/hi";
 import { FaGithub, FaTwitter, FaReddit } from "react-icons/fa";
 
@@ -26,13 +28,18 @@ const ProfileStudent = () => {
 
   useEffect(() => {
     const fetchStudentDetails = async () => {
+      console.log("ProfileStudent: user object:", user);
       if (user?.id) {
+        console.log("ProfileStudent: fetching details for user.id:", user.id);
         try {
           const details = await ApiService.getStudentByUserId(user.id);
+          console.log("ProfileStudent: received details:", details);
           setStudentDetails(details);
         } catch (error) {
           console.error("Error fetching student details:", error);
         }
+      } else {
+        console.log("ProfileStudent: No user ID available");
       }
       setLoading(false);
     };
@@ -52,8 +59,18 @@ const ProfileStudent = () => {
     );
   }
 
+  // TODO: 将来在后端添加更多字段时，在此处同步添加新字段展示
   const userName = studentDetails?.nombre_completo || user?.name || "Jake Gyll";
   const userEmail = user?.email || "usuario@email.com";
+  const userCedula = studentDetails?.cedula || "No especificado";
+  const userFechaNacimiento =
+    studentDetails?.fecha_nacimiento || "No especificado";
+  const userSobreMi =
+    studentDetails?.sobremi || "No hay información disponible";
+  const userGithub = studentDetails?.github || "No especificado";
+  const userLenguajes = studentDetails?.lenguajes || "No especificado";
+  const userPais = studentDetails?.pais || "No especificado";
+  const userContratado = studentDetails?.contratado === 1 ? "Sí" : "No";
 
   return (
     <div className="profile-student-container">
@@ -99,11 +116,11 @@ const ProfileStudent = () => {
                   </p>
                   <div className="student-profile-location">
                     <HiLocationMarker />
-                    <span>Manchester, UK</span>
+                    <span>{userPais}</span>
                   </div>
                   <div className="student-profile-status">
                     <HiFlag />
-                    <span>Abierto a Oportunidades</span>
+                    <span>Contratado: {userContratado}</span>
                   </div>
                 </div>
                 <button className="student-btn-edit-profile">
@@ -121,19 +138,7 @@ const ProfileStudent = () => {
                 </button>
               </div>
               <div className="student-card-content">
-                <p>
-                  Ingeniera de Software Senior con más de 10 años de experiencia
-                  en el diseño y desarrollo de productos digitales impactantes.
-                  Apasionada por construir interfaces de usuario intuitivas y
-                  experiencias de usuario excepcionales que resuelvan problemas
-                  complejos y generen un impacto positivo.
-                </p>
-                <p>
-                  Experiencia probada en el ciclo completo de desarrollo de
-                  software, desde la conceptualización y estrategia de producto
-                  hasta la implementación, optimización y despliegue en entornos
-                  de alta escalabilidad.
-                </p>
+                <p>{userSobreMi}</p>
               </div>
             </section>
 
@@ -316,13 +321,11 @@ const ProfileStudent = () => {
                 </div>
                 <div className="student-contact-item">
                   <div className="student-contact-icon">
-                    <HiPhone />
+                    <HiIdentification />
                   </div>
                   <div className="student-contact-content">
-                    <div className="student-contact-label">Phone</div>
-                    <div className="student-contact-value">
-                      +44 1245 572 135
-                    </div>
+                    <div className="student-contact-label">Cédula</div>
+                    <div className="student-contact-value">{userCedula}</div>
                   </div>
                 </div>
                 <div className="student-contact-item">
@@ -330,9 +333,33 @@ const ProfileStudent = () => {
                     <HiTranslate />
                   </div>
                   <div className="student-contact-content">
-                    <div className="student-contact-label">Lenguajes</div>
+                    <div className="student-contact-label">
+                      Lenguajes de Programación
+                    </div>
+                    <div className="student-contact-value">{userLenguajes}</div>
+                  </div>
+                </div>
+                <div className="student-contact-item">
+                  <div className="student-contact-icon">
+                    <HiFlag />
+                  </div>
+                  <div className="student-contact-content">
+                    <div className="student-contact-label">País</div>
+                    <div className="student-contact-value">{userPais}</div>
+                  </div>
+                </div>
+                <div className="student-contact-item">
+                  <div className="student-contact-icon">
+                    <HiCalendar />
+                  </div>
+                  <div className="student-contact-content">
+                    <div className="student-contact-label">
+                      Fecha de Nacimiento
+                    </div>
                     <div className="student-contact-value">
-                      Español, Inglés, Frances
+                      {userFechaNacimiento
+                        ? new Date(userFechaNacimiento).toLocaleDateString()
+                        : "No especificado"}
                     </div>
                   </div>
                 </div>
@@ -355,7 +382,7 @@ const ProfileStudent = () => {
                   <div className="student-social-content">
                     <div className="student-social-label">Github</div>
                     <div className="student-social-value">
-                      github.com/jakegyll
+                      {userGithub || "No especificado"}
                     </div>
                   </div>
                 </div>
