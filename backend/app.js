@@ -7,7 +7,7 @@ import estudiantesRoutes from './src/routes/estudiantes.routes.js';
 import empresaRoutes from './src/routes/empresa.routes.js';
 import paymentRoutes from './src/routes/payment.routes.js';
 import empresaEstudiante from './src/routes/empresaEstudiante.router.js';
-
+import usuariosMobile from './src/routes/usuariosMobile.routes.js';
 
 dotenv.config();
 
@@ -30,6 +30,7 @@ app.use('/api/estudiantes', estudiantesRoutes);
 app.use('/api/empresas', empresaRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/empresa-Estudiante', empresaEstudiante);
+app.use('/api/usuariosMobile', usuariosMobile);
 
 
 // Servidor

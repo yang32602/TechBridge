@@ -48,7 +48,8 @@ sobremi VARCHAR(2000),
 github VARCHAR(200),
 lenguajes VARCHAR(2000),
 pais VARCHAR(100),
-contratado BOOLEAN DEFAULT FALSE, 
+contratado BOOLEAN DEFAULT FALSE,
+expoPushToken VARCHAR(255), 
 CONSTRAINT fk_estudiante_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 
@@ -61,6 +62,7 @@ logo_url VARCHAR(150),
 descripcion VARCHAR(1000),
 telefono VARCHAR(30),
 id_usuario INT,
+expoPushToken VARCHAR(255),
 CONSTRAINT fk_empresa_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 
