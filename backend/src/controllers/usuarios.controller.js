@@ -17,7 +17,7 @@ export const obtenerEstudiantes = async (req, res) => {
 // Obtener empresas
 export const obtenerEmpresas = async(req, res) => {
     try {
-        const empresas = await empresaModel.getUsuariosEmpresas();
+        const empresas = await usuarioModel.getEmpresas();
         res.json({ estado: 1, mensaje: 'Empresas obtenidas correctamente', data: empresas });
     } catch (error) {
         res.json({ estado: 0, mensaje: 'Error al obtener las empresas' });
