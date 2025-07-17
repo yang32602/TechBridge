@@ -1,8 +1,8 @@
 // Importación del modelo de usuario usando ES6
-import * as usuarioModel from '../models/usuario.model.js';
-import * as empresaModel from '../models/empresa.model.js'
+import * as usuarioModel from '../models/usuarios.model.js';
+import * as empresaModel from '../models/empresas.model.js'
 import * as estudianteModel from '../models/estudiantes.model.js'
-
+ 
 // Obtener estudiantes
 export const obtenerEstudiantes = async (req, res) => {
     const {id_empresa} = req.body
@@ -12,12 +12,12 @@ export const obtenerEstudiantes = async (req, res) => {
     } catch (error) {
         res.json({ estado: 0, mensaje: 'Error al obtener los estudiantes' });
     }
-}; 
+};
 
 // Obtener empresas
 export const obtenerEmpresas = async(req, res) => {
     try {
-        const empresas = await usuarioModel.getUsuariosEmpresas();
+        const empresas = await empresaModel.getUsuariosEmpresas();
         res.json({ estado: 1, mensaje: 'Empresas obtenidas correctamente', data: empresas });
     } catch (error) {
         res.json({ estado: 0, mensaje: 'Error al obtener las empresas' });
