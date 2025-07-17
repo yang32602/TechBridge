@@ -11,6 +11,9 @@ import {
   HiBell,
   HiChevronDown,
   HiBriefcase,
+  HiOfficeBuilding,
+  HiTrendingUp,
+  HiCube,
 } from "react-icons/hi";
 
 const DashboardCompany = () => {
@@ -35,34 +38,9 @@ const DashboardCompany = () => {
           <div className="company-header-content">
             <div className="company-info">
               <div className="company-logo">
-                <svg width="37" height="44" viewBox="0 0 37 44" fill="none">
-                  <g clipPath="url(#clip0_514_16635)">
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M0.5 11.1201V32.4538L18.8241 43.471L19.2494 42.7861L18.8241 22.0811L1.13004 11.1328L0.5 11.1201Z"
-                      fill="#449B82"
-                    />
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M36.9501 11.02V32.6542L18.8242 43.4713V22.0812L36.2862 11.0363L36.9501 11.02Z"
-                      fill="#9BDB9C"
-                    />
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M18.725 0.402832L36.95 11.0196L18.8241 22.4377L0.5 11.1198L18.725 0.402832Z"
-                      fill="#56CDAD"
-                    />
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M27.8783 8.91113L21.7143 12.5597V19.9238L15.5383 16.2154L9.59961 19.7306V35.1226L15.7636 31.3002V23.015L22.3473 27.2177L27.8783 23.7879V8.91113Z"
-                      fill="white"
-                    />
-                  </g>
-                </svg>
+                <HiOfficeBuilding
+                  style={{ width: "37px", height: "44px", color: "#56CDAD" }}
+                />
               </div>
               <div className="company-details">
                 <span className="company-type">Company</span>
@@ -153,15 +131,12 @@ const DashboardCompany = () => {
                 <span>0</span>
               </div>
               <div className="company-chart-area">
-                <svg className="company-chart-line" viewBox="0 0 400 150">
-                  <path
-                    d="M20 120 C60 100, 100 80, 140 70 C180 60, 220 40, 260 30 C300 20, 340 35, 380 25"
-                    stroke="#56CDAD"
-                    strokeWidth="3"
-                    fill="none"
+                <div className="company-chart-placeholder">
+                  <HiTrendingUp
+                    style={{ width: "60px", height: "60px", color: "#56CDAD" }}
                   />
-                  <circle cx="280" cy="30" r="4" fill="#56CDAD" />
-                </svg>
+                  <span className="chart-label">Gráfico de postulaciones</span>
+                </div>
                 <div className="company-chart-tooltip">
                   <div className="company-tooltip-content">
                     <span className="company-tooltip-label">Post</span>
@@ -253,34 +228,9 @@ const DashboardCompany = () => {
             <div className="company-job-card active">
               <div className="company-job-header">
                 <div className="company-job-logo">
-                  <svg width="37" height="44" viewBox="0 0 37 44" fill="none">
-                    <g clipPath="url(#clip0_514_16635)">
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M0.5 11.1201V32.4538L18.8241 43.471L19.2494 42.7861L18.8241 22.0811L1.13004 11.1328L0.5 11.1201Z"
-                        fill="#449B82"
-                      />
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M36.9501 11.02V32.6542L18.8242 43.4713V22.0812L36.2862 11.0363L36.9501 11.02Z"
-                        fill="#9BDB9C"
-                      />
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M18.725 0.402832L36.95 11.0196L18.8241 22.4377L0.5 11.1198L18.725 0.402832Z"
-                        fill="#56CDAD"
-                      />
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M27.8783 8.91113L21.7143 12.5597V19.9238L15.5383 16.2154L9.59961 19.7306V35.1226L15.7636 31.3002V23.015L22.3473 27.2177L27.8783 23.7879V8.91113Z"
-                        fill="white"
-                      />
-                    </g>
-                  </svg>
+                  <HiOfficeBuilding
+                    style={{ width: "37px", height: "44px", color: "#56CDAD" }}
+                  />
                 </div>
                 <span className="company-job-status active">Activo</span>
               </div>
@@ -295,14 +245,9 @@ const DashboardCompany = () => {
             <div className="company-job-card closed">
               <div className="company-job-header">
                 <div className="company-job-logo dropbox">
-                  <svg width="39" height="36" viewBox="0 0 39 36" fill="none">
-                    <g clipPath="url(#clip0_514_16960)">
-                      <path
-                        d="M9.90074 1.54932L0.300781 7.7468L9.90074 13.8531L19.5007 7.7468L9.90074 1.54932ZM29.1007 1.54932L19.5007 7.7468L29.1007 13.8531L38.7006 7.7468L29.1007 1.54932ZM0.300781 20.0506L9.90074 26.2481L19.5007 20.0506L9.90074 13.8531L0.300781 20.0506ZM29.1007 13.8531L19.5007 20.0506L29.1007 26.2481L38.7006 20.0506L29.1007 13.8531ZM9.90074 28.2532L19.5007 34.4506L29.1007 28.2532L19.5007 22.1468L9.90074 28.2532Z"
-                        fill="#0062FF"
-                      />
-                    </g>
-                  </svg>
+                  <HiBriefcase
+                    style={{ width: "39px", height: "36px", color: "#0062FF" }}
+                  />
                 </div>
                 <span className="company-job-status closed">Cerrada</span>
               </div>
@@ -317,26 +262,9 @@ const DashboardCompany = () => {
             <div className="company-job-card closed">
               <div className="company-job-header">
                 <div className="company-job-logo terraform">
-                  <svg width="35" height="40" viewBox="0 0 35 40" fill="none">
-                    <g clipPath="url(#clip0_514_3099)">
-                      <path
-                        d="M12.2637 7.5957L22.4274 13.4888V25.2274L12.2637 19.3343V7.5957Z"
-                        fill="#21D4EF"
-                      />
-                      <path
-                        d="M24.2324 13.4888L34.3962 7.5957V19.3343L24.2324 25.2274V13.4888Z"
-                        fill="#21D4EF"
-                      />
-                      <path
-                        d="M0.201172 0.799805L10.3649 6.69287V18.4315L0.201172 12.5384V0.799805Z"
-                        fill="#21D4EF"
-                      />
-                      <path
-                        d="M12.2637 21.5684L22.4274 27.4139V39.2001L12.2637 33.307V21.5684Z"
-                        fill="#21D4EF"
-                      />
-                    </g>
-                  </svg>
+                  <HiCube
+                    style={{ width: "35px", height: "40px", color: "#21D4EF" }}
+                  />
                 </div>
                 <span className="company-job-status closed">Cerrada</span>
               </div>

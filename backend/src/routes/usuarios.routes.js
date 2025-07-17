@@ -1,13 +1,13 @@
 // src/routes/usuario.routes.js
 import express from 'express';
-import * as usuarioController from '../controllers/usuario.controller.js';
+import * as usuarioController from '../controllers/usuarios.controller.js';
 
 const router = express.Router();
 
 // Obtener todos los usuarios estudiantes [POST]
 router.post('/estudiantes', usuarioController.obtenerEstudiantes);
 
-// Obtener todos los usuarios [GET]
+// Obtener todos las empresas [GET]
 router.get('/empresas', usuarioController.obtenerEmpresas);
 
 // Obtener insignias de un usuario [GET], tiene que recibir el id del estudiante y le devuelve todas sus insignias

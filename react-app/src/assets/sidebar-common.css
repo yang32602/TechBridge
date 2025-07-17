@@ -1,7 +1,4 @@
-/* 统一的Sidebar样式文件 */
-/* 避免在各个页面重复定义sidebar样式 */
-
-/* StudentSidebar 基础样式 */
+/* StudentSidebar */
 .student-dashboard-sidebar {
   width: 272px;
   min-width: 272px;
