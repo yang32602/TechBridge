@@ -1,12 +1,13 @@
 // Importación del modelo de empresa usando ES6
-import * as empresaModel from '../models/empresa.model.js';
+import * as empresaModel from '../models/empresas.model.js';
 
-// Obtener todas las empresas
+// Obtener todas las empresas 
 export const getEmpresas = async (req, res) => {
+    const {id_usuario} = req.body
     try {
-        const empresas = await empresaModel.getEmpresas();
+        const empresas = await empresaModel.getEmpresa(id_usuario);
         if (empresas) {
-            return res.status(200).json(empresas);
+            return res.status(200).json({data:empresas});
         } else {
             return res.status(404).json({ mensaje: 'No se encontraron empresas' });
         }

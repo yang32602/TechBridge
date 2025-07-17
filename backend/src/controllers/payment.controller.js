@@ -1,5 +1,6 @@
 
 import dotenv from 'dotenv';
+import * as puntosModel from '../models/puntos.model.js'
 dotenv.config();
 
 const PAY_PAL_API = process.env.PAY_PAL_API;
@@ -7,18 +8,19 @@ const PAY_PAL_CLIENTID = process.env.PAY_PAL_CLIENTID;
 const PAY_PAL_SECRETKEYS = process.env.PAY_PAL_SECRETKEYS;
 
 export const createOrder = async (req, res) => {
-  const {valor} = req.body
+  const { valor, id_empresa, id_techpoints } = req.body;
   const host = req.get('host');
   const protocol = req.protocol;
 
-  const order = {
+const order = {
     intent: "CAPTURE",
     purchase_units: [
       {
         amount: {
           currency_code: "USD",
           value: `${valor}`
-        }
+        },
+        custom_id: `${id_empresa}-${id_techpoints}`
       }
     ],
     application_context: {
@@ -27,9 +29,10 @@ export const createOrder = async (req, res) => {
       user_action: "PAY_NOW",
       return_url: `${protocol}://${host}/api/payment/capture-order`,
       cancel_url: `${protocol}://${host}/api/payment/cancel-order`
-      //enviar la orden
     }
   };
+
+
 
   try{
     const response = await fetch(`${PAY_PAL_API}/v2/checkout/orders`,{
@@ -49,28 +52,46 @@ export const createOrder = async (req, res) => {
   
 };
 
-
-export const captureOrder = async (req, res) =>{
-  const {token} = req.query;
+export const captureOrder = async (req, res) => {
+  const { token } = req.query;
 
   try {
-    const acces_token = await getAccessToken();
+    const access_token = await getAccessToken();
 
-    const response = await fetch(`${PAY_PAL_API}/v1/checkout/orders/${token}/capture`,{
+    const response = await fetch(`${PAY_PAL_API}/v1/checkout/orders/${token}/capture`, {
       method: "POST",
-      headers:{
-      'Authorization': `Bearer ${acces_token}`,
-      'Content-Type': 'application/json'
+      headers: {
+        'Authorization': `Bearer ${access_token}`,
+        'Content-Type': 'application/json'
       }
     });
 
     const data = await response.json();
-    return res.json(data);
+
+    if (data.status === 'COMPLETED') {
+      const customId = data.purchase_units?.[0]?.payments?.captures?.[0]?.custom_id;
+
+      // ⚠️ A veces viene en purchase_units directamente, si no está en captures
+      const fallbackCustomId = data.purchase_units?.[0]?.custom_id || "";
+
+      const [id_empresa, id_techpoints] = (customId || fallbackCustomId || "").split("-");
+
+      if (!id_empresa || !id_techpoints) {
+        return res.status(400).json({ error: 'custom_id malformado o no encontrado' });
+      }
+
+      await puntosModel.asingarPuntos(id_empresa, id_techpoints);
+        return res.redirect(`${process.env.FE_URL}`);
+    } else {
+      return res.status(400).json({ estado: 0, mensaje: 'Pago NO completado', data });
+    }
+
   } catch (error) {
-        console.error("Error al capturar la orden:", error);
+    console.error("Error al capturar la orden:", error);
     return res.status(500).json({ error: "Error al capturar la orden" });
   }
-}
+};
+
 
 export const cancelOrder = async (req, res) =>{
     return res.status(200).json({mensaje: 'todo chillc el man cancelo'});
