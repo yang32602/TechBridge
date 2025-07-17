@@ -2,16 +2,16 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-import usuarioRoutes from './src/routes/usuario.routes.js';
+import usuarioRoutes from './src/routes/usuarios.routes.js';
 import estudiantesRoutes from './src/routes/estudiantes.routes.js';
-import empresaRoutes from './src/routes/empresa.routes.js';
+import empresaRoutes from './src/routes/empresas.routes.js';
 import paymentRoutes from './src/routes/payment.routes.js';
 import empresaEstudiante from './src/routes/empresaEstudiante.router.js';
 import puntos from './src/routes/puntos.routes.js';
 
 
 dotenv.config();
-
+ 
 const app = express(); 
 
 const FEPORT = process.env.FEPORT || 5173
