@@ -30,7 +30,7 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/estudiantes', estudiantesRoutes);
 app.use('/api/empresas', empresaRoutes);
 app.use('/api/payment', paymentRoutes);
-app.use('/api/empresa-Estudiante', empresaEstudiante);
+app.use('/api/empresa-estudiante', empresaEstudiante);
 app.use('/api/puntos', puntos);
 
 
