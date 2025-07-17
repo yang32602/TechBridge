@@ -15,7 +15,7 @@ export const getEstudiantes = async (id_empresa) => {
                     i.id AS id_insignia,
                     i.nombre AS nombre_insignia,
                     i.descripcion AS descripcion_insignia,
-                    i.id_tecnologia AS tecnologia_insignia,
+                    i.nombre AS tecnologia_insignia,
                     
                     ui.fecha_asignacion
 
