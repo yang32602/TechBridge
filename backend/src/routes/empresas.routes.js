@@ -9,6 +9,9 @@ router.post('/', empresaController.getEmpresas);
 
 // Registrar una nueva empresa [POSt]
 router.post('/register', empresaController.insertEmpresa);
+//
+router.patch('/actualizar', empresaController.actualizarCampoEmpresa);
+
 
 // Reclutar a un estudiante [POSt]
 router.post('/reclutar', empresaController.reclutarEstudiante);
