@@ -1,10 +1,12 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { Header, Footer } from "./components";
 import {
   Home,
   Login,
   Register,
+  Postulantes,
+  Contacto,
   ProfileCompany,
   ProfileStudent,
   Dashboard,
@@ -18,43 +20,42 @@ import "./assets/styles.css";
 import "./assets/dashboard.css";
 import "./assets/dashboard-styles.css";
 
-/*hola*/
+// Componente wrapper para usar hooks dentro del router
+const AppContent = () => {
+  const location = useLocation();
+  const hideHeaderFooter = /^\/(login|register)(\/.*)?$/.test(location.pathname);
+
+  return (
+    <div className="app">
+      {!hideHeaderFooter && <Header />}
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/login/:userType" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/register/:userType" element={<Register />} />
+        <Route path="/postulantes" element={<Postulantes />} />
+        <Route path="/contacto" element={<Contacto />} />
+        <Route path="/profile-company" element={<ProfileCompany />} />
+        <Route path="/profile-student" element={<ProfileStudent />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/technical-tests" element={<TechnicalTests />} />
+        <Route path="/technical-test-quiz/:testId" element={<TechnicalTestQuiz />} />
+        <Route path="/technical-test-result/:testId" element={<TechnicalTestResult />} />
+        <Route path="/comprar-puntos" element={<ComprarPuntos />} />
+      </Routes>
+
+      {!hideHeaderFooter && <Footer />}
+    </div>
+  );
+};
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="app">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <>
-                  <Header />
-                  <Home />
-                  <Footer />
-                </>
-              }
-            />
-            <Route path="/login" element={<Login />} />
-            <Route path="/login/:userType" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/register/:userType" element={<Register />} />
-            <Route path="/profile-company" element={<ProfileCompany />} />
-            <Route path="/profile-student" element={<ProfileStudent />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/technical-tests" element={<TechnicalTests />} />
-            <Route
-              path="/technical-test-quiz/:testId"
-              element={<TechnicalTestQuiz />}
-            />
-            <Route
-              path="/technical-test-result/:testId"
-              element={<TechnicalTestResult />}
-            />
-            <Route path="/comprar-puntos" element={<ComprarPuntos />} />
-          </Routes>
-        </div>
+        <AppContent />
       </Router>
     </AuthProvider>
   );
