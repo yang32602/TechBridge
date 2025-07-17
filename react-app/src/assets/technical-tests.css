@@ -30,7 +30,6 @@
   padding: 10px;
 }
 
-/* 注意：Sidebar样式现在由StudentSidebar组件管理，无需在此文件中重复定义 */
 
 .technical-tests-container {
   display: flex;
