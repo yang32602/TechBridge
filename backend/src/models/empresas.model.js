@@ -1,9 +1,9 @@
 import db from '../config/db.js';
 
-export const getEmpresas = async () => {
-    const sql = `SELECT * FROM empresas`;
+export const getEmpresa = async (id_usuario) => {
+    const sql = `SELECT * FROM empresas WHERE id_usuario = ?`;
     try {
-        const [empresas] = await db.query(sql);
+        const [empresas] = await db.query(sql, [id_usuario]);
         return empresas;
     } catch (error) {
         console.error('Error al obtener las empresas');
@@ -11,6 +11,9 @@ export const getEmpresas = async () => {
     }
 };
 
+
+
+//sirve para insertar empresa
 export const insertEmpresas = async (empresaData, id_usuario) => {
     const { nombre, ruc} = empresaData;
     const sql = `
@@ -27,6 +30,7 @@ export const insertEmpresas = async (empresaData, id_usuario) => {
     }
 };
 
+//para reclutar estudiante
 export const reclutarEstudiante = async (id_empresa, id_estudiante) => {
     const sql = `
         INSERT INTO empresa_estudiante (id_empresa, id_estudiante, fecha_reclutamiento)

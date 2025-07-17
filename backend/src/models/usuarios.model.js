@@ -1,22 +1,36 @@
 import db from '../config/db.js';
 
 export const getEstudiantes = async (id_empresa) => {
-    const sql = ` SELECT 
-            u.id AS id_usuario,
-            u.correo,
-            u.foto_perfil,
-            u.biografia,
-            u.validado,
-            e.id AS id_estudiante,
-            e.nombre_completo,
-            e.pais,
-            ee.id AS desbloqueado
-        FROM usuarios u
-        JOIN estudiantes e ON u.id = e.id_usuario
-        LEFT JOIN empresa_estudiante ee 
-            ON ee.id_estudiante = e.id 
-            AND ee.id_empresa = ?
-        WHERE u.tipo = 'estudiante'`
+    const sql = `SELECT 
+                    u.id AS id_usuario,
+                    u.correo,
+                    u.foto_perfil,
+                    u.biografia,
+                    u.validado,
+                    e.id AS id_estudiante,
+                    e.nombre_completo,
+                    e.pais,
+                    ee.id AS desbloqueado,
+                    
+                    i.id AS id_insignia,
+                    i.nombre AS nombre_insignia,
+                    i.descripcion AS descripcion_insignia,
+                    i.id_tecnologia AS tecnologia_insignia,
+                    
+                    ui.fecha_asignacion
+
+                FROM usuarios u
+                JOIN estudiantes e ON u.id = e.id_usuario
+                LEFT JOIN empresa_estudiante ee 
+                    ON ee.id_estudiante = e.id
+                    AND ee.id_empresa = ?
+
+                -- 🔗 Relación con usuario_insignia
+                LEFT JOIN usuario_insignia ui ON ui.id_usuario = u.id
+                LEFT JOIN insignias i ON i.id = ui.id_insignia
+
+                WHERE u.tipo = 'estudiante';
+                `
 
     try {
         const [rows] = await db.query(sql,id_empresa);

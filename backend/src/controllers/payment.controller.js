@@ -81,7 +81,7 @@ export const captureOrder = async (req, res) => {
       }
 
       await puntosModel.asingarPuntos(id_empresa, id_techpoints);
-      return res.status(200).json({ estado: 1, mensaje: 'Pago exitoso y puntos asignados', data });
+        return res.redirect(`${process.env.FE_URL}`);
     } else {
       return res.status(400).json({ estado: 0, mensaje: 'Pago NO completado', data });
     }
