@@ -2,14 +2,17 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-import usuarioRoutes from './src/routes/usuario.routes.js';
+import usuarioRoutes from './src/routes/usuarios.routes.js';
 import estudiantesRoutes from './src/routes/estudiantes.routes.js';
-import empresaRoutes from './src/routes/empresa.routes.js';
-import paymentRoutes from './src/routes/pago.routes.js';
+import empresaRoutes from './src/routes/empresas.routes.js';
+import paymentRoutes from './src/routes/payment.routes.js';
+import empresaEstudiante from './src/routes/empresaEstudiante.router.js';
+import puntos from './src/routes/puntos.routes.js';
+
 
 dotenv.config();
-
-const app = express();
+ 
+const app = express(); 
 
 const FEPORT = process.env.FEPORT || 5173
 
@@ -27,9 +30,13 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/estudiantes', estudiantesRoutes);
 app.use('/api/empresas', empresaRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/empresa-Estudiante', empresaEstudiante);
+app.use('/api/puntos', puntos);
+
+
 
 // Servidor
 const PORT = process.env.PORT || 3000; 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-});
+}); 

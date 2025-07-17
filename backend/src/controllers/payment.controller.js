@@ -1,5 +1,6 @@
 
 import dotenv from 'dotenv';
+import * as puntosModel from '../models/puntos.model.js'
 dotenv.config();
 
 const PAY_PAL_API = process.env.PAY_PAL_API;
@@ -7,17 +8,19 @@ const PAY_PAL_CLIENTID = process.env.PAY_PAL_CLIENTID;
 const PAY_PAL_SECRETKEYS = process.env.PAY_PAL_SECRETKEYS;
 
 export const createOrder = async (req, res) => {
+  const { valor, id_empresa, id_techpoints } = req.body;
   const host = req.get('host');
   const protocol = req.protocol;
 
-  const order = {
+const order = {
     intent: "CAPTURE",
     purchase_units: [
       {
         amount: {
           currency_code: "USD",
-          value: `1000`
-        }
+          value: `${valor}`
+        },
+        custom_id: `${id_empresa}-${id_techpoints}`
       }
     ],
     application_context: {
@@ -29,48 +32,88 @@ export const createOrder = async (req, res) => {
     }
   };
 
-  try {
-    // Autenticación con PayPal
-    const basicAuth = Buffer
-      .from(`${PAY_PAL_CLIENTID}:${PAY_PAL_SECRETKEYS}`)
-      .toString('base64');
 
-    const tokenRes = await fetch(`${PAY_PAL_API}/v1/oauth2/token`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${basicAuth}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: 'grant_type=client_credentials'
-    });
 
-    const tokenData = await tokenRes.json();
-    const access_token = tokenData.access_token;
-
-    // Crear la orden
-    const orderRes = await fetch(`${PAY_PAL_API}/v2/checkout/orders`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${access_token}`
+  try{
+    const response = await fetch(`${PAY_PAL_API}/v2/checkout/orders`,{
+      method : "POST",
+      headers : { 
+        'Authorization': `Bearer ${await getAccessToken()}`,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(order)
     });
+    const orderdata = await response.json();
 
-    const orderData = await orderRes.json();
+    return res.json(orderdata);
+  }catch(error){
+    res.status(500).json({error: "error en la pasarela de pago"})
+  }
+  
+};
 
-    return res.json(orderData);
+export const captureOrder = async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    const access_token = await getAccessToken();
+
+    const response = await fetch(`${PAY_PAL_API}/v1/checkout/orders/${token}/capture`, {
+      method: "POST",
+      headers: {
+        'Authorization': `Bearer ${access_token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const data = await response.json();
+
+    if (data.status === 'COMPLETED') {
+      const customId = data.purchase_units?.[0]?.payments?.captures?.[0]?.custom_id;
+
+      // ⚠️ A veces viene en purchase_units directamente, si no está en captures
+      const fallbackCustomId = data.purchase_units?.[0]?.custom_id || "";
+
+      const [id_empresa, id_techpoints] = (customId || fallbackCustomId || "").split("-");
+
+      if (!id_empresa || !id_techpoints) {
+        return res.status(400).json({ error: 'custom_id malformado o no encontrado' });
+      }
+
+      await puntosModel.asingarPuntos(id_empresa, id_techpoints);
+        return res.redirect(`${process.env.FE_URL}`);
+    } else {
+      return res.status(400).json({ estado: 0, mensaje: 'Pago NO completado', data });
+    }
+
   } catch (error) {
-    console.error("Error creando la orden de PayPal:", error);
-    return res.status(500).json({ error: "Error creando la orden" });
+    console.error("Error al capturar la orden:", error);
+    return res.status(500).json({ error: "Error al capturar la orden" });
   }
 };
 
 
-export const captureOrder = async (req, res) =>{
-    return res.status(200).json({mensaje: 'todo chill en la capture'});
-}
-
 export const cancelOrder = async (req, res) =>{
     return res.status(200).json({mensaje: 'todo chillc el man cancelo'});
 }
+
+
+//funcion para consguir el token de acceso
+
+ const getAccessToken = async ()=>{
+    //el basic id:key espera un base64, asi queusamos buffer para convertirlo en una secuencia de bytes (buffer) y luego lo pasamos a base 64 para que lo acepte 
+    const basicAuth = Buffer.from(`${PAY_PAL_CLIENTID}:${PAY_PAL_SECRETKEYS}`).toString('base64');
+
+    //aqui hacemos el procedimiento para adquirir el token de acceso
+    const token = await fetch(`${PAY_PAL_API}/v1/oauth2/token`,{
+      method: "POST",//metodo
+      headers: {//los heades que este rquiere Authorization y Content-Type
+        'Authorization': `Basic ${basicAuth}`,
+        'Content-Type': 'application/x-www-form-urlencoded'//usamos esto para volverlo texto plano y asi pypal lo admite
+      },
+      body: 'grant_type=client_credentials'
+    });
+
+    const { access_token } = await token.json();
+    return access_token;
+  }

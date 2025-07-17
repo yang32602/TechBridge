@@ -14,7 +14,7 @@ const pool = mysql.createPool({
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
 });
-
+ 
 // probamos la conexión
 async function testConnection() {
   try {
