@@ -1,6 +1,18 @@
 import db from '../config/db.js';
 
-export const getEmpresa = async (id_usuario) => {
+export const getEmpresa = async () => {
+    const sql = `SELECT * FROM empresas`;
+    try {
+        const [empresas] = await db.query(sql);
+        return empresas;
+    } catch (error) {
+        console.error('Error al obtener las empresas');
+        throw error;
+    }
+};
+
+
+export const getEmpresaPorID = async (id_usuario) => {
     const sql = `SELECT * FROM empresas WHERE id_usuario = ?`;
     try {
         const [empresas] = await db.query(sql, [id_usuario]);
@@ -44,4 +56,24 @@ export const reclutarEstudiante = async (id_empresa, id_estudiante) => {
         console.error('Error al reclutar');
         throw error;
     }
+};
+
+//actualiza los campos de las empresas
+export const actualizarCampoEmpresa = async (id, campo, valor) => {
+    const camposPermitidos = [
+        'nombre',
+        'ruc',
+        'sector',
+        'logo_url',
+        'descripcion',
+        'telefono'
+    ];
+
+    if (!camposPermitidos.includes(campo)) {
+        throw new Error(`El campo "${campo}" no está permitido para actualizar.`);
+    }
+
+    const sql = `UPDATE empresas SET ${campo} = ? WHERE id_usuario = ?`;
+    const [resultado] = await db.query(sql, [valor, id]);
+    return resultado;
 };
