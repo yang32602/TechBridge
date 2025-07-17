@@ -1,0 +1,883 @@
+/* Student Dashboard Styles */
+.student-dashboard-main {
+  margin-left: 272px;
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.student-dashboard-header {
+  background: white;
+  padding: 32px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.student-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.student-header-content h1 {
+  color: #25324b;
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.student-header-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.student-btn-primary {
+  background: #0a5cb8;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.student-btn-secondary {
+  background: #0a5cb8;
+  color: white;
+  border: 1px solid #0a5cb8;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.student-greeting-section {
+  background: white;
+  padding: 32px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.student-greeting-content h2 {
+  color: #25324b;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.student-greeting-content p {
+  color: #7c8493;
+  margin: 0;
+}
+
+.student-stats-section {
+  padding: 32px;
+}
+
+.student-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.student-stat-card {
+  background: white;
+  border: 1px solid #e6edff;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.student-stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.student-stat-number {
+  font-size: 28px;
+  font-weight: 600;
+  color: #000;
+}
+
+.student-stat-label {
+  color: #000;
+  font-size: 16px;
+}
+
+.student-stat-icon {
+  width: 42px;
+  height: 42px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(124, 141, 181, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7c8493;
+}
+
+.student-stat-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.student-charts-section {
+  padding: 0 32px 32px;
+}
+
+.student-chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 32px;
+}
+
+.student-chart-card {
+  background: white;
+  border: 1px solid #e6edff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.student-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e6edff;
+}
+
+.student-card-header h3 {
+  color: #000;
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.student-card-content {
+  padding: 20px 24px;
+}
+
+.student-test-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e6edff;
+}
+
+.student-test-item:last-child {
+  border-bottom: none;
+}
+
+.student-test-info h4 {
+  color: #000;
+  font-size: 15px;
+  margin: 0 0 4px 0;
+}
+
+.student-test-info p {
+  color: #7c8db5;
+  font-size: 12px;
+  margin: 0;
+}
+
+.student-badge {
+  padding: 6px 14px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.student-badge.available {
+  background: rgba(135, 212, 254, 0.51);
+  color: #14609a;
+}
+
+.student-badge.completed {
+  background: rgba(172, 255, 136, 0.51);
+  color: #148b52;
+}
+
+.student-recommended-jobs .student-job-item {
+  padding: 12px;
+  border: 0.5px solid rgba(0, 0, 0, 0.18);
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.student-recommended-jobs .student-job-item h4 {
+  color: #000;
+  font-size: 12px;
+  margin: 0 0 4px 0;
+}
+
+.student-recommended-jobs .student-job-item p {
+  color: rgba(84, 84, 84, 0.44);
+  font-size: 10px;
+  margin: 0;
+}
+
+.student-bottom-section {
+  padding: 0 32px 32px;
+}
+
+.student-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.student-projects-card,
+.student-skills-card {
+  background: white;
+  border: 1px solid #e6edff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.student-project-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #e6edff;
+}
+
+.student-project-item:last-child {
+  border-bottom: none;
+}
+
+.student-project-icon {
+  width: 42px;
+  height: 42px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(124, 141, 181, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7c8493;
+  flex-shrink: 0;
+}
+
+.student-project-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.student-project-info {
+  flex: 1;
+}
+
+.student-project-info h4 {
+  color: #000;
+  font-size: 15px;
+  margin: 0 0 4px 0;
+}
+
+.student-project-info p {
+  color: #7c8db5;
+  font-size: 13px;
+  margin: 0;
+}
+
+.student-btn-view {
+  background: rgba(135, 212, 254, 0.51);
+  color: #14609a;
+  border: none;
+  padding: 6px 13px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.student-skill-item {
+  margin-bottom: 24px;
+}
+
+.student-skill-item:last-child {
+  margin-bottom: 0;
+}
+
+.student-skill-info h4 {
+  color: #2b2b2b;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.student-skill-bar {
+  width: 100%;
+  height: 7px;
+  background: #ececec;
+  border-radius: 25px;
+  overflow: hidden;
+}
+
+.student-skill-progress {
+  height: 100%;
+  background: #0a5cb8;
+  border-radius: 25px;
+  transition: width 0.3s ease;
+}
+
+.student-skill-progress.student-backend {
+  background: #2faf26;
+}
+
+.student-skill-progress.student-database {
+  background: #ffa200;
+}
+
+/* Company Dashboard Styles */
+.company-dashboard-main {
+  margin-left: 272px;
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.company-dashboard-header {
+  background: white;
+  padding: 16px 32px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.company-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.company-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.company-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.company-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.company-type {
+  color: #515b6f;
+  font-size: 16px;
+}
+
+.company-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #25324b;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.company-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.company-notification-icon {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.company-notification-icon svg {
+  width: 24px;
+  height: 24px;
+  color: #25324b;
+}
+
+.company-notification-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 8px;
+  height: 8px;
+  background: #ff6550;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.company-btn-primary {
+  background: #0a5cb8;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.company-btn-secondary {
+  background: #0a5cb8;
+  color: white;
+  border: 1px solid #0a5cb8;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.company-greeting-section {
+  background: white;
+  padding: 32px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.company-greeting-content h2 {
+  color: #25324b;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.company-greeting-content p {
+  color: #7c8493;
+  margin: 0;
+}
+
+.company-stats-section {
+  padding: 32px;
+  display: flex;
+  gap: 24px;
+}
+
+.company-stat-card {
+  flex: 1;
+  padding: 24px;
+  border-radius: 8px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+}
+
+.company-stat-card.blue {
+  background: #0a5cb8;
+}
+
+.company-stat-card.green {
+  background: #56cdad;
+}
+
+.company-stat-card.orange {
+  background: #f4a261;
+}
+
+.company-stat-content {
+  flex: 1;
+}
+
+.company-stat-number {
+  font-size: 48px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.company-stat-label {
+  font-size: 18px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.company-stat-arrow {
+  width: 24px;
+  height: 24px;
+}
+
+.company-content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  padding: 0 32px 32px;
+}
+
+.company-chart-card {
+  background: white;
+  border: 1px solid #e6edff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.company-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e6edff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.company-card-header h3 {
+  color: #25324b;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.company-filter-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid #d6ddeb;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+}
+
+.company-chart-content {
+  padding: 24px;
+  position: relative;
+}
+
+.company-chart-y-axis {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: absolute;
+  left: 24px;
+  top: 24px;
+  color: #515b6f;
+  font-size: 16px;
+}
+
+.company-chart-area {
+  margin-left: 72px;
+  position: relative;
+  height: 200px;
+}
+
+.company-chart-line {
+  width: 100%;
+  height: 100%;
+}
+
+.company-chart-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  gap: 16px;
+}
+
+.chart-label {
+  color: #515b6f;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.company-chart-tooltip {
+  position: absolute;
+  top: 50px;
+  right: 100px;
+  background: #515b6f;
+  color: white;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.company-chart-tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 16px;
+  height: 16px;
+  background: #515b6f;
+}
+
+.company-tooltip-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.company-tooltip-label {
+  opacity: 0.8;
+}
+
+.company-tooltip-value {
+  font-weight: 600;
+}
+
+.company-chart-x-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 72px;
+  color: #515b6f;
+  font-size: 16px;
+  margin-top: 16px;
+}
+
+.company-chart-x-axis .company-highlighted {
+  color: #56cdad;
+  font-weight: 600;
+}
+
+.company-featured-candidates {
+  background: white;
+  border: 1px solid #e6edff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.company-candidates-list {
+  padding: 8px 24px 24px;
+}
+
+.company-candidate-card {
+  padding: 24px;
+  border: 1px solid #e9ebfd;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.company-candidate-card:last-child {
+  margin-bottom: 0;
+}
+
+.company-candidate-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.company-candidate-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #26a4ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.company-candidate-details h4 {
+  color: #25324b;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.company-view-profile {
+  color: #0a5cb8;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.company-candidate-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.company-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.company-meta-label {
+  color: #7c8493;
+  font-size: 14px;
+}
+
+.company-meta-value {
+  color: #25324b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.company-jobs-summary {
+  background: white;
+  border: 1px solid #e6edff;
+  border-radius: 12px;
+  margin: 0 32px 32px;
+  overflow: hidden;
+}
+
+.company-view-all {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0a5cb8;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.company-jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  padding: 24px;
+}
+
+.company-job-card {
+  background: white;
+  border: 1px solid #d6ddeb;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.company-job-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.company-job-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.company-job-status {
+  padding: 6px 10px;
+  border-radius: 80px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.company-job-status.active {
+  background: rgba(86, 205, 173, 0.1);
+  color: #56cdad;
+}
+
+.company-job-status.closed {
+  background: rgba(205, 86, 88, 0.05);
+  color: #cd5656;
+}
+
+.company-job-card h4 {
+  color: #25324b;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+
+.company-job-tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.company-tag {
+  padding: 6px 10px;
+  border-radius: 80px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.company-tag.yellow {
+  color: #ffb836;
+  border-color: #ffb836;
+}
+
+.company-tag.purple {
+  color: #4640de;
+  border-color: #4640de;
+}
+
+.company-tag.green {
+  color: #56cdad;
+  border-color: #56cdad;
+}
+
+.company-job-card p {
+  color: #7c8493;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .student-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .student-chart-grid,
+  .student-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .company-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .company-jobs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .student-dashboard-main,
+  .company-dashboard-main {
+    margin-left: 0;
+  }
+
+  .profile-student-container .student-dashboard-sidebar,
+  .company-sidebar {
+    display: none;
+  }
+
+  .student-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .company-stats-section {
+    flex-direction: column;
+  }
+
+  .company-jobs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .student-header-actions,
+  .company-header-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

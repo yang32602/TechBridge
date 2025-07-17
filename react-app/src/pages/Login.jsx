@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import logoImage from "../assets/Logo.png";
+import ApiService from "../services/api";
+import { useAuth } from "../hooks/useAuth";
+// React Icons
+import { FaGoogle, FaCheck } from "react-icons/fa";
 
 const Login = () => {
   const location = useLocation();
@@ -15,6 +19,9 @@ const Login = () => {
     password: "",
     remember: false,
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { login } = useAuth();
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -29,10 +36,89 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login submitted:", { ...formData, userType: activeTab });
-    // Handle login logic here
+    setLoading(true);
+    setError("");
+
+    try {
+      if (!formData.email || !formData.password) {
+        setError("Email y contraseña son obligatorios");
+        setLoading(false);
+        return;
+      }
+
+      let response;
+      const credentials = {
+        email: formData.email,
+        password: formData.password,
+      };
+
+      if (activeTab === "postulantes") {
+        response = await ApiService.loginStudent(credentials);
+      } else {
+        response = await ApiService.loginCompany(credentials);
+      }
+
+      if (response.estado === 1) {
+        console.log("Login response:", response); // Debug log
+
+        // Get user ID from login response - check multiple possible fields
+        const userId =
+          response.usuario?.id ||
+          response.id ||
+          response.userId ||
+          response.user?.id;
+        console.log("User ID from login:", userId); // Debug log
+
+        // Fetch complete user information using the user ID
+        let userDetails = null;
+        let displayName =
+          activeTab === "postulantes" ? "Estudiante" : "Empresa";
+
+        if (userId) {
+          try {
+            if (activeTab === "postulantes") {
+              userDetails = await ApiService.getStudentByUserId(userId);
+              console.log("Student details:", userDetails); // Debug log
+            } else {
+              userDetails = await ApiService.getCompanyByUserId(userId);
+              console.log("Company details:", userDetails); // Debug log
+            }
+
+            if (userDetails) {
+              displayName =
+                userDetails.nombre_completo ||
+                userDetails.nombre ||
+                displayName;
+            }
+          } catch (detailsError) {
+            console.error("Error fetching user details:", detailsError);
+          }
+        }
+
+        const userData = {
+          email: formData.email,
+          userType: activeTab,
+          name: displayName,
+          id: userId,
+          realName: userDetails?.nombre_completo || userDetails?.nombre,
+          ...response, // Include all login response data
+          ...(userDetails || {}), // Include all user details
+        };
+
+        console.log("Final user data:", userData); // Debug log
+        login(userData);
+        navigate("/");
+      } else {
+        setError(response.mensaje || "Credenciales inválidas");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRegisterClick = () => {
@@ -90,30 +176,7 @@ const Login = () => {
 
           {activeTab === "postulantes" && (
             <button className="google-button">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M18.1706 8.36824H17.4993V8.33366H9.99935V11.667H14.7089C14.0219 13.6074 12.1756 15.0003 9.99935 15.0003C7.2381 15.0003 4.99935 12.7616 4.99935 10.0003C4.99935 7.23908 7.2381 5.00033 9.99935 5.00033C11.2739 5.00033 12.4335 5.48116 13.3164 6.26658L15.6735 3.90949C14.1852 2.52241 12.1943 1.66699 9.99935 1.66699C5.39727 1.66699 1.66602 5.39824 1.66602 10.0003C1.66602 14.6024 5.39727 18.3337 9.99935 18.3337C14.6014 18.3337 18.3327 14.6024 18.3327 10.0003C18.3327 9.44158 18.2752 8.89616 18.1706 8.36824Z"
-                  fill="#FFC107"
-                />
-                <path
-                  d="M2.62695 6.12158L5.36487 8.12949C6.1057 6.29533 7.89987 5.00033 9.99945 5.00033C11.274 5.00033 12.4336 5.48116 13.3165 6.26658L15.6736 3.90949C14.1853 2.52241 12.1945 1.66699 9.99945 1.66699C6.79862 1.66699 4.02279 3.47408 2.62695 6.12158Z"
-                  fill="#FF3D00"
-                />
-                <path
-                  d="M10.0008 18.3336C12.1533 18.3336 14.1091 17.5099 15.5879 16.1703L13.0087 13.9878C12.1439 14.6454 11.0872 15.0011 10.0008 15.0003C7.83328 15.0003 5.99286 13.6182 5.29953 11.6895L2.58203 13.7832C3.9612 16.482 6.76203 18.3336 10.0008 18.3336Z"
-                  fill="#4CAF50"
-                />
-                <path
-                  d="M18.1713 8.36759H17.5V8.33301H10V11.6663H14.7096C14.3809 12.5898 13.7889 13.3968 13.0067 13.9876L13.0079 13.9868L15.5871 16.1693C15.4046 16.3351 18.3333 14.1663 18.3333 9.99967C18.3333 9.44092 18.2758 8.89551 18.1713 8.36759Z"
-                  fill="#1976D2"
-                />
-              </svg>
+              <FaGoogle size={20} />
               Iniciar sesión con Google
             </button>
           )}
@@ -126,36 +189,45 @@ const Login = () => {
             </div>
           )}
 
+          {error && (
+            <div
+              className="error-message"
+              style={{
+                color: "#ef4444",
+                backgroundColor: "#fef2f2",
+                padding: "12px",
+                borderRadius: "8px",
+                border: "1px solid #fecaca",
+                marginBottom: "16px",
+                fontSize: "14px",
+              }}
+            >
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="auth-form-fields">
             <div className="form-group">
-              <label>
-                {activeTab === "postulantes"
-                  ? "Correo electrónico"
-                  : "Correo Institucional"}
-              </label>
+              <label htmlFor="email">Email address</label>
               <input
                 type="email"
+                id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder={
-                  activeTab === "postulantes"
-                    ? "Ingresa tu correo electrónico"
-                    : "Ingrese correo institucional"
-                }
-                required
+                placeholder="Ingresa tu email"
               />
             </div>
 
             <div className="form-group">
-              <label>Contraseña</label>
+              <label htmlFor="password">Password</label>
               <input
                 type="password"
+                id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder="Ingresa tu contraseña"
-                required
               />
             </div>
 
@@ -168,42 +240,14 @@ const Login = () => {
                   onChange={handleInputChange}
                 />
                 <span className="checkmark">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M3.33398 8.00033L6.66732 11.3337L13.334 4.66699"
-                      stroke="#E9EBFD"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  {formData.remember && <FaCheck size={12} color="white" />}
                 </span>
-                {activeTab === "postulantes" ? (
-                  "Recordar sesión"
-                ) : (
-                  <>
-                    Acepto los{" "}
-                    <a href="#" className="link">
-                      Términos de Servicio
-                    </a>{" "}
-                    y la{" "}
-                    <a href="#" className="link">
-                      Política de Privacidad
-                    </a>{" "}
-                    en nombre de mi empresa
-                  </>
-                )}
+                Recordarme en este dispositivo
               </label>
             </div>
 
-            <button type="submit" className="submit-button">
-              Iniciar sesión
+            <button type="submit" className="submit-button" disabled={loading}>
+              {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
             </button>
           </form>
 
@@ -211,10 +255,10 @@ const Login = () => {
             <span>¿No tienes una cuenta?</span>
             <button
               type="button"
-              className="link-button"
               onClick={handleRegisterClick}
+              className="link-button"
             >
-              {activeTab === "postulantes" ? "Registrar" : "Registrate"}
+              Registrarse
             </button>
           </div>
         </div>

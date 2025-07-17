@@ -1,11 +1,11 @@
 // src/routes/empresa.routes.js
 import express from 'express';
-import * as empresaController from '../controllers/empresa.controller.js';
+import * as empresaController from '../controllers/empresas.controller.js';
 
 const router = express.Router();
 
 // Obtener todas las empresas [GET]
-router.get('/', empresaController.getEmpresas);
+router.post('/', empresaController.getEmpresas);
 
 // Registrar una nueva empresa [POSt]
 router.post('/register', empresaController.insertEmpresa);
