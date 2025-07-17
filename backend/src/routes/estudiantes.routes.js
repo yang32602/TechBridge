@@ -6,9 +6,8 @@ const router = express.Router();
 
 
 // Ruta para obtener todos los estudiantes [GET]
-router.get('/', estudiantesController.getEstudiantes);
+router.post('/', estudiantesController.getEstudiantes);
 
-// Registrar un estudiante [POSt]
-router.post('/', estudiantesController.insertEstudiante);
+router.patch('/actualizar', estudiantesController.updateCampoEstudiante);
 
 export default router;
