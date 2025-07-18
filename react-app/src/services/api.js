@@ -235,6 +235,31 @@ class ApiService {
       return [];
     }
   }
+
+  // Método para actualizar campos individuales del estudiante
+  // TODO: Para agregar nuevos campos editables en el futuro:
+  // 1. Agregar el campo a la lista de campos editables en el componente EditProfileModal
+  // 2. Asegurar que el backend maneje el nuevo campo en la ruta PATCH /estudiantes/actualizar
+  // 3. No es necesario modificar este método ya que es genérico
+  async updateStudentField(userId, field, value) {
+    try {
+      console.log("updateStudentField called with:", { userId, field, value });
+      const response = await this.request("/estudiantes/actualizar", {
+        method: "PATCH",
+        body: JSON.stringify({
+          id_usuario: userId,
+          campo: field,
+          valor: value,
+        }),
+      });
+
+      console.log("updateStudentField response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error updating student field:", error);
+      throw error;
+    }
+  }
 }
 
 export default new ApiService();
