@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import ApiService from "../services/api";
 import { StudentSidebar } from "../components";
+import EditProfileModal from "../components/EditProfileModal";
 import "../assets/profile-student.css";
 
 // React Icons
@@ -23,16 +24,27 @@ import { FaGithub, FaTwitter, FaReddit } from "react-icons/fa";
 const ProfileStudent = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { studentId } = useParams();
+  const location = useLocation();
   const [studentDetails, setStudentDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  // Check if this is read-only mode (viewing another student's profile)
+  const isReadOnly = studentId || location.state?.readOnly;
+  const targetUserId = studentId || user?.id;
 
   useEffect(() => {
     const fetchStudentDetails = async () => {
       console.log("ProfileStudent: user object:", user);
-      if (user?.id) {
-        console.log("ProfileStudent: fetching details for user.id:", user.id);
+      if (targetUserId) {
+        console.log(
+          "ProfileStudent: fetching details for user.id:",
+          targetUserId,
+        );
         try {
-          const details = await ApiService.getStudentByUserId(user.id);
+          const details = await ApiService.getStudentByUserId(targetUserId);
           console.log("ProfileStudent: received details:", details);
           setStudentDetails(details);
         } catch (error) {
@@ -45,7 +57,7 @@ const ProfileStudent = () => {
     };
 
     fetchStudentDetails();
-  }, [user]);
+  }, [user, targetUserId]);
 
   const handleLogoClick = () => {
     navigate("/");
@@ -59,31 +71,42 @@ const ProfileStudent = () => {
     );
   }
 
-  // TODO: 将来在后端添加更多字段时，在此处同步添加新字段展示
+  // Use studentDetails if available (read-only mode or own profile), fallback to current user
   const userName = studentDetails?.nombre_completo || user?.name || "Jake Gyll";
-  const userEmail = user?.email || "usuario@email.com";
+  const userEmail = isReadOnly
+    ? studentDetails?.email || "No especificado"
+    : user?.email || "usuario@email.com";
   const userCedula = studentDetails?.cedula || "No especificado";
   const userFechaNacimiento =
     studentDetails?.fecha_nacimiento || "No especificado";
   const userSobreMi =
-    studentDetails?.sobremi || "No hay información disponible";
+    studentDetails?.sobremi || "No hay informaci��n disponible";
   const userGithub = studentDetails?.github || "No especificado";
   const userLenguajes = studentDetails?.lenguajes || "No especificado";
   const userPais = studentDetails?.pais || "No especificado";
+  const userProvincia = studentDetails?.provincia || "No especificado";
+  const userTelefono = studentDetails?.telefono || "No especificado";
+  const userX = studentDetails?.X || "No especificado";
+  const userReddit = studentDetails?.Reddit || "No especificado";
   const userContratado = studentDetails?.contratado === 1 ? "Sí" : "No";
 
   return (
-    <div className="profile-student-container">
-      {/* Sidebar */}
-      <StudentSidebar activeSection="profile" />
+    <div
+      className={`profile-student-container ${isReadOnly ? "profile-student-readonly" : ""}`}
+    >
+      {/* Sidebar - only show if not in read-only mode */}
+      {!isReadOnly && <StudentSidebar activeSection="profile" />}
 
       {/* Main Content */}
       <main className="student-dashboard-main">
         {/* Top Navigation */}
         <header className="student-dashboard-header">
-          <h1>Mi Perfil</h1>
-          <button className="student-btn-return" onClick={handleLogoClick}>
-            Regresar a Inicio
+          <h1>{isReadOnly ? "Perfil del Estudiante" : "Mi Perfil"}</h1>
+          <button
+            className="student-btn-return"
+            onClick={() => (isReadOnly ? navigate(-1) : handleLogoClick())}
+          >
+            {isReadOnly ? "Volver" : "Regresar a Inicio"}
           </button>
         </header>
 
@@ -93,9 +116,6 @@ const ProfileStudent = () => {
             <section className="student-profile-header-card">
               <div className="student-profile-banner">
                 <div className="student-banner-overlay"></div>
-                <button className="student-edit-btn">
-                  <HiPencil color="#f8f8fd" />
-                </button>
               </div>
               <div className="student-profile-info">
                 <div className="student-profile-avatar">
@@ -110,10 +130,6 @@ const ProfileStudent = () => {
                 </div>
                 <div className="student-profile-details">
                   <h2 className="student-profile-name">{userName}</h2>
-                  <p className="student-profile-title">
-                    Product Designer en{" "}
-                    <span className="student-company-name">Twitter</span>
-                  </p>
                   <div className="student-profile-location">
                     <HiLocationMarker />
                     <span>{userPais}</span>
@@ -123,9 +139,14 @@ const ProfileStudent = () => {
                     <span>Contratado: {userContratado}</span>
                   </div>
                 </div>
-                <button className="student-btn-edit-profile">
-                  Editar Perfil
-                </button>
+                {!isReadOnly && (
+                  <button
+                    className="student-btn-edit-profile"
+                    onClick={() => setIsEditModalOpen(true)}
+                  >
+                    Editar Perfil
+                  </button>
+                )}
               </div>
             </section>
 
@@ -133,9 +154,6 @@ const ProfileStudent = () => {
             <section className="student-content-card">
               <div className="student-card-header">
                 <h3>Sobre mi</h3>
-                <button className="student-edit-icon-btn">
-                  <HiPencil />
-                </button>
               </div>
               <div className="student-card-content">
                 <p>{userSobreMi}</p>
@@ -146,9 +164,11 @@ const ProfileStudent = () => {
             <section className="student-content-card">
               <div className="student-card-header">
                 <h3>Experiencias</h3>
-                <button className="student-add-btn">
-                  <HiPlus />
-                </button>
+                {!isReadOnly && (
+                  <button className="student-add-btn">
+                    <HiPlus />
+                  </button>
+                )}
               </div>
               <div className="student-experience-list">
                 <div className="student-experience-item">
@@ -161,9 +181,6 @@ const ProfileStudent = () => {
                   <div className="student-experience-content">
                     <div className="student-experience-header">
                       <h4>Ingeniera de Software</h4>
-                      <button className="student-edit-icon-btn">
-                        <HiPencil />
-                      </button>
                     </div>
                     <div className="student-experience-meta">
                       <span className="company">Twitter</span>
@@ -198,9 +215,6 @@ const ProfileStudent = () => {
                       <h4>
                         Especialista en Diseño & Desarrollo de Interfaz (UI/UX)
                       </h4>
-                      <button className="student-edit-icon-btn">
-                        <HiPencil />
-                      </button>
                     </div>
                     <div className="student-experience-meta">
                       <span className="company">GoDaddy</span>
@@ -225,9 +239,11 @@ const ProfileStudent = () => {
             <section className="student-content-card">
               <div className="student-card-header">
                 <h3>Educación</h3>
-                <button className="student-add-btn">
-                  <HiPlus />
-                </button>
+                {!isReadOnly && (
+                  <button className="student-add-btn">
+                    <HiPlus />
+                  </button>
+                )}
               </div>
               <div className="student-divider"></div>
               <div className="student-education-list">
@@ -241,9 +257,6 @@ const ProfileStudent = () => {
                   <div className="student-education-content">
                     <div className="student-education-header">
                       <h4>Universidad Tecnológica de Panamá</h4>
-                      <button className="student-edit-icon-btn">
-                        <HiPencil />
-                      </button>
                     </div>
                     <div className="student-degree">Diseño Gráfico</div>
                     <div className="student-duration">2005 - 2009</div>
@@ -256,14 +269,11 @@ const ProfileStudent = () => {
             <section className="student-content-card">
               <div className="student-card-header">
                 <h3>Habilidades</h3>
-                <div className="student-header-actions">
+                {!isReadOnly && (
                   <button className="student-add-btn">
                     <HiPlus />
                   </button>
-                  <button className="student-edit-icon-btn">
-                    <HiPencil />
-                  </button>
-                </div>
+                )}
               </div>
               <div className="student-skills-grid">
                 <span className="student-skill-tag">Comunicación</span>
@@ -280,9 +290,11 @@ const ProfileStudent = () => {
             <section className="student-content-card">
               <div className="student-card-header">
                 <h3>Portafolio</h3>
-                <button className="student-add-btn">
-                  <HiPlus />
-                </button>
+                {!isReadOnly && (
+                  <button className="student-add-btn">
+                    <HiPlus />
+                  </button>
+                )}
               </div>
               <div className="student-portfolio-empty">
                 <div className="student-empty-icon">
@@ -305,9 +317,6 @@ const ProfileStudent = () => {
             <section className="student-sidebar-card">
               <div className="student-card-header">
                 <h3>Detalles Adicionales</h3>
-                <button className="student-edit-icon-btn">
-                  <HiPencil />
-                </button>
               </div>
               <div className="student-contact-list">
                 <div className="student-contact-item">
@@ -350,6 +359,24 @@ const ProfileStudent = () => {
                 </div>
                 <div className="student-contact-item">
                   <div className="student-contact-icon">
+                    <HiLocationMarker />
+                  </div>
+                  <div className="student-contact-content">
+                    <div className="student-contact-label">Provincia</div>
+                    <div className="student-contact-value">{userProvincia}</div>
+                  </div>
+                </div>
+                <div className="student-contact-item">
+                  <div className="student-contact-icon">
+                    <HiPhone />
+                  </div>
+                  <div className="student-contact-content">
+                    <div className="student-contact-label">Teléfono</div>
+                    <div className="student-contact-value">{userTelefono}</div>
+                  </div>
+                </div>
+                <div className="student-contact-item">
+                  <div className="student-contact-icon">
                     <HiCalendar />
                   </div>
                   <div className="student-contact-content">
@@ -370,9 +397,6 @@ const ProfileStudent = () => {
             <section className="student-sidebar-card">
               <div className="student-card-header">
                 <h3>Enlaces</h3>
-                <button className="student-edit-icon-btn">
-                  <HiPencil />
-                </button>
               </div>
               <div className="student-social-links">
                 <div className="student-social-item">
@@ -392,7 +416,7 @@ const ProfileStudent = () => {
                   </div>
                   <div className="student-social-content">
                     <div className="student-social-label">X</div>
-                    <div className="student-social-value">x.com/jakegyll</div>
+                    <div className="student-social-value">{userX}</div>
                   </div>
                 </div>
                 <div className="student-social-item">
@@ -401,9 +425,7 @@ const ProfileStudent = () => {
                   </div>
                   <div className="student-social-content">
                     <div className="student-social-label">Reddit</div>
-                    <div className="student-social-value">
-                      reddit.com/user/jakegyll
-                    </div>
+                    <div className="student-social-value">{userReddit}</div>
                   </div>
                 </div>
               </div>
@@ -413,9 +435,6 @@ const ProfileStudent = () => {
             <section className="student-sidebar-card">
               <div className="student-card-header">
                 <h3>Badges</h3>
-                <button className="student-edit-icon-btn">
-                  <HiPencil />
-                </button>
               </div>
               <div className="student-badges-grid">
                 <div className="student-badge js-advanced">Js Advanced</div>
@@ -428,9 +447,6 @@ const ProfileStudent = () => {
             <section className="student-sidebar-card">
               <div className="student-card-header">
                 <h3>CV</h3>
-                <button className="student-edit-icon-btn">
-                  <HiPencil />
-                </button>
               </div>
               <button className="student-download-cv-btn">
                 <HiDownload />
@@ -440,6 +456,42 @@ const ProfileStudent = () => {
           </aside>
         </div>
       </main>
+
+      {/* Modal de edición de perfil */}
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSuccessMessage("");
+        }}
+        userDetails={studentDetails}
+        userId={targetUserId}
+        onSuccess={(updatedFields) => {
+          // Mostrar mensaje de éxito
+          setSuccessMessage(`Campos actualizados: ${updatedFields.join(", ")}`);
+
+          // Refrescar los datos del estudiante
+          const fetchUpdatedDetails = async () => {
+            try {
+              const details = await ApiService.getStudentByUserId(targetUserId);
+              setStudentDetails(details);
+            } catch (error) {
+              console.error("Error refreshing student details:", error);
+            }
+          };
+          fetchUpdatedDetails();
+
+          // Ocultar mensaje después de 3 segundos
+          setTimeout(() => setSuccessMessage(""), 3000);
+        }}
+      />
+
+      {/* Mensaje de éxito */}
+      {successMessage && (
+        <div className="success-notification">
+          <span>✓ {successMessage}</span>
+        </div>
+      )}
     </div>
   );
 };
