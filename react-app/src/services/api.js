@@ -89,12 +89,19 @@ class ApiService {
 
   async getStudentByUserId(userId) {
     try {
-      const students = await this.getStudents();
-      if (students && Array.isArray(students)) {
-        // Match by id_usuario field in estudiantes endpoint
-        const student = students.find(
-          (student) => student.id_usuario === userId,
-        );
+      console.log("getStudentByUserId called with userId:", userId);
+      const response = await this.request("/estudiantes", {
+        method: "POST",
+        body: JSON.stringify({ id_usuario: userId }),
+      });
+
+      console.log("getStudentByUserId response:", response);
+
+      // TODO: 将来在后端添加更多字段时，在此处同步添加新字段处理
+      // 例如: linkedin, telefono, portafolio_url, direccion, habilidades_adicionales 等
+      if (response && response.data && Array.isArray(response.data)) {
+        const student = response.data.length > 0 ? response.data[0] : null;
+        console.log("getStudentByUserId returning:", student);
         return student;
       }
       return null;
@@ -106,12 +113,19 @@ class ApiService {
 
   async getCompanyByUserId(userId) {
     try {
-      const companies = await this.getCompanies();
-      if (companies && Array.isArray(companies)) {
-        // Match by id_usuario field in empresas endpoint
-        const company = companies.find(
-          (company) => company.id_usuario === userId,
-        );
+      console.log("getCompanyByUserId called with userId:", userId);
+      const response = await this.request("/empresas", {
+        method: "POST",
+        body: JSON.stringify({ id_usuario: userId }),
+      });
+
+      console.log("getCompanyByUserId response:", response);
+
+      // TODO: 将来在后端添加更多字段时，在此处同步添加新字段处理
+      // 例如: linkedin, telefono, sitio_web, direccion, tamaño_empresa 等
+      if (response && response.data && Array.isArray(response.data)) {
+        const company = response.data.length > 0 ? response.data[0] : null;
+        console.log("getCompanyByUserId returning:", company);
         return company;
       }
       return null;
@@ -174,6 +188,76 @@ class ApiService {
     } catch (error) {
       console.error("Error fetching company by ID:", error);
       return null;
+    }
+  }
+
+  async getCompanyApplicants(companyId) {
+    try {
+      console.log("getCompanyApplicants called with companyId:", companyId);
+      const response = await this.request("/usuarios/estudiantes", {
+        method: "POST",
+        body: JSON.stringify({ id_empresa: companyId }),
+      });
+
+      console.log("getCompanyApplicants response:", response);
+
+      // Handle the response format: {estado: 1, mensaje: '...', data: Array}
+      if (response && response.data && Array.isArray(response.data)) {
+        return response.data;
+      } else if (response && Array.isArray(response)) {
+        return response;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error fetching company applicants:", error);
+      return [];
+    }
+  }
+
+  async getStudentBadges(studentId) {
+    try {
+      console.log("getStudentBadges called with studentId:", studentId);
+      const response = await this.request(
+        `/usuarios/${studentId}/estudianteInsignia`,
+        {
+          method: "GET",
+        },
+      );
+
+      console.log("getStudentBadges response:", response);
+
+      if (response && Array.isArray(response.data)) {
+        return response.data;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error fetching student badges:", error);
+      return [];
+    }
+  }
+
+  // Método para actualizar campos individuales del estudiante
+  // TODO: Para agregar nuevos campos editables en el futuro:
+  // 1. Agregar el campo a la lista de campos editables en el componente EditProfileModal
+  // 2. Asegurar que el backend maneje el nuevo campo en la ruta PATCH /estudiantes/actualizar
+  // 3. No es necesario modificar este método ya que es genérico
+  async updateStudentField(userId, field, value) {
+    try {
+      console.log("updateStudentField called with:", { userId, field, value });
+      const response = await this.request("/estudiantes/actualizar", {
+        method: "PATCH",
+        body: JSON.stringify({
+          id_usuario: userId,
+          campo: field,
+          valor: value,
+        }),
+      });
+
+      console.log("updateStudentField response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error updating student field:", error);
+      throw error;
     }
   }
 }
