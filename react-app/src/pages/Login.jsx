@@ -63,48 +63,23 @@ const Login = () => {
       if (response.estado === 1) {
         console.log("Login response:", response); // Debug log
 
-        // Get user ID from login response - check multiple possible fields
+        // Extract user ID from login response
+        // The login response should contain the id_usuario we need
         const userId =
-          response.usuario?.id ||
+          response.id_usuario ||
+          response.usuario?.id_usuario ||
           response.id ||
-          response.userId ||
-          response.user?.id;
+          response.usuario?.id;
         console.log("User ID from login:", userId); // Debug log
 
-        // Fetch complete user information using the user ID
-        let userDetails = null;
-        let displayName =
-          activeTab === "postulantes" ? "Estudiante" : "Empresa";
-
-        if (userId) {
-          try {
-            if (activeTab === "postulantes") {
-              userDetails = await ApiService.getStudentByUserId(userId);
-              console.log("Student details:", userDetails); // Debug log
-            } else {
-              userDetails = await ApiService.getCompanyByUserId(userId);
-              console.log("Company details:", userDetails); // Debug log
-            }
-
-            if (userDetails) {
-              displayName =
-                userDetails.nombre_completo ||
-                userDetails.nombre ||
-                displayName;
-            }
-          } catch (detailsError) {
-            console.error("Error fetching user details:", detailsError);
-          }
-        }
-
+        // Store basic user data without fetching additional details yet
+        // Details will be fetched in the profile components when needed
         const userData = {
           email: formData.email,
           userType: activeTab,
-          name: displayName,
+          name: activeTab === "postulantes" ? "Estudiante" : "Empresa",
           id: userId,
-          realName: userDetails?.nombre_completo || userDetails?.nombre,
-          ...response, // Include all login response data
-          ...(userDetails || {}), // Include all user details
+          ...response, // Include all login response data for reference
         };
 
         console.log("Final user data:", userData); // Debug log
