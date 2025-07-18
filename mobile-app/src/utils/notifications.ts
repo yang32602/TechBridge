@@ -3,6 +3,7 @@ import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device'; // Importa expo-device
 import Constants from 'expo-constants'; // Importa expo-constants
 import { Platform } from 'react-native';
+import { Router } from 'expo-router'; // Importa el tipo Router para tipado correcto
 
 // Configura cómo se deben manejar las notificaciones cuando la app está en primer plano
 // Esto es importante para decidir si la notificación se muestra como un banner, si reproduce sonido, etc.
@@ -54,8 +55,9 @@ export async function registerForPushNotificationsAsync(): Promise<string | unde
     }
 
     // Obtener el token de Expo Push
+    
     token = (await Notifications.getExpoPushTokenAsync({
-      projectId: Constants.expoConfig?.extra?.eas?.projectId || Constants.expoConfig?.owner // Expo Router uses projectId from app.json/app.config.js
+      projectId: Constants.expoConfig?.extra?.eas?.projectId || Constants.expoConfig?.owner  // Expo Router usa projectId de app.json/app.config.js o el owner
     })).data;
 
     console.log('Expo Push Token:', token);
@@ -71,10 +73,10 @@ export async function registerForPushNotificationsAsync(): Promise<string | unde
 
 /**
  * Escucha las notificaciones recibidas y las interacciones del usuario con ellas.
- * @param {any} router - El objeto 'router' de Expo Router para la navegación.
+ * @param {Router} router - El objeto 'router' de Expo Router para la navegación.
  * @returns {() => void} Una función para limpiar los listeners al desmontar el componente.
  */
-export function setupNotificationListeners(router: any) {
+export function setupNotificationListeners(router: Router) { // Cambiado 'any' por 'Router' para mejor tipado
   // Listener para notificaciones recibidas mientras la app está en primer plano
   const notificationListener = Notifications.addNotificationReceivedListener(notification => {
     console.log("Notification received in foreground:", notification);
@@ -85,19 +87,40 @@ export function setupNotificationListeners(router: any) {
   const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
     console.log("Notification tapped/interacted:", response);
     // Extraer datos personalizados de la notificación
-    const { screen, data } = response.notification.request.content.data;
+    // Asumimos que `data` contiene `{ screen: 'postulanteNotificaciones', itemId: 'ID_DE_LA_OFERTA' }`
+    const { screen, ...data } = response.notification.request.content.data; // Desestructuramos 'screen' y el resto de 'data'
 
-    if (screen) {
+    // Define el tipo esperado para los parámetros del router
+    type RouterParams = Record<string, string | number | (string | number)[] | null | undefined>;
+
+    if (typeof screen === 'string') { // Asegurarnos de que 'screen' sea una cadena
       console.log(`Navigating to ${screen} with data:`, data);
-      // Usar el objeto `router` de Expo Router para navegar
-      // router.push() para añadir una nueva pantalla a la pila
-      // router.replace() para reemplazar la pantalla actual
-      // router.navigate() para navegar de forma inteligente (push o reemplazar)
 
-      // Asegúrate de que `screen` sea una ruta válida en tu Expo Router,
-      // por ejemplo, 'profile', 'vacantes/detalle', 'empresa/postulaciones'
-      // y que `data` sea un objeto de parámetros válido para esa ruta.
-      router.push({ pathname: screen, params: data });
+      // Lógica de redirección basada en la pantalla y, opcionalmente, otros datos
+      switch (screen) {
+        case 'postulanteDashboard':
+          router.push('/postulante/dashboard');
+          break;
+        case 'postulanteNotificaciones':
+          // Ejemplo: Si itemId es el ID de una oferta, navegar a una pantalla de detalle de oferta
+          router.push({ pathname: '/postulante/notificaciones', params: data as RouterParams});
+          break;
+        case 'empresaDashboard':
+          router.push('/empresa/dashboard');
+          break;
+        case 'empresaNotificaciones':
+          // Ejemplo: Si itemId es el ID de un postulante, navegar a una pantalla de detalle del postulante
+          router.push({ pathname: '/empresa/notificaciones', params: data as RouterParams});
+          break;
+        // Añade más casos si tienes otras pantallas a las que las notificaciones pueden redirigir
+        default:
+          // Redirección por defecto si la pantalla no es reconocida (ej. al dashboard principal)
+          // Puedes usar router.replace si quieres que no se pueda volver a la notificación
+          router.push('/postulante/dashboard'); // O a una ruta genérica como '/home'
+          break;
+      }
+    } else {
+      console.warn("Notification data 'screen' is missing or not a string, cannot navigate.");
     }
   });
 
@@ -114,7 +137,11 @@ export async function schedulePushNotification() {
     content: {
       title: "Título de Prueba! 📬",
       body: 'Este es el cuerpo de la notificación de prueba.',
-      data: { screen: 'explore', itemId: '123' },
+      data: {
+        screen: 'postulanteNotificaciones', // Ejemplo: redirige a la pantalla de notificaciones del postulante
+        itemId: 'oferta123', // Ejemplo de un ID de item
+        messageId: 'msg456'
+      },
     },
     // Modifica el trigger para incluir 'type'
     trigger: {

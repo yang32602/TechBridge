@@ -1,6 +1,6 @@
 // backend/src/utils/pushNotifications.js
-const { Expo } = require('expo-server-sdk');
-const db = require('../config/db'); // Ajusta la ruta a tu configuración de base de datos
+import { Expo } from 'expo-server-sdk';
+import db from '../config/db.js'; // Ajusta la ruta a tu configuración de base de datos
 
 let expo = new Expo(); // No necesitas accessToken a menos que quieras usar características avanzadas de Expo Push (raro)
 
@@ -44,7 +44,7 @@ async function sendPushNotification(targetExpoPushToken, title, body, data = {})
  */
 async function notifyApplicant(applicantId, title, body, data = {}) {
   try {
-    const [rows] = await db.query('SELECT expoPushToken FROM Postulantes WHERE id = ?', [applicantId]);
+    const [rows] = await db.query('SELECT expoPushToken FROM estudiantes WHERE id = ?', [applicantId]);
     const applicantToken = rows[0]?.expoPushToken;
 
     if (applicantToken) {
@@ -66,7 +66,7 @@ async function notifyApplicant(applicantId, title, body, data = {}) {
  */
 async function notifyCompany(companyId, title, body, data = {}) {
   try {
-    const [rows] = await db.query('SELECT expoPushToken FROM Empresas WHERE id = ?', [companyId]);
+    const [rows] = await db.query('SELECT expoPushToken FROM empresas WHERE id = ?', [companyId]);
     const companyToken = rows[0]?.expoPushToken;
 
     if (companyToken) {
@@ -79,7 +79,7 @@ async function notifyCompany(companyId, title, body, data = {}) {
   }
 }
 
-module.exports = {
+export {
   sendPushNotification,
   notifyApplicant,
   notifyCompany,

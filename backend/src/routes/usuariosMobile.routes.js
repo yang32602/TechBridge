@@ -1,7 +1,9 @@
 // backend/src/routes/users.js
-const express = require('express');
+import express from 'express';
+
+import db from '../config/db.js'; // Tu configuración de base de datos MySQL
+
 const router = express.Router();
-const db = require('../config/db'); // Tu configuración de base de datos MySQL
 
 // Ruta para que la app móvil registre el token de notificación de un usuario
 router.post('/registerPushToken', async (req, res) => {
@@ -14,15 +16,16 @@ router.post('/registerPushToken', async (req, res) => {
   try {
     let tableName;
     if (userType === 'postulante') {
-      tableName = 'Postulantes';
+      tableName = 'estudiantes';
     } else if (userType === 'empresa') {
-      tableName = 'Empresas';
+      tableName = 'empresas';
     } else {
       return res.status(400).json({ message: 'Tipo de usuario inválido. Debe ser "postulante" o "empresa".' });
     }
 
-    // Actualiza el token en la base de datos para el usuario correspondiente
-    const query = `UPDATE ${tableName} SET expoPushToken = ? WHERE id = ?`;
+    // El cambio clave: Actualizamos el token en la tabla correcta (estudiantes/empresas)
+    // usando la columna `id_usuario` que referencia al `id` de la tabla `usuarios`.
+    const query = `UPDATE ${tableName} SET expoPushToken = ? WHERE id_usuario = ?`;
     await db.query(query, [expoPushToken, userId]);
 
     res.status(200).json({ message: 'Token de notificación registrado exitosamente.' });
@@ -32,4 +35,4 @@ router.post('/registerPushToken', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
