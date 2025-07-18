@@ -367,14 +367,6 @@
   margin: 0 0 8px 0;
 }
 
-.profile-student-container .student-profile-title {
-  color: #25324b;
-  font-family: Epilogue;
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 160%;
-  margin: 0 0 8px 0;
-}
 
 .profile-student-container .student-company-name {
   color: #25324b;
@@ -981,9 +973,6 @@
     font-size: 20px;
   }
 
-  .profile-student-container .student-profile-title {
-    font-size: 16px;
-  }
 
   .profile-student-container .student-skills-grid {
     flex-direction: column;
@@ -994,4 +983,36 @@
     text-align: center;
     padding: 8px 12px;
   }
+}
+
+/* Read-only mode styles */
+.profile-student-container:has(.student-dashboard-main:only-child)
+  .student-dashboard-main {
+  width: 100%;
+  margin-left: 0;
+}
+
+/* Fallback for browsers that don't support :has() */
+.profile-student-readonly .student-dashboard-main {
+  width: 100%;
+  margin-left: 0;
+}
+
+.profile-student-readonly .student-dashboard-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.profile-student-readonly .student-main-content {
+  max-width: 100%;
+}
+
+.profile-student-readonly .student-sidebar-right {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 2rem;
+}
+
+.profile-student-readonly .student-dashboard-content {
+  flex-direction: column;
 }
