@@ -367,14 +367,6 @@
   margin: 0 0 8px 0;
 }
 
-.profile-student-container .student-profile-title {
-  color: #25324b;
-  font-family: Epilogue;
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 160%;
-  margin: 0 0 8px 0;
-}
 
 .profile-student-container .student-company-name {
   color: #25324b;
@@ -981,9 +973,6 @@
     font-size: 20px;
   }
 
-  .profile-student-container .student-profile-title {
-    font-size: 16px;
-  }
 
   .profile-student-container .student-skills-grid {
     flex-direction: column;
