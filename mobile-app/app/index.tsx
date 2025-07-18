@@ -51,7 +51,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'postulante' | 'empresa'>('postulante');
+  const [activeTab, setActiveTab] = useState<'estudiante' | 'empresa'>('estudiante');
   const [rememberMe, setRememberMe] = useState(false); // Para el checkbox
 
   // Carga de fuentes (asegúrate de que los archivos estén en assets/fonts)
@@ -67,7 +67,7 @@ export default function LoginScreen() {
     setIsLoading(true); // Mostrar indicador de carga
     try {
       // 1. Intentar iniciar sesión con el backend
-      const loginResponse = await loginUser({ email, password });
+      const loginResponse = await loginUser({ correo: email, contrasena: password }, activeTab);
       // loginResponse debería ser un objeto como: { userId: 1, userType: 'postulante', token: 'tu_jwt_aqui' }
 
       if (loginResponse && loginResponse.userId && loginResponse.userType) {
@@ -88,8 +88,14 @@ export default function LoginScreen() {
         }
 
         // 4. Navegar a la pantalla principal después de un login exitoso y registro de token
-        // Asegúrate de que '/(tabs)' es la ruta correcta a tu navegación principal
-        router.replace('/(tabs)');
+        if (loginResponse.userType === 'estudiante') {
+          router.replace('/postulante/dashboard'); // Redirigir al dashboard del postulante
+        } else if (loginResponse.userType === 'empresa') {
+          router.replace('/empresa/dashboard'); // Redirigir al dashboard de la empresa
+        } else {
+          // En caso de que el userType devuelto por el backend no sea ni 'postulante' ni 'empresa'
+          Alert.alert('Error de inicio de sesión', 'Tipo de usuario no reconocido. Por favor, contacta a soporte.');
+        }
 
       } else {
         // Esto se ejecutaría si loginUser devuelve algo, pero sin los datos esperados
@@ -120,10 +126,10 @@ export default function LoginScreen() {
         <View style={styles.frame}>
           <View style={styles.signUpOptions}>
             <TouchableOpacity
-              style={[styles.tabBase, activeTab === 'postulante' ? styles.activeTab : styles.inactiveTab]} // Modificado
-              onPress={() => setActiveTab('postulante')}
+              style={[styles.tabBase, activeTab === 'estudiante' ? styles.activeTab : styles.inactiveTab]} // Modificado
+              onPress={() => setActiveTab('estudiante')}
             >
-              <Text style={[styles.caption, activeTab === 'postulante' && styles.activeCaption]}>Postulante</Text>
+              <Text style={[styles.caption, activeTab === 'estudiante' && styles.activeCaption]}>Postulante</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.tabBase, activeTab === 'empresa' ? styles.activeTab : styles.inactiveTab]} // Modificado
@@ -132,7 +138,7 @@ export default function LoginScreen() {
               <Text style={[styles.caption, activeTab === 'empresa' && styles.activeCaption]}>Empresa</Text>
             </TouchableOpacity>
           </View>
-          {activeTab === 'postulante' && (
+          {activeTab === 'estudiante' && (
             <Text style={styles.welcomeBackDude}>Obten más oportunidades</Text>
           )}
           {activeTab === 'empresa' && (

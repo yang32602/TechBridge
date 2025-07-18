@@ -41,22 +41,25 @@ export default function RootLayout() {
       <Stack>
         {/* Aquí defines tu estructura de navegación principal con Expo Router */}
 
-        {/* La pantalla 'index' (que probablemente es tu pantalla de inicio/login) */}
+        {/* LoginScreen */}
         <Stack.Screen name="index" options={{ headerShown: false }} />
-
-        {/* Las rutas dentro de (tabs) se manejan con su propio _layout.tsx */}
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-
-        {/* ¡¡¡AÑADE ESTA LÍNEA PARA RECONOCER LA RUTA /signup!!! */}
+        {/* Pantalla de Registro */}
         <Stack.Screen name="signup" options={{ headerShown: false }} />
+
+        {/* Rutas para Postulante */}
+        <Stack.Screen name="postulante/dashboard" options={{ headerShown: false }} />
+        <Stack.Screen name="postulante/notificaciones" options={{ title: 'Mis Notificaciones' }} />
+        {/* Si Postulante tiene su propio _layout.tsx para sub-rutas, puedes usar: */}
+        {/* <Stack.Screen name="postulante" options={{ headerShown: false }} /> */}
+
+        {/* Rutas para Empresa */}
+        <Stack.Screen name="empresa/dashboard" options={{ headerShown: false }} />
+        <Stack.Screen name="empresa/notificaciones" options={{ title: 'Mis Notificaciones' }} />
+        {/* Si Empresa tiene su propio _layout.tsx, puedes usar: */}
+        {/* <Stack.Screen name="empresa" options={{ headerShown: false }} /> */}
         
         {/* Ruta para el manejo de "no encontrado" */}
         <Stack.Screen name="+not-found" />
-
-        {/* Puedes añadir otras rutas globales aquí, como pantallas de perfil o configuración
-            que no estén dentro de las pestañas */}
-        {/* <Stack.Screen name="profile/[id]" options={{ title: 'Perfil' }} /> */}
-        {/* <Stack.Screen name="vacantes/[id]" options={{ title: 'Detalle Vacante' }} /> */}
       </Stack>
     </>
   );

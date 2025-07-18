@@ -1,14 +1,34 @@
 // mobile-app/src/services/api.ts
-import { API_BASE_URL } from '../config/api'; // Importa la URL base que acabas de definir
 
+// Asegúrate de que esta URL base esté bien configurada para tu IP/Emulador
+// Si tu IP es 192.168.0.9 y tu backend corre en el puerto 3000
+// mobile-app/src/config/api.ts DEBE tener: export const API_BASE_URL = 'http://192.168.0.9:3000';
+import { API_BASE_URL } from '../config/api'; // Importa la URL base sin el '/api' final
+
+// Interfaz para la respuesta de registro de token push
 interface RegisterPushTokenResponse {
   message: string;
+}
+
+// Interfaz para la respuesta de login del backend (tal como la devuelve AHORA)
+interface BackendLoginResponse {
+  estado: number;
+  mensaje: string;
+  id: number; // Este es el userId
+}
+
+// Interfaz para la respuesta de login que el frontend ESPERA y NECESITA
+interface FrontendLoginResponse {
+  userId: number;
+  userType: 'estudiante' | 'empresa'; // 'estudiante' es lo que tu backend devuelve para postulantes
+  token: string; // ¡Esto es crucial y tu backend NO lo está devolviendo aún!
+  message?: string;
 }
 
 // Función para enviar el token de Expo Push al backend
 export const registerPushTokenOnBackend = async (
   userId: number,
-  userType: 'postulante' | 'empresa',
+  userType: 'estudiante' | 'empresa', // Asegúrate de que esto coincida con lo que tu backend espera ('estudiante' o 'empresa')
   expoPushToken: string,
   authToken?: string // Opcional: si tu ruta de registro de token en el backend requiere autenticación
 ): Promise<RegisterPushTokenResponse> => {
@@ -21,7 +41,8 @@ export const registerPushTokenOnBackend = async (
       headers['Authorization'] = `Bearer ${authToken}`;
     }
 
-    const response = await fetch(`${API_BASE_URL}/registerPushToken`, {
+    // La ruta completa para el registro de token
+    const response = await fetch(`${API_BASE_URL}/api/usuariosMobile/registerPushToken`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({
@@ -43,11 +64,22 @@ export const registerPushTokenOnBackend = async (
   }
 };
 
-// Función de ejemplo para el login (asegúrate de que esta función exista y devuelva los datos necesarios)
-// Adapta esto a cómo manejas actualmente el inicio de sesión en tu app.
-export const loginUser = async (credentials: { email: string; password: string }) => {
+// Función para el login, ahora recibe el tipo de usuario
+export const loginUser = async (
+  credentials: { correo: string; contrasena: string }, // Cambiado a 'correo' y 'contrasena' para coincidir con tu backend
+  userType: 'estudiante' | 'empresa' // Recibe el tipo de usuario para seleccionar el endpoint
+): Promise<FrontendLoginResponse> => { // Ahora retorna la interfaz que el frontend necesita
   try {
-    const response = await fetch(`${API_BASE_URL}/login`, { // Asegúrate de que esta sea la URL de tu endpoint de login
+    let loginEndpoint = '';
+    if (userType === 'estudiante') {
+      loginEndpoint = '/api/usuarios/estudianteLogin'; // Ruta correcta para postulantes
+    } else if (userType === 'empresa') {
+      loginEndpoint = '/api/usuarios/empresaLogin'; // Ruta correcta para empresas
+    } else {
+      throw new Error('Tipo de usuario no válido para el login.');
+    }
+
+    const response = await fetch(`${API_BASE_URL}${loginEndpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -57,14 +89,32 @@ export const loginUser = async (credentials: { email: string; password: string }
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Login failed');
+      throw new Error(errorData.mensaje || 'Login failed'); // Usa errorData.mensaje
     }
 
-    const data = await response.json();
-    // ESTO ES CLAVE: Asume que la respuesta del login incluye el userId, userType, y el token de sesión (JWT)
-    // Ejemplo de lo que debería devolver tu backend en un login exitoso:
-    // { userId: 123, userType: 'postulante', token: 'eyJhbGciOiJIUzI1Ni...' }
-    return data;
+    const data: BackendLoginResponse = await response.json(); // Lee la respuesta actual del backend
+
+    // ***********************************************************************************
+    // *** ¡ATENCIÓN CRÍTICA AQUÍ! ***
+    // Tu backend actualmente devuelve { estado, mensaje, id }.
+    // Para que el frontend funcione correctamente (especialmente con el registro de push token
+    // y la navegación), NECESITA que el backend devuelva:
+    // { userId: number, userType: 'estudiante' | 'empresa', token: string }
+    //
+    // Por ahora, estoy simulando la respuesta esperada para que el frontend no falle,
+    // pero DEBES MODIFICAR TU BACKEND para que devuelva 'userType' y un 'token' JWT.
+    // ***********************************************************************************
+
+    // Mapea la respuesta actual del backend a la estructura que el frontend espera
+    // Esto es una SOLUCIÓN TEMPORAL hasta que modifiques el backend
+    const frontendData: FrontendLoginResponse = {
+      userId: data.id,
+      userType: userType, // Mapea 'postulante' a 'estudiante'
+      token: 'FAKE_TOKEN_FROM_BACKEND_PLEASE_GENERATE_REAL_ONE', // ¡MUY IMPORTANTE: Tu backend debe generar un JWT real!
+      message: data.mensaje,
+    };
+
+    return frontendData;
   } catch (error: any) {
     console.error('Error during login API call:', error.message);
     throw error;
