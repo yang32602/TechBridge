@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import { Header, Footer } from "./components";
 import {
   Home,
@@ -23,7 +28,9 @@ import "./assets/dashboard-styles.css";
 // Componente wrapper para usar hooks dentro del router
 const AppContent = () => {
   const location = useLocation();
-  const hideHeaderFooter = /^\/(login|register)(\/.*)?$/.test(location.pathname);
+  const hideHeaderFooter = /^\/(login|register)(\/.*)?$/.test(
+    location.pathname,
+  );
 
   return (
     <div className="app">
@@ -39,10 +46,20 @@ const AppContent = () => {
         <Route path="/contacto" element={<Contacto />} />
         <Route path="/profile-company" element={<ProfileCompany />} />
         <Route path="/profile-student" element={<ProfileStudent />} />
+        <Route
+          path="/profile-student/:studentId"
+          element={<ProfileStudent />}
+        />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/technical-tests" element={<TechnicalTests />} />
-        <Route path="/technical-test-quiz/:testId" element={<TechnicalTestQuiz />} />
-        <Route path="/technical-test-result/:testId" element={<TechnicalTestResult />} />
+        <Route
+          path="/technical-test-quiz/:testId"
+          element={<TechnicalTestQuiz />}
+        />
+        <Route
+          path="/technical-test-result/:testId"
+          element={<TechnicalTestResult />}
+        />
         <Route path="/comprar-puntos" element={<ComprarPuntos />} />
       </Routes>
 

@@ -190,6 +190,51 @@ class ApiService {
       return null;
     }
   }
+
+  async getCompanyApplicants(companyId) {
+    try {
+      console.log("getCompanyApplicants called with companyId:", companyId);
+      const response = await this.request("/usuarios/estudiantes", {
+        method: "POST",
+        body: JSON.stringify({ id_empresa: companyId }),
+      });
+
+      console.log("getCompanyApplicants response:", response);
+
+      // Handle the response format: {estado: 1, mensaje: '...', data: Array}
+      if (response && response.data && Array.isArray(response.data)) {
+        return response.data;
+      } else if (response && Array.isArray(response)) {
+        return response;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error fetching company applicants:", error);
+      return [];
+    }
+  }
+
+  async getStudentBadges(studentId) {
+    try {
+      console.log("getStudentBadges called with studentId:", studentId);
+      const response = await this.request(
+        `/usuarios/${studentId}/estudianteInsignia`,
+        {
+          method: "GET",
+        },
+      );
+
+      console.log("getStudentBadges response:", response);
+
+      if (response && Array.isArray(response.data)) {
+        return response.data;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error fetching student badges:", error);
+      return [];
+    }
+  }
 }
 
 export default new ApiService();
