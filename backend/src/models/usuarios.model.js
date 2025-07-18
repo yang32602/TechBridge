@@ -11,9 +11,7 @@ export const getEstudiantes = async (id_empresa) => {
                     e.nombre_completo,
                     e.pais,
                     ee.id AS desbloqueado,
-                    
-                    i.id AS id_insignia,
-                    i.nombre AS nombre_insignia,
+                
                     i.descripcion AS descripcion_insignia,
                     i.nombre AS tecnologia_insignia,
                     
@@ -25,13 +23,12 @@ export const getEstudiantes = async (id_empresa) => {
                     ON ee.id_estudiante = e.id
                     AND ee.id_empresa = ?
 
-                -- 🔗 Relación con usuario_insignia
-                LEFT JOIN usuario_insignia ui ON ui.id_usuario = u.id
-                LEFT JOIN insignias i ON i.id = ui.id_insignia
-
                 WHERE u.tipo = 'estudiante';
-                `
-
+                `//i.id AS id_insignia, i.nombre AS nombre_insignia,
+                
+                // -- 🔗 Relación con usuario_insignia
+                // LEFT JOIN usuario_insignia ui ON ui.id_usuario = u.id
+                // LEFT JOIN insignias i ON i.id = ui.id_insignia
     try {
         const [rows] = await db.query(sql,id_empresa);
         return rows;
@@ -40,6 +37,9 @@ export const getEstudiantes = async (id_empresa) => {
         throw error;
     }
 };
+
+
+
 
 export const getEmpresas= async () => {
     try {

@@ -1,7 +1,7 @@
 // Importación del modelo de usuario usando ES6
 import * as usuarioModel from '../models/usuarios.model.js';
 import * as empresaModel from '../models/empresas.model.js'
-import * as estudianteModel from '../models/estudiantes.model.js'
+import * as estudiantesModel from '../models/estudiantes.model.js'
  
 // Obtener estudiantes
 export const obtenerEstudiantes = async (req, res) => {
@@ -26,23 +26,38 @@ export const obtenerEmpresas = async(req, res) => {
 
 // Insertar nuevo usuario
 export const insertarUsuarioEstudiante = async (req, res) => {
-    const {correo} = req.body;
-        const existe = await usuarioModel.verificarCorreoEstudiante(correo)
-            if (existe){
-                res.status(400).json({error: 'correo repetido'})
-            }
-    try {
+    const { correo, nombre_completo } = req.body;
+    const existe = await usuarioModel.verificarCorreoEstudiante(correo);
 
+    if (existe) {
+        return res.status(400).json({ error: 'Correo repetido' });
+    }
+
+    try {
+        // Insertar usuario y obtener id
         const nuevoUsuario = await usuarioModel.insertUsuarioEstudiante(req.body);
-        const nuevoEstudiante = await estudianteModel.insertEstudiante(req.body, nuevoUsuario)
-        if(nuevoEstudiante && nuevoUsuario){
-           return res.json({ estado: 1, mensaje: 'Usuario registrado exitosamente', data: nuevoUsuario, nuevoEstudiante });
+        // Insertar estudiante usando nombre_completo
+        const nuevoEstudiante = await estudiantesModel.insertEstudiante({ nombre_completo }, nuevoUsuario);
+        const experiencia = await estudiantesModel.crearExperiencia(nuevoEstudiante);
+
+        if (nuevoEstudiante && nuevoUsuario) {
+            return res.json({
+                estado: 1,
+                mensaje: 'Usuario registrado exitosamente',
+                data: nuevoUsuario,
+                nuevoEstudiante,
+                experiencias: experiencia
+            });
         }
-        res.status(400).json({error: 'error al insertar estudiante'})
+
+        res.status(400).json({ error: 'Error al insertar estudiante' });
     } catch (error) {
-        res.json({ estado: 0, mensaje: 'Error al registrar el usuario' });
+        console.error(error);
+        res.status(500).json({ estado: 0, mensaje: 'Error al registrar el usuario' });
     }
 };
+
+
 
 // Insertar nuevo usuario
 export const insertarUsuarioEmpresa = async (req, res) => {
@@ -82,9 +97,9 @@ export const autenticacionEstudiante = async (req, res) => {
         }
 
         const autenticacion = await usuarioModel.usuarioContrasena(correo, contrasena);
-
+        const id_estud = await estudiantesModel.obtenerIDEstudiante(correoExiste)
         if (autenticacion) {
-            return res.json({ estado: 1, mensaje: 'Inicio de sesión exitoso', id:correoExiste});
+            return res.json({ estado: 1, mensaje: 'Inicio de sesión exitoso', id:correoExiste, id_estudiante:id_estud });
         } else {
             return res.json({ estado: 0, mensaje: 'La contraseña es incorrecta' });
         }
