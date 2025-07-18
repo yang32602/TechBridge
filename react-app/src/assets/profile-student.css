@@ -995,3 +995,35 @@
     padding: 8px 12px;
   }
 }
+
+/* Read-only mode styles */
+.profile-student-container:has(.student-dashboard-main:only-child)
+  .student-dashboard-main {
+  width: 100%;
+  margin-left: 0;
+}
+
+/* Fallback for browsers that don't support :has() */
+.profile-student-readonly .student-dashboard-main {
+  width: 100%;
+  margin-left: 0;
+}
+
+.profile-student-readonly .student-dashboard-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.profile-student-readonly .student-main-content {
+  max-width: 100%;
+}
+
+.profile-student-readonly .student-sidebar-right {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 2rem;
+}
+
+.profile-student-readonly .student-dashboard-content {
+  flex-direction: column;
+}
