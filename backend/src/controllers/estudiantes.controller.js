@@ -19,7 +19,7 @@ export const insertEstudiante = async (req, res) => {
         res.status(200).json(nuevoEstudiante);
     } catch (error) {
         res.status(500).json({ error: 'Error al insertar al estudiante' });
-    }
+    } 
 };
 
 // Actualizar un campo del estudiante
