@@ -45,7 +45,7 @@ export const insertarUsuarioEstudiante = async (req, res) => {
                 estado: 1,
                 mensaje: 'Usuario registrado exitosamente',
                 data: nuevoUsuario,
-                nuevoEstudiante,
+                id_estudiante:nuevoEstudiante,
                 experiencias: experiencia
             });
         }
