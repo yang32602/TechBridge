@@ -6,7 +6,7 @@ const router = express.Router();
 
 // Obtener estudiantes por id_usuario (pasado en query o body, según preferencia)
 // Normalmente GET con query param
-router.get('/', estudiantesController.getEstudiantes);
+router.post('/', estudiantesController.getEstudiantes);
 
 // Actualizar campo específico de estudiante (patch con body: id_usuario, campo, valor)
 router.patch('/actualizar', estudiantesController.updateCampoEstudiante);
