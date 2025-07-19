@@ -72,7 +72,7 @@ export default function LoginScreen() {
       const loginResponse = await loginUser({ correo: email, contrasena: password }, activeTab);
       // loginResponse debería ser un objeto como: { userId: 1, userType: 'postulante', token: 'tu_jwt_aqui' }
 
-      // console.log('Respuesta del login:', loginResponse); // Para depuración
+      console.log('LoginScreen: loginResponse después de llamar a loginUser:', loginResponse); // <-- Añade esto
       // 2. Si el login es exitoso, obtener el token de notificación del dispositivo
       if (loginResponse && loginResponse.userId && loginResponse.userType && loginResponse.token) {
         // 3. Obtener el token de notificación del dispositivo
@@ -103,7 +103,8 @@ export default function LoginScreen() {
 
       } else {
         // En caso de una respuesta exitosa pero con datos incompletos (raro si el backend está bien)
-        Alert.alert('Error de inicio de sesión', 'Credenciales inválidas o datos de usuario incompletos recibidos.');
+        console.log('LoginScreen: loginResponse es incompleto o falsy:', loginResponse); // <-- Añade esto
+        Alert.alert('Error de inicio de sesión', loginResponse?.mensaje || 'Credenciales inválidas o datos de usuario incompletos recibidos.');
       }
 
     } catch (error: any) {

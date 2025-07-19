@@ -56,7 +56,7 @@ export const autenticacionEstudianteMobile = async (req, res) => {
         const token = jwt.sign(userPayload, JWT_SECRET, { expiresIn: '1h' });
 
         // 5. Enviar la respuesta
-        res.status(200).json({
+        return res.status(200).json({
             userId: estudianteId,
             userType: usuario.tipo,
             token: token,
@@ -64,9 +64,19 @@ export const autenticacionEstudianteMobile = async (req, res) => {
             estado: 1
         });
 
+        /*const responseData = {
+            userId: estudianteId,
+            userType: usuario.tipo,
+            token: token,
+            mensaje: 'Inicio de sesión exitoso',
+            estado: 1
+        };
+        console.log('BACKEND DEBUG: Enviando respuesta JSON al frontend:', responseData); // <-- ¡AÑADE ESTA LÍNEA!
+        res.status(200).json(responseData); */
+
     } catch (error) {
         console.error('Error en autenticacionEstudianteMobile:', error);
-        res.status(500).json({ mensaje: 'Error interno del servidor.' });
+        return res.status(500).json({ mensaje: 'Error interno del servidor.' });
     }
 };
 
@@ -82,13 +92,22 @@ export const autenticacionEmpresaMobile = async (req, res) => {
             return res.status(401).json({ mensaje: 'Credenciales inválidas para empresa.' });
         }
 
-        // 2. Comparar la contraseña hasheada
-        const contrasenaValida = await bcrypt.compare(contrasena, usuario.contrasena);
-
-        if (!contrasenaValida) {
-            return res.status(401).json({ mensaje: 'Credenciales inválidas.' });
+        if (contrasena !== usuario.contrasena) { // Comparación directa, solo si la contraseña NO está hasheada en DB
+             return res.status(401).json({ mensaje: 'Credenciales inválidas.' });
         }
 
+        // ***** ADVERTENCIA DE SEGURIDAD: ESTO ES TEMPORAL Y DEBE SER CAMBIADO A BCRYPT *****
+        // Si las contraseñas NO ESTÁN HASHADAS en la DB, usa esta línea.
+        if (contrasena !== usuario.contrasena) {
+            return res.status(401).json({ mensaje: 'Credenciales inválidas.' });
+        }
+        // ***** FIN DE ADVERTENCIA *****
+
+        // Si SÍ tienes contraseñas hasheadas en DB, activa esto y borra lo anterior:
+        // const contrasenaValida = await bcrypt.compare(contrasena, usuario.contrasena);
+        // if (!contrasenaValida) {
+        //     return res.status(401).json({ mensaje: 'Credenciales inválidas.' });
+        // }
         // 3. Obtener el ID específico de la empresa de la tabla 'empresas'
         const empresaId = await UsuarioMobileModel.getEmpresaIdByUsuarioId(usuario.id);
 
@@ -104,7 +123,7 @@ export const autenticacionEmpresaMobile = async (req, res) => {
         const token = jwt.sign(userPayload, JWT_SECRET, { expiresIn: '1h' });
 
         // 5. Enviar la respuesta
-        res.status(200).json({
+        return res.status(200).json({
             userId: empresaId,
             userType: usuario.tipo,
             token: token,
@@ -112,9 +131,19 @@ export const autenticacionEmpresaMobile = async (req, res) => {
             estado: 1
         });
 
+        /*const responseData = {
+            userId: empresaId,
+            userType: usuario.tipo,
+            token: token,
+            mensaje: 'Inicio de sesión exitoso',
+            estado: 1
+        };
+        console.log('BACKEND DEBUG: Enviando respuesta JSON al frontend:', responseData); // <-- ¡AÑADE ESTA LÍNEA!
+        res.status(200).json(responseData); */
+
     } catch (error) {
         console.error('Error en autenticacionEmpresaMobile:', error);
-        res.status(500).json({ mensaje: 'Error interno del servidor.' });
+        return res.status(500).json({ mensaje: 'Error interno del servidor.' });
     }
 };
 
@@ -122,24 +151,19 @@ export const autenticacionEmpresaMobile = async (req, res) => {
 export const registerPushToken = async (req, res) => {
     // Cuando el frontend envía userId para esta ruta, se espera que sea el ID
     // de la tabla `estudiantes` o `empresas`, NO el `id` de la tabla `usuarios`.
-    const { userId, userType, expoPushToken } = req.user;
+    const { userId, userType} = req.user;
 
-    // Aclaración: userType en frontend (index.tsx) es 'estudiante' o 'empresa' (o 'postulante' si no lo cambiaste)
-    // Pero en el backend, tu esquema de DB usa 'estudiante' o 'empresa'.
-    // Si tu frontend envía 'postulante', asegúrate de que aquí lo mapeas a 'estudiante'
-    /*let backendUserType = userType;
-    if (userType === 'postulante') { // Si el frontend aún envía 'postulante'
-        backendUserType = 'estudiante'; // Mapea a 'estudiante' para tu DB
-    }*/
+    /// expoPushToken siempre vendrá en el body (o deberías enviarlo así desde el frontend)
+    const { expoPushToken } = req.body;
 
-    if (!userId || !backendUserType || !expoPushToken) {
+    if (!userId || !userType || !expoPushToken) {
         return res.status(400).json({ message: 'Faltan campos requeridos: userId, userType, expoPushToken' });
     }
 
     try {
         // Usamos el modelo para actualizar el token en la BD
         // El userId que recibimos aquí es el ID de la tabla `estudiantes` o `empresas`
-        const affectedRows = await UsuarioMobileModel.updateExpoPushToken(userId, backendUserType, expoPushToken);
+        const affectedRows = await UsuarioMobileModel.updateExpoPushToken(userId, userType, expoPushToken);
 
         if (affectedRows === 0) {
             // Esto podría significar que el userId no existe en la tabla correspondiente
@@ -147,9 +171,9 @@ export const registerPushToken = async (req, res) => {
             return res.status(404).json({ message: 'Usuario no encontrado o token ya registrado.' });
         }
 
-        res.status(200).json({ message: 'Token de notificación registrado exitosamente.' });
+        return res.status(200).json({ message: 'Token de notificación registrado exitosamente.' });
     } catch (error) {
         console.error('Error al registrar el token de push:', error);
-        res.status(500).json({ message: 'Error interno del servidor al registrar el token de push.' });
+       return res.status(500).json({ message: 'Error interno del servidor al registrar el token de push.' });
     }
 };
