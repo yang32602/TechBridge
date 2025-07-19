@@ -10,12 +10,7 @@ export const getEstudiantes = async (id_empresa) => {
                     e.id AS id_estudiante,
                     e.nombre_completo,
                     e.pais,
-                    ee.id AS desbloqueado,
-                
-                    i.descripcion AS descripcion_insignia,
-                    i.nombre AS tecnologia_insignia,
-                    
-                    ui.fecha_asignacion
+                    ee.id AS desbloqueado
 
                 FROM usuarios u
                 JOIN estudiantes e ON u.id = e.id_usuario
