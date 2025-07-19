@@ -80,28 +80,23 @@ export const obtenerExperienciasPorEstudiante = async (req, res) => {
   }
 };
 
-export const actualizarCamposExperiencia = async (req, res) => {
-  const { id_experiencia, ...campos } = req.body;
+export const actualizarCampoExperiencia = async (req, res) => {
+  const { campo, valor, id_experiencia } = req.body;
 
-  if (!id_experiencia) {
-    return res.status(400).json({
-      estado: 0,
-      mensaje: 'Falta el campo id_experiencia en el cuerpo de la solicitud.'
-    });
+  if (!campo || !valor || !id_experiencia) {
+    return res.status(400).json({ error: "Faltan datos: 'campo', 'valor' e 'id_experiencia' son obligatorios." });
   }
 
   try {
-    const resultado = await estudiantesModel.actualizarCamposExperiencia(id_experiencia, campos);
+    const resultado = await estudiantesModel.actualizarCampoExperiencia(campo, valor, { id_experiencia });
     return res.status(200).json(resultado);
   } catch (error) {
     console.error('Error al actualizar experiencia:', error);
-    return res.status(500).json({
-      estado: 0,
-      mensaje: 'Error interno al actualizar experiencia.',
-      error: error.message
-    });
+    return res.status(500).json({ error: error.message });
   }
 };
+  
+
 
 
 // EDUCACION
@@ -140,19 +135,53 @@ export const obtenerEducacionesPorEstudiante = async (req, res) => {
   }
 };
 
-export const actualizarCamposEducacion = async (req, res) => {
-  const { idEducacion } = req.params;
-  const campos = req.body;
+// Actualizar campo específico en educación
+export const actualizarCampoEducacion = async (req, res) => {
+  const { campo, valor, id_educacion } = req.body;
 
-  if (!idEducacion) {
-    return res.status(400).json({ estado: 0, mensaje: 'Falta idEducacion' });
+  if (!campo || valor === undefined || !id_educacion) {
+    return res.status(400).json({ estado: 0, mensaje: 'Faltan datos requeridos: campo, valor o id_educacion.' });
   }
 
   try {
-    const resultado = await estudiantesModel.actualizarCamposEducacion(idEducacion, campos);
+    const resultado = await estudiantesModel.actualizarCampoEducacion(campo, valor, { id_educacion });
     return res.status(200).json(resultado);
   } catch (error) {
     console.error('Error al actualizar educación:', error);
-    return res.status(500).json({ estado: 0, mensaje: 'Error al actualizar educación', error: error.message });
+    return res.status(500).json({ estado: 0, mensaje: error.message });
   }
 };
+
+
+
+
+export const eliminarExperienciaController = async (req, res) => {
+    const { id_experiencia } = req.body;
+
+    if (!id_experiencia) {
+        return res.status(400).json({ error: "Falta el id_experiencia en el cuerpo de la solicitud" });
+    }
+
+    try {
+        const resultado = await estudiantesModel.eliminarExperiencia(id_experiencia);
+        res.json(resultado);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const eliminarEducacionController = async (req, res) => {
+    const { id_educacion } = req.body;
+
+    if (!id_educacion) {
+        return res.status(400).json({ error: "Falta el id_educacion en el cuerpo de la solicitud" });
+    }
+
+    try {
+        const resultado = await estudiantesModel.eliminarEducacion(id_educacion);
+        res.json(resultado);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
