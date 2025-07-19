@@ -10,13 +10,6 @@ interface RegisterPushTokenResponse {
   message: string;
 }
 
-// Interfaz para la respuesta de login del backend (tal como la devuelve AHORA)
-interface BackendLoginResponse {
-  estado: number;
-  mensaje: string;
-  id: number; // Este es el userId
-}
-
 // Interfaz para la respuesta de login que el frontend ESPERA y NECESITA
 interface FrontendLoginResponse {
   userId: number;
@@ -86,13 +79,11 @@ export const loginUser = async (
       },
       body: JSON.stringify(credentials),
     });
-
+    // Si la respuesta no es OK (ej. 401 Unauthorized, 500 Internal Server Error)
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.mensaje || 'Login failed'); // Usa errorData.mensaje
     }
-
-    const data: BackendLoginResponse = await response.json(); // Lee la respuesta actual del backend
 
     // ***********************************************************************************
     // *** ¡ATENCIÓN CRÍTICA AQUÍ! ***
@@ -107,17 +98,11 @@ export const loginUser = async (
 
     // Mapea la respuesta actual del backend a la estructura que el frontend espera
     // Esto es una SOLUCIÓN TEMPORAL hasta que modifiques el backend
-    const frontendData: FrontendLoginResponse = {
-      userId: data.id,
-      userType: userType, // Mapea 'postulante' a 'estudiante'
-      token: 'FAKE_TOKEN_FROM_BACKEND_PLEASE_GENERATE_REAL_ONE', // ¡MUY IMPORTANTE: Tu backend debe generar un JWT real!
-      message: data.mensaje,
-    };
-
-    return frontendData;
+    const data: FrontendLoginResponse = await response.json();
+    return data;
   } catch (error: any) {
     console.error('Error during login API call:', error.message);
-    throw error;
+    throw error; // Propaga el error para que sea manejado por el componente que llama
   }
 };
 
