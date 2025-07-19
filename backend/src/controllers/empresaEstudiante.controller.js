@@ -1,9 +1,9 @@
-import * as empresaEstudianteModel from '../models/empresaEstudiante.model.js';
+import * as empresaestudiantesModel from '../models/empresaEstudiante.model.js';
 
 export const insertEmpresaEstudiante = async(req,res) =>{
     const {id_empresa, id_estudiante} = req.body;
     try {
-        const response = await empresaEstudianteModel.insertEmpresaEstudiante(id_empresa,id_estudiante);
+        const response = await empresaestudiantesModel.insertEmpresaEstudiante(id_empresa,id_estudiante);
 
         if(response){
             return res.status(200).json({estado:1, mensaje: 'insertado correctamente', data: response });
