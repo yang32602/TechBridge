@@ -15,7 +15,8 @@ interface FrontendLoginResponse {
   userId: number;
   userType: 'estudiante' | 'empresa'; // 'estudiante' es lo que tu backend devuelve para postulantes
   token: string; // ¡Esto es crucial y tu backend NO lo está devolviendo aún!
-  message?: string;
+  mensaje?: string;
+  estado: number;
 }
 
 // Función para enviar el token de Expo Push al backend
@@ -65,9 +66,9 @@ export const loginUser = async (
   try {
     let loginEndpoint = '';
     if (userType === 'estudiante') {
-      loginEndpoint = '/api/usuarios/estudianteLogin'; // Ruta correcta para postulantes
+      loginEndpoint = '/api/usuariosMobile/estudianteLogin'; // Ruta correcta para postulantes
     } else if (userType === 'empresa') {
-      loginEndpoint = '/api/usuarios/empresaLogin'; // Ruta correcta para empresas
+      loginEndpoint = '/api/usuariosMobile/empresaLogin'; // Ruta correcta para empresas
     } else {
       throw new Error('Tipo de usuario no válido para el login.');
     }
@@ -99,6 +100,7 @@ export const loginUser = async (
     // Mapea la respuesta actual del backend a la estructura que el frontend espera
     // Esto es una SOLUCIÓN TEMPORAL hasta que modifiques el backend
     const data: FrontendLoginResponse = await response.json();
+    console.log('API: Datos recibidos del backend:', data); // <-- Añade esto
     return data;
   } catch (error: any) {
     console.error('Error during login API call:', error.message);

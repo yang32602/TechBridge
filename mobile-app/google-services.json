@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "402254235588",
+    "project_id": "techbridge-4daa9",
+    "storage_bucket": "techbridge-4daa9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:402254235588:android:f887a3a5d48d08cd9a8691",
+        "android_client_info": {
+          "package_name": "com.techbridge.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRzB-cllSjuyMzaSrJrtAnkOL9QI1Wo6g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
