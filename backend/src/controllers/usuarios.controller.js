@@ -97,7 +97,7 @@ export const autenticacionEstudiante = async (req, res) => {
         }
 
         const autenticacion = await usuarioModel.usuarioContrasena(correo, contrasena);
-        const id_estud = await estudiantesModel.obtenerIDEstudiante(correoExiste)
+        const id_estud = await estudiantesModel.obtenerid_estudiante(correoExiste)
         if (autenticacion) {
             return res.json({ estado: 1, mensaje: 'Inicio de sesión exitoso', id:correoExiste, id_estudiante:id_estud });
         } else {
