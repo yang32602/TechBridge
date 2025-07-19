@@ -20,7 +20,7 @@ router.post('/experiencias', estudiantesController.crearExperiencia);
 router.get('/experiencias/:id_estudiante', estudiantesController.obtenerExperienciasPorEstudiante);
 
 // Actualizar experiencia (PATCH, idExperiencia como param, body con campos a actualizar)
-router.patch('/experiencias', estudiantesController.actualizarCamposExperiencia);
+router.patch('/experiencias', estudiantesController.actualizarCampoExperiencia);
 
 // --- Rutas para EDUCACION ---
 
@@ -31,6 +31,10 @@ router.post('/educacion', estudiantesController.crearEducacion);
 router.get('/educacion/:id_estudiante', estudiantesController.obtenerEducacionesPorEstudiante);
 
 // Actualizar educación (PATCH, idEducacion como param, body con campos a actualizar)
-router.patch('/educacion/:idEducacion', estudiantesController.actualizarCamposEducacion);
+router.patch('/educacion', estudiantesController.actualizarCampoEducacion);
+
+// Rutas para eliminar
+router.delete('/experiencia', estudiantesController.eliminarExperienciaController);
+router.delete('/educacion', estudiantesController.eliminarEducacionController);
 
 export default router;
