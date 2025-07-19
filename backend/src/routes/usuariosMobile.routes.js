@@ -1,38 +1,21 @@
 // backend/src/routes/users.js
 import express from 'express';
+import * as usuariosMobileController from '../controllers/usuariosMobile.controller.js';
+
+// Opcional: Si vas a usar un middleware de autenticación (como 'verifyToken')
+import { verifyToken } from '../middleware/authMiddleware.js';
 
 import db from '../config/db.js'; // Tu configuración de base de datos MySQL
 
 const router = express.Router();
 
-// Ruta para que la app móvil registre el token de notificación de un usuario
-router.post('/registerPushToken', async (req, res) => {
-  const { userId, userType, expoPushToken } = req.body; // userType puede ser 'postulante' o 'empresa'
+// Rutas de autenticación para la app móvil
+router.post('/estudianteLogin', usuariosMobileController.autenticacionEstudianteMobile);
+router.post('/empresaLogin', usuariosMobileController.autenticacionEmpresaMobile);
 
-  if (!userId || !userType || !expoPushToken) {
-    return res.status(400).json({ message: 'Faltan campos requeridos: userId, userType, expoPushToken' });
-  }
-
-  try {
-    let tableName;
-    if (userType === 'postulante') {
-      tableName = 'estudiantes';
-    } else if (userType === 'empresa') {
-      tableName = 'empresas';
-    } else {
-      return res.status(400).json({ message: 'Tipo de usuario inválido. Debe ser "postulante" o "empresa".' });
-    }
-
-    // El cambio clave: Actualizamos el token en la tabla correcta (estudiantes/empresas)
-    // usando la columna `id_usuario` que referencia al `id` de la tabla `usuarios`.
-    const query = `UPDATE ${tableName} SET expoPushToken = ? WHERE id_usuario = ?`;
-    await db.query(query, [expoPushToken, userId]);
-
-    res.status(200).json({ message: 'Token de notificación registrado exitosamente.' });
-  } catch (error) {
-    console.error('Error al registrar el token de push:', error);
-    res.status(500).json({ message: 'Error interno del servidor al registrar el token de push.' });
-  }
-});
+// Ruta para registrar el push token.
+// Ahora, esta ruta también llama a una función del controlador.
+// Si quieres que esta ruta esté protegida, descomenta 'verifyToken'.
+router.post('/registerPushToken', verifyToken, usuariosMobileController.registerPushToken);
 
 export default router;

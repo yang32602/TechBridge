@@ -67,27 +67,31 @@ export default function LoginScreen() {
     setIsLoading(true); // Mostrar indicador de carga
     try {
       // 1. Intentar iniciar sesión con el backend
+      // Se pasa un objeto con 'correo' y 'contrasena' (nombres de campos que espera tu backend)
+      // Se pasa 'activeTab' para que loginUser sepa qué endpoint usar
       const loginResponse = await loginUser({ correo: email, contrasena: password }, activeTab);
       // loginResponse debería ser un objeto como: { userId: 1, userType: 'postulante', token: 'tu_jwt_aqui' }
 
-      if (loginResponse && loginResponse.userId && loginResponse.userType) {
-        // 2. Si el login es exitoso, obtener el token de notificación del dispositivo
+      // console.log('Respuesta del login:', loginResponse); // Para depuración
+      // 2. Si el login es exitoso, obtener el token de notificación del dispositivo
+      if (loginResponse && loginResponse.userId && loginResponse.userType && loginResponse.token) {
+        // 3. Obtener el token de notificación del dispositivo
         const expoPushToken = await registerForPushNotificationsAsync();
-
-        // 3. Enviar el token de notificación y los datos del usuario al backend
+        // console.log('Expo Push Token obtenido:', expoPushToken); // Para depuración
+        // 4. Enviar el token de notificación y los datos del usuario al backend
         if (expoPushToken) {
           await registerPushTokenOnBackend(
             loginResponse.userId,
-            loginResponse.userType,
+            loginResponse.userType, // Usa el userType que viene del backend
             expoPushToken,
-            loginResponse.token // Pasar el token de sesión si tu ruta de registro lo requiere
+            loginResponse.token // Pasa el token de sesión (JWT) para autenticar la petición
           );
           console.log('Token de notificación registrado con éxito en el backend.');
         } else {
           console.warn('No se pudo obtener el token de Expo Push para registrar.');
         }
 
-        // 4. Navegar a la pantalla principal después de un login exitoso y registro de token
+        // 5. Navegar a la pantalla principal después de un login exitoso y registro de token
         if (loginResponse.userType === 'estudiante') {
           router.replace('/postulante/dashboard'); // Redirigir al dashboard del postulante
         } else if (loginResponse.userType === 'empresa') {
@@ -98,11 +102,12 @@ export default function LoginScreen() {
         }
 
       } else {
-        // Esto se ejecutaría si loginUser devuelve algo, pero sin los datos esperados
+        // En caso de una respuesta exitosa pero con datos incompletos (raro si el backend está bien)
         Alert.alert('Error de inicio de sesión', 'Credenciales inválidas o datos de usuario incompletos recibidos.');
       }
 
     } catch (error: any) {
+      // Manejo de errores de la API (ej. 401 Credenciales inválidas, Network request failed)
       console.error('Error durante el inicio de sesión o registro de token:', error);
       Alert.alert('Error', error.message || 'Ocurrió un error inesperado al iniciar sesión.');
     } finally {
