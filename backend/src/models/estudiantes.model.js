@@ -11,7 +11,7 @@ export const getEstudiantes = async (id_usuario) => {
     }
 };
 
-export const obtenerIDEstudiante= async (id_estudiante) => {
+export const obtenerid_estudiante= async (id_estudiante) => {
     const sql = 'SELECT id FROM estudiantes WHERE id_usuario = ?';
     try {
         const [rows] = await db.query(sql,[id_estudiante]);
@@ -76,26 +76,26 @@ export const actualizarCampoEstudiante = async (id_usuario, campo, valor) => {
 
 
 //experiencias
-export const crearExperiencia = async (idEstudiante) => {
+export const crearExperiencia = async (id_estudiante) => {
     const sql = `INSERT INTO experiencias(id_estudiante) Values (?)`
 
     try {
-        const row = await db.query(sql,[idEstudiante]);
+        const row = await db.query(sql,[id_estudiante]);
         return row.insertId ;
     } catch (error) {
         console.log('Error al insertar experiencia');
     }
 };
 
-export const obtenerExperienciasPorEstudiante = async (idEstudiante) => {
-  const [rows] = await db.query('SELECT * FROM experiencias WHERE id_estudiante = ?', [idEstudiante]);
+export const obtenerExperienciasPorEstudiante = async (id_estudiante) => {
+  const [rows] = await db.query('SELECT * FROM experiencias WHERE id_estudiante = ?', [id_estudiante]);
   return rows;
 };
 
 export const actualizarCamposExperiencia = async (id_experiencia, campos) => {
     const camposPermitidos = [
         'titulo',
-        'empresa',
+        'empresa_o_institucion',
         'descripcion',
         'fecha_inicio',
         'fecha_fin',
@@ -131,11 +131,11 @@ export const actualizarCamposExperiencia = async (id_experiencia, campos) => {
 
 
 //educacion
-export const crearEducacion = async (idEstudiante) => {
+export const crearEducacion = async (id_estudiante) => {
     const sql = `INSERT INTO educacion(id_estudiante) Values (?)`;
 
     try {
-        const row = await db.query(sql,[idEstudiante]);
+        const row = await db.query(sql,[id_estudiante]);
         return { id_educacion: row.insertId };
     } catch (error) {
         console.log('Error al insertar experiencia');
@@ -143,8 +143,8 @@ export const crearEducacion = async (idEstudiante) => {
 };
 
 
-export const obtenerEducacionesPorEstudiante = async (idEstudiante) => {
-  const [rows] = await db.query('SELECT * FROM educacion WHERE id_estudiante = ?', [idEstudiante]);
+export const obtenerEducacionesPorEstudiante = async (id_estudiante) => {
+  const [rows] = await db.query('SELECT * FROM educacion WHERE id_estudiante = ?', [id_estudiante]);
   return rows;
 };
 

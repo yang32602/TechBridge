@@ -46,13 +46,14 @@ export const updateCampoEstudiante = async (req, res) => {
 // EXPERIENCIAS
 
 export const crearExperiencia = async (req, res) => {
-  const { idEstudiante } = req.body;
-  if (!idEstudiante) {
-    return res.status(400).json({ estado: 0, mensaje: 'Falta idEstudiante' });
+  const { id_estudiante } = req.body;
+    
+  if (!id_estudiante) {
+    return res.status(400).json({ estado: 0, mensaje: 'Falta id_estudiante' });
   }
 
   try {
-    const idExperiencia = await estudiantesModel.crearExperiencia(idEstudiante);
+    const idExperiencia = await estudiantesModel.crearExperiencia(id_estudiante);
     return res.status(201).json({
       estado: 1,
       mensaje: 'Experiencia creada exitosamente',
@@ -65,13 +66,13 @@ export const crearExperiencia = async (req, res) => {
 };
 
 export const obtenerExperienciasPorEstudiante = async (req, res) => {
-  const { idEstudiante } = req.params;
-  if (!idEstudiante) {
-    return res.status(400).json({ estado: 0, mensaje: 'Falta idEstudiante' });
+  const { id_estudiante } = req.params;
+  if (!id_estudiante) {
+    return res.status(400).json({ estado: 0, mensaje: 'Falta id_estudiante' });
   }
 
   try {
-    const experiencias = await estudiantesModel.obtenerExperienciasPorEstudiante(idEstudiante);
+    const experiencias = await estudiantesModel.obtenerExperienciasPorEstudiante(id_estudiante);
     return res.status(200).json({ estado: 1, experiencias });
   } catch (error) {
     console.error('Error al obtener experiencias:', error);
@@ -80,32 +81,39 @@ export const obtenerExperienciasPorEstudiante = async (req, res) => {
 };
 
 export const actualizarCamposExperiencia = async (req, res) => {
-  const { idExperiencia } = req.params;
-  const campos = req.body;
+  const { id_experiencia, ...campos } = req.body;
 
-  if (!idExperiencia) {
-    return res.status(400).json({ estado: 0, mensaje: 'Falta idExperiencia' });
+  if (!id_experiencia) {
+    return res.status(400).json({
+      estado: 0,
+      mensaje: 'Falta el campo id_experiencia en el cuerpo de la solicitud.'
+    });
   }
 
   try {
-    const resultado = await estudiantesModel.actualizarCamposExperiencia(idExperiencia, campos);
+    const resultado = await estudiantesModel.actualizarCamposExperiencia(id_experiencia, campos);
     return res.status(200).json(resultado);
   } catch (error) {
     console.error('Error al actualizar experiencia:', error);
-    return res.status(500).json({ estado: 0, mensaje: 'Error al actualizar experiencia', error: error.message });
+    return res.status(500).json({
+      estado: 0,
+      mensaje: 'Error interno al actualizar experiencia.',
+      error: error.message
+    });
   }
 };
+
 
 // EDUCACION
 
 export const crearEducacion = async (req, res) => {
-  const { idEstudiante } = req.body;
-  if (!idEstudiante) {
-    return res.status(400).json({ estado: 0, mensaje: 'Falta idEstudiante' });
+  const { id_estudiante } = req.body;
+  if (!id_estudiante) {
+    return res.status(400).json({ estado: 0, mensaje: 'Falta id_estudiante' });
   }
 
   try {
-    const idEducacion = await estudiantesModel.crearEducacion(idEstudiante);
+    const idEducacion = await estudiantesModel.crearEducacion(id_estudiante);
     return res.status(201).json({
       estado: 1,
       mensaje: 'Educación creada exitosamente',
@@ -118,13 +126,13 @@ export const crearEducacion = async (req, res) => {
 };
 
 export const obtenerEducacionesPorEstudiante = async (req, res) => {
-  const { idEstudiante } = req.params;
-  if (!idEstudiante) {
-    return res.status(400).json({ estado: 0, mensaje: 'Falta idEstudiante' });
+  const { id_estudiante } = req.params;
+  if (!id_estudiante) {
+    return res.status(400).json({ estado: 0, mensaje: 'Falta id_estudiante' });
   }
 
   try {
-    const educaciones = await estudiantesModel.obtenerEducacionesPorEstudiante(idEstudiante);
+    const educaciones = await estudiantesModel.obtenerEducacionesPorEstudiante(id_estudiante);
     return res.status(200).json({ estado: 1, educaciones });
   } catch (error) {
     console.error('Error al obtener educación:', error);

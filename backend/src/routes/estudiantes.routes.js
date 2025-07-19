@@ -13,22 +13,22 @@ router.patch('/actualizar', estudiantesController.updateCampoEstudiante);
 
 // --- Rutas para EXPERIENCIAS ---
 
-// Crear nueva experiencia (POST, body con idEstudiante)
+// Crear nueva experiencia (POST, body con id_estudiante)
 router.post('/experiencias', estudiantesController.crearExperiencia);
 
-// Obtener experiencias de un estudiante (GET, idEstudiante como param)
-router.get('/experiencias/:idEstudiante', estudiantesController.obtenerExperienciasPorEstudiante);
+// Obtener experiencias de un estudiante (GET, id_estudiante como param)
+router.get('/experiencias/:id_estudiante', estudiantesController.obtenerExperienciasPorEstudiante);
 
 // Actualizar experiencia (PATCH, idExperiencia como param, body con campos a actualizar)
-router.patch('/experiencias/:idExperiencia', estudiantesController.actualizarCamposExperiencia);
+router.patch('/experiencias', estudiantesController.actualizarCamposExperiencia);
 
 // --- Rutas para EDUCACION ---
 
-// Crear nueva educación (POST, body con idEstudiante)
+// Crear nueva educación (POST, body con id_estudiante)
 router.post('/educacion', estudiantesController.crearEducacion);
 
-// Obtener educaciones de un estudiante (GET, idEstudiante como param)
-router.get('/educacion/:idEstudiante', estudiantesController.obtenerEducacionesPorEstudiante);
+// Obtener educaciones de un estudiante (GET, id_estudiante como param)
+router.get('/educacion/:id_estudiante', estudiantesController.obtenerEducacionesPorEstudiante);
 
 // Actualizar educación (PATCH, idEducacion como param, body con campos a actualizar)
 router.patch('/educacion/:idEducacion', estudiantesController.actualizarCamposEducacion);
