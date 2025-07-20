@@ -1,0 +1,225 @@
+/* Education Item Styles - Matching Experience Styling */
+.student-education-item {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.student-education-item:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.student-education-content {
+  position: relative;
+}
+
+.education-edit-header {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 1;
+}
+
+.education-edit-main-icon {
+  color: #6b7280;
+  font-size: 16px;
+  opacity: 0.6;
+}
+
+.education-field {
+  margin-bottom: 16px;
+}
+
+.education-field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.education-field-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.education-field-value {
+  flex: 1;
+  color: #111827;
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.education-edit-icon {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.education-field:hover .education-edit-icon {
+  opacity: 1;
+}
+
+.education-edit-icon:hover {
+  color: #3b82f6;
+  background: #f3f4f6;
+}
+
+.education-field-edit {
+  margin-bottom: 16px;
+}
+
+.education-edit-controls {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.education-edit-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.education-edit-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.education-edit-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.education-edit-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.education-save-btn,
+.education-cancel-btn {
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.education-save-btn {
+  background: #10b981;
+  color: white;
+}
+
+.education-save-btn:hover {
+  background: #059669;
+}
+
+.education-save-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.education-cancel-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.education-cancel-btn:hover {
+  background: #dc2626;
+}
+
+.education-cancel-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.education-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* Empty state */
+.education-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Loading state */
+.education-loading {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+}
+
+/* Add education button */
+.add-education-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-education-btn:hover {
+  background: #2563eb;
+}
+
+.add-education-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .student-education-item {
+    padding: 16px;
+  }
+
+  .education-dates {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .education-edit-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .education-edit-buttons {
+    justify-content: flex-end;
+  }
+}
