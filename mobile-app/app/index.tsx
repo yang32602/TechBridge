@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useFonts } from 'expo-font';
 import { router } from 'expo-router';
+import * as Device from 'expo-device';
 
 // Importa tus funciones API y de notificaciones
 import { loginUser, registerPushTokenOnBackend } from '../src/services/api';
@@ -60,7 +61,7 @@ export default function LoginScreen() {
     'Epilogue-Regular': require('../assets/fonts/Epilogue-Regular.ttf'),   // Ajusta la ruta
     'Epilogue-Bold': require('../assets/fonts/Epilogue-Bold.ttf'),         // Ajusta la ruta
     'LeagueSpartan-SemiBold': require('../assets/fonts/LeagueSpartan-SemiBold.ttf'), // Ajusta la ruta
-    'Inter-SemiBold': require('../assets/fonts/Inter_28pt-SemiBold.ttf'),       // Ajusta la ruta
+    'Inter-SemiBold': require('../assets/fonts/Inter_28pt-SemiBold.ttf'),        // Ajusta la ruta
   });
 
   const handleLogin = async () => {
@@ -77,7 +78,18 @@ export default function LoginScreen() {
       if (loginResponse && loginResponse.userId && loginResponse.userType && loginResponse.token) {
         // 3. Obtener el token de notificación del dispositivo
         const expoPushToken = await registerForPushNotificationsAsync();
-        // console.log('Expo Push Token obtenido:', expoPushToken); // Para depuración
+        console.log('🎉 Expo Push Token OBTENIDO DESDE LA APP:', expoPushToken); // ¡IMPORTANTE!
+
+        // Añade una alerta para que el token se muestre en la pantalla del dispositivo/emulador
+        if (expoPushToken) {
+            Alert.alert(
+                'Token Obtenido',
+                `Tu Expo Push Token es:\n\n${expoPushToken}\n\nCópialo para Postman.`,
+                [{ text: 'OK' }]
+            );
+        } else {
+            Alert.alert('Error', 'No se pudo obtener el Expo Push Token.');
+        }
         // 4. Enviar el token de notificación y los datos del usuario al backend
         if (expoPushToken) {
           await registerPushTokenOnBackend(
@@ -302,9 +314,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 7,
     paddingHorizontal: 12,
-    // NO pongas backgroundColor aquí si quieres que el 'inactiveTab' lo defina
-    // o si el fondo global del contenedor de pestañas ya es neutro.
-    // Podrías poner un borderRadius o un borde aquí si es común para ambos.
+    // NO pongas backgroundColor aquí if you want 'inactiveTab' to define it
+    // or if the global background of the tab container is already neutral.
+    // You could put a borderRadius or a border here if it's common for both.
   },
   captionWrapper: {
     flexDirection: 'row',

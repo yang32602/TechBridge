@@ -1,4 +1,3 @@
-// mobile-app/app/_layout.tsx
 import React, { useEffect, useRef } from 'react';
 import { Stack, router } from 'expo-router'; // Importa 'router' de expo-router
 import { StatusBar } from 'expo-status-bar';

@@ -1,4 +1,3 @@
-// backend/src/utils/pushNotifications.js
 import { Expo } from 'expo-server-sdk';
 import db from '../config/db.js'; // Ajusta la ruta a tu configuración de base de datos
 
