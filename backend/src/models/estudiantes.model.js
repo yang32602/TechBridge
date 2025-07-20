@@ -54,6 +54,7 @@ export const actualizarCampoEstudiante = async (id_usuario, campo, valor) => {
     "telefono",
     "email",
     "contratado",
+    "cv"
   ];
 
   if (!camposPermitidos.includes(campo)) {
