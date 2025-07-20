@@ -5,3 +5,6 @@ export { default as DashboardCompany } from "./DashboardCompany";
 export { default as StudentSidebar } from "./StudentSidebar";
 export { default as CompanySidebar } from "./CompanySidebar";
 export { default as EditProfileModal } from "./EditProfileModal";
+export { default as ExperienceItem } from "./ExperienceItem";
+export { default as EducationItem } from "./EducationItem";
+export { default as PaginatedItems } from "./PaginatedItems";

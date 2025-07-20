@@ -1,0 +1,443 @@
+/* Paginated Items Component Styles */
+.paginated-items {
+  width: 100%;
+}
+
+.paginated-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.paginated-navigation {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.paginated-nav-btn {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border: 2px solid #dee2e6;
+  border-radius: 12px;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  color: #495057;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.paginated-nav-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.paginated-nav-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border-color: #0056b3;
+  color: white;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+}
+
+.paginated-nav-btn:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.paginated-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  background: #e9ecef;
+  box-shadow: none;
+}
+
+.paginated-counter {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6c757d;
+  min-width: 80px;
+  text-align: center;
+}
+
+.paginated-add-btn {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+}
+
+.paginated-add-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.paginated-add-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.paginated-content {
+  position: relative;
+  min-height: 200px;
+  overflow: hidden;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 10px 0;
+}
+
+.paginated-loading,
+.paginated-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #6c757d;
+  font-style: italic;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+}
+
+.paginated-dots {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 25px;
+  padding: 10px;
+}
+
+.paginated-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #dee2e6;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.paginated-dot::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: #007bff;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  transform: translate(-50%, -50%);
+}
+
+.paginated-dot.active {
+  border-color: #007bff;
+  transform: scale(1.3);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.paginated-dot.active::before {
+  width: 8px;
+  height: 8px;
+}
+
+.paginated-dot:hover:not(.active) {
+  border-color: #adb5bd;
+  transform: scale(1.2);
+}
+
+.paginated-dot:hover:not(.active)::before {
+  width: 4px;
+  height: 4px;
+  background: #adb5bd;
+}
+
+/* Animation Classes */
+.slide-in-left {
+  animation: pageFlipInLeft 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.slide-in-right {
+  animation: pageFlipInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.slide-out-left {
+  animation: pageFlipOutLeft 0.2s cubic-bezier(0.55, 0.06, 0.68, 0.19);
+}
+
+.slide-out-right {
+  animation: pageFlipOutRight 0.2s cubic-bezier(0.55, 0.06, 0.68, 0.19);
+}
+
+.fade-in {
+  animation: gentleFadeIn 0.4s ease-out;
+}
+
+.fade-out {
+  animation: gentleFadeOut 0.2s ease-in;
+}
+
+/* Page Flip Animations - Left Direction */
+@keyframes pageFlipInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) rotateY(-90deg) scale(0.8);
+    transform-origin: right center;
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateX(-25%) rotateY(-45deg) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg) scale(1);
+    transform-origin: center center;
+  }
+}
+
+@keyframes pageFlipOutLeft {
+  0% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg) scale(1);
+    transform-origin: center center;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-30%) rotateY(90deg) scale(0.8);
+    transform-origin: left center;
+  }
+}
+
+/* Page Flip Animations - Right Direction */
+@keyframes pageFlipInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(50%) rotateY(90deg) scale(0.8);
+    transform-origin: left center;
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateX(25%) rotateY(45deg) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg) scale(1);
+    transform-origin: center center;
+  }
+}
+
+@keyframes pageFlipOutRight {
+  0% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg) scale(1);
+    transform-origin: center center;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(30%) rotateY(-90deg) scale(0.8);
+    transform-origin: right center;
+  }
+}
+
+/* Gentle Fade Animations */
+@keyframes gentleFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    filter: blur(1px);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(10px) scale(0.98);
+    filter: blur(0.5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes gentleFadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+    filter: blur(0.5px);
+  }
+}
+
+/* Delete button styles for experience and education items */
+.experience-delete-btn,
+.education-delete-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: auto;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.experience-delete-btn:hover:not(:disabled),
+.education-delete-btn:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.experience-delete-btn:disabled,
+.education-delete-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.experience-delete-icon,
+.education-delete-icon {
+  font-size: 18px;
+}
+
+/* Update header styles */
+.experience-edit-header,
+.education-edit-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 25px;
+  padding: 10px 0 15px 0;
+  border-bottom: 1px solid #e9ecef;
+  position: relative;
+  z-index: 20;
+}
+
+/* Ensure content doesn't overlap with header */
+.student-experience-content,
+.student-education-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Override the absolute positioning from experience-item.css */
+.paginated-content .experience-edit-header {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+}
+
+/* Add space for better layout and prevent overlap */
+.experience-field:first-of-type,
+.education-field:first-of-type {
+  margin-top: 15px;
+}
+
+/* Ensure field content has proper spacing from delete button */
+.experience-field-content,
+.education-field-content {
+  margin-right: 10px;
+}
+
+/* Adjust field layout to prevent overlap */
+.paginated-content .experience-field,
+.paginated-content .education-field {
+  clear: both;
+  position: relative;
+  z-index: 5;
+}
+
+/* Ensure proper spacing in paginated content */
+.paginated-content .student-experience-item,
+.paginated-content .student-education-item {
+  margin-bottom: 0;
+  border: none;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.paginated-content .student-experience-item:hover,
+.paginated-content .student-education-item:hover {
+  box-shadow: none;
+}
+
+/* Specific styling for paginated context */
+.paginated-content .experience-field-content,
+.paginated-content .education-field-content {
+  padding-right: 50px; /* Give extra space to avoid delete button overlap */
+}
+
+/* Ensure edit icons are visible and properly positioned */
+.paginated-content .experience-edit-icon,
+.paginated-content .education-edit-icon {
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .paginated-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .paginated-navigation {
+    justify-content: center;
+  }
+
+  .paginated-add-btn {
+    justify-content: center;
+  }
+
+  .paginated-nav-btn {
+    width: 45px;
+    height: 45px;
+  }
+}
