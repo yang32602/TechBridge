@@ -2,9 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import ApiService from "../services/api";
-import { StudentSidebar } from "../components";
+import {
+  StudentSidebar,
+  PaginatedItems,
+  ExperienceItem,
+  EducationItem,
+} from "../components";
 import EditProfileModal from "../components/EditProfileModal";
 import "../assets/profile-student.css";
+import "../assets/experience-item.css";
+import "../assets/education-item.css";
+import "../assets/paginated-items.css";
 
 // React Icons
 import {
@@ -30,6 +38,12 @@ const ProfileStudent = () => {
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [experiences, setExperiences] = useState([]);
+  const [experiencesLoading, setExperiencesLoading] = useState(false);
+  const [addingExperience, setAddingExperience] = useState(false);
+  const [education, setEducation] = useState([]);
+  const [educationLoading, setEducationLoading] = useState(false);
+  const [addingEducation, setAddingEducation] = useState(false);
 
   // Check if this is read-only mode (viewing another student's profile)
   const isReadOnly = studentId || location.state?.readOnly;
@@ -59,8 +73,108 @@ const ProfileStudent = () => {
     fetchStudentDetails();
   }, [user, targetUserId]);
 
+  // Fetch experiences when studentDetails is available
+  useEffect(() => {
+    const fetchExperiences = async () => {
+      if (studentDetails?.id) {
+        console.log("Fetching experiences for student ID:", studentDetails.id);
+        setExperiencesLoading(true);
+        try {
+          const experiencesData = await ApiService.getStudentExperiences(
+            studentDetails.id,
+          );
+          console.log("Received experiences data:", experiencesData);
+          setExperiences(experiencesData);
+        } catch (error) {
+          console.error("Error fetching experiences:", error);
+        } finally {
+          setExperiencesLoading(false);
+        }
+      } else {
+        console.log("No student ID available for experiences:", studentDetails);
+      }
+    };
+
+    fetchExperiences();
+  }, [studentDetails]);
+
+  // Fetch education when studentDetails is available
+  useEffect(() => {
+    const fetchEducation = async () => {
+      if (studentDetails?.id) {
+        console.log("Fetching education for student ID:", studentDetails.id);
+        setEducationLoading(true);
+        try {
+          const educationData = await ApiService.getStudentEducation(
+            studentDetails.id,
+          );
+          console.log("Received education data:", educationData);
+          setEducation(educationData);
+        } catch (error) {
+          console.error("Error fetching education:", error);
+        } finally {
+          setEducationLoading(false);
+        }
+      } else {
+        console.log("No student ID available for education:", studentDetails);
+      }
+    };
+
+    fetchEducation();
+  }, [studentDetails]);
+
   const handleLogoClick = () => {
     navigate("/");
+  };
+
+  const handleAddExperience = async () => {
+    if (!studentDetails?.id) return;
+
+    const response = await ApiService.addStudentExperience(studentDetails.id);
+    if (response && response.estado === 1) {
+      // Refetch experiences to get the updated list
+      const experiencesData = await ApiService.getStudentExperiences(
+        studentDetails.id,
+      );
+      setExperiences(experiencesData);
+    }
+  };
+
+  const handleUpdateExperience = (updatedExperience) => {
+    setExperiences((prev) =>
+      prev.map((exp) =>
+        exp.id === updatedExperience.id ? updatedExperience : exp,
+      ),
+    );
+  };
+
+  const handleDeleteExperience = (deletedId) => {
+    setExperiences((prev) => prev.filter((exp) => exp.id !== deletedId));
+  };
+
+  const handleAddEducation = async () => {
+    if (!studentDetails?.id) return;
+
+    const response = await ApiService.addStudentEducation(studentDetails.id);
+    if (response && response.estado === 1) {
+      // Refetch education to get the updated list
+      const educationData = await ApiService.getStudentEducation(
+        studentDetails.id,
+      );
+      setEducation(educationData);
+    }
+  };
+
+  const handleUpdateEducation = (updatedEducation) => {
+    setEducation((prev) =>
+      prev.map((edu) =>
+        edu.id === updatedEducation.id ? updatedEducation : edu,
+      ),
+    );
+  };
+
+  const handleDeleteEducation = (deletedId) => {
+    setEducation((prev) => prev.filter((edu) => edu.id !== deletedId));
   };
 
   if (loading) {
@@ -164,105 +278,52 @@ const ProfileStudent = () => {
             <section className="student-content-card">
               <div className="student-card-header">
                 <h3>Experiencias</h3>
-                {!isReadOnly && (
-                  <button className="student-add-btn">
-                    <HiPlus />
-                  </button>
+              </div>
+              <PaginatedItems
+                items={experiences}
+                renderItem={(experience, onDelete) => (
+                  <ExperienceItem
+                    experience={experience}
+                    isReadOnly={isReadOnly}
+                    onUpdate={handleUpdateExperience}
+                    onDelete={onDelete}
+                  />
                 )}
-              </div>
-              <div className="student-experience-list">
-                <div className="student-experience-item">
-                  <div className="student-company-logo twitter">
-                    <img
-                      src="https://cdn.builder.io/api/v1/image/assets/TEMP/9637c8cc87f774345a91608e82c2fb7107805656?width=160"
-                      alt="Twitter"
-                    />
-                  </div>
-                  <div className="student-experience-content">
-                    <div className="student-experience-header">
-                      <h4>Ingeniera de Software</h4>
-                    </div>
-                    <div className="student-experience-meta">
-                      <span className="company">Twitter</span>
-                      <span className="dot">•</span>
-                      <span className="type">Full-Time</span>
-                      <span className="dot">•</span>
-                      <span className="duration">
-                        Jun 2019 - Presente (1y 1m)
-                      </span>
-                    </div>
-                    <div className="student-location">Manchester, UK</div>
-                    <p className="student-description">
-                      Contribución activa en el desarrollo frontend y la
-                      arquitectura de componentes para nuevas características de
-                      la plataforma, asegurando la consistencia y escalabilidad
-                      de la UI/UX.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="student-divider"></div>
-
-                <div className="student-experience-item">
-                  <div className="student-company-logo godaddy">
-                    <img
-                      src="https://cdn.builder.io/api/v1/image/assets/TEMP/373778f4ea3a7d85e05b7eb084d0e07932b27858?width=160"
-                      alt="GoDaddy"
-                    />
-                  </div>
-                  <div className="student-experience-content">
-                    <div className="student-experience-header">
-                      <h4>
-                        Especialista en Diseño & Desarrollo de Interfaz (UI/UX)
-                      </h4>
-                    </div>
-                    <div className="student-experience-meta">
-                      <span className="company">GoDaddy</span>
-                      <span className="dot">•</span>
-                      <span className="type">Full-Time</span>
-                      <span className="dot">•</span>
-                      <span className="duration">Jun 2011 - May 2019 (8y)</span>
-                    </div>
-                    <div className="student-location">Manchester, UK</div>
-                    <p className="student-description">
-                      Desarrollo e implementación de funcionalidades clave para
-                      plataformas digitales, incluyendo la creación de
-                      componentes reutilizables y librer��as de UI que
-                      impulsaron la eficiencia del desarrollo.
-                    </p>
-                  </div>
-                </div>
-              </div>
+                onAdd={handleAddExperience}
+                onDelete={handleDeleteExperience}
+                isReadOnly={isReadOnly}
+                loading={experiencesLoading}
+                emptyMessage="No tienes experiencias registradas. ¡Agrega tu primera experiencia!"
+                addingText="Agregando..."
+                addText="Agregar"
+                className="experiences-pagination"
+              />
             </section>
 
             {/* Education */}
             <section className="student-content-card">
               <div className="student-card-header">
                 <h3>Educación</h3>
-                {!isReadOnly && (
-                  <button className="student-add-btn">
-                    <HiPlus />
-                  </button>
+              </div>
+              <PaginatedItems
+                items={education}
+                renderItem={(educationItem, onDelete) => (
+                  <EducationItem
+                    education={educationItem}
+                    isReadOnly={isReadOnly}
+                    onUpdate={handleUpdateEducation}
+                    onDelete={onDelete}
+                  />
                 )}
-              </div>
-              <div className="student-divider"></div>
-              <div className="student-education-list">
-                <div className="student-education-item">
-                  <div className="student-institution-logo">
-                    <img
-                      src="https://cdn.builder.io/api/v1/image/assets/TEMP/3a687d8a17f0a98911b8f028bbbc9a808e3e64dc?width=172"
-                      alt="UTP"
-                    />
-                  </div>
-                  <div className="student-education-content">
-                    <div className="student-education-header">
-                      <h4>Universidad Tecnológica de Panamá</h4>
-                    </div>
-                    <div className="student-degree">Diseño Gráfico</div>
-                    <div className="student-duration">2005 - 2009</div>
-                  </div>
-                </div>
-              </div>
+                onAdd={handleAddEducation}
+                onDelete={handleDeleteEducation}
+                isReadOnly={isReadOnly}
+                loading={educationLoading}
+                emptyMessage="No tienes educación registrada. ¡Agrega tu primera institución!"
+                addingText="Agregando..."
+                addText="Agregar"
+                className="education-pagination"
+              />
             </section>
 
             {/* Skills */}

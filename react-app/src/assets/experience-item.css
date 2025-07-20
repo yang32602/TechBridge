@@ -1,0 +1,225 @@
+/* Experience Item Styles */
+.student-experience-item {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.student-experience-item:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.student-experience-content {
+  position: relative;
+}
+
+.experience-edit-header {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 1;
+}
+
+.experience-edit-main-icon {
+  color: #6b7280;
+  font-size: 16px;
+  opacity: 0.6;
+}
+
+.experience-field {
+  margin-bottom: 16px;
+}
+
+.experience-field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.experience-field-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.experience-field-value {
+  flex: 1;
+  color: #111827;
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.experience-edit-icon {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.experience-field:hover .experience-edit-icon {
+  opacity: 1;
+}
+
+.experience-edit-icon:hover {
+  color: #3b82f6;
+  background: #f3f4f6;
+}
+
+.experience-field-edit {
+  margin-bottom: 16px;
+}
+
+.experience-edit-controls {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.experience-edit-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.experience-edit-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.experience-edit-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.experience-edit-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.experience-save-btn,
+.experience-cancel-btn {
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.experience-save-btn {
+  background: #10b981;
+  color: white;
+}
+
+.experience-save-btn:hover {
+  background: #059669;
+}
+
+.experience-save-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.experience-cancel-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.experience-cancel-btn:hover {
+  background: #dc2626;
+}
+
+.experience-cancel-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.experience-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* Empty state */
+.experience-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Loading state */
+.experience-loading {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+}
+
+/* Add experience button */
+.add-experience-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-experience-btn:hover {
+  background: #2563eb;
+}
+
+.add-experience-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .student-experience-item {
+    padding: 16px;
+  }
+
+  .experience-dates {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .experience-edit-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .experience-edit-buttons {
+    justify-content: flex-end;
+  }
+}

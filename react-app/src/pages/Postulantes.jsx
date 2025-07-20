@@ -16,7 +16,7 @@ const Postulantes = () => {
 
   const { user } = useAuth();
   const navigate = useNavigate();
-  const applicantsPerPage = 7;
+  const applicantsPerPage = 6;
 
   // Create stable reference for studentBadges to prevent dependency array size changes
   const stableStudentBadges = useMemo(

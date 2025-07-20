@@ -25,10 +25,13 @@ class ApiService {
   async registerStudent(userData) {
     return this.request("/usuarios/estudianteRegister", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         correo: userData.email,
         contrasena: userData.password,
-        nombre: userData.fullName,
+        nombre_completo: userData.fullName,
       }),
     });
   }
@@ -257,6 +260,192 @@ class ApiService {
       return response;
     } catch (error) {
       console.error("Error updating student field:", error);
+      throw error;
+    }
+  }
+
+  // Métodos para manejar experiencias de estudiantes
+  async getStudentExperiences(idEstudiante) {
+    try {
+      console.log(
+        "getStudentExperiences called with idEstudiante:",
+        idEstudiante,
+      );
+      const response = await this.request(
+        `/estudiantes/experiencias/${idEstudiante}`,
+        {
+          method: "GET",
+        },
+      );
+
+      console.log("getStudentExperiences response:", response);
+      // Backend returns { estado: 1, experiencias: [...] }
+      if (
+        response &&
+        response.experiencias &&
+        Array.isArray(response.experiencias)
+      ) {
+        return response.experiencias;
+      }
+      return Array.isArray(response) ? response : [];
+    } catch (error) {
+      console.error("Error fetching student experiences:", error);
+      return [];
+    }
+  }
+
+  async addStudentExperience(idEstudiante) {
+    try {
+      console.log(
+        "addStudentExperience called with idEstudiante:",
+        idEstudiante,
+      );
+      const response = await this.request("/estudiantes/experiencias", {
+        method: "POST",
+        body: JSON.stringify({
+          id_estudiante: idEstudiante,
+        }),
+      });
+
+      console.log("addStudentExperience response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error adding student experience:", error);
+      throw error;
+    }
+  }
+
+  async updateStudentExperience(idExperiencia, campo, valor) {
+    try {
+      console.log("updateStudentExperience called with:", {
+        idExperiencia,
+        campo,
+        valor,
+      });
+      const response = await this.request("/estudiantes/experiencias", {
+        method: "PATCH",
+        body: JSON.stringify({
+          campo: campo,
+          valor: valor,
+          id_experiencia: idExperiencia,
+        }),
+      });
+
+      console.log("updateStudentExperience response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error updating student experience:", error);
+      throw error;
+    }
+  }
+
+  async deleteStudentExperience(idExperiencia) {
+    try {
+      console.log("deleteStudentExperience called with:", idExperiencia);
+      const response = await this.request("/estudiantes/experiencia", {
+        method: "DELETE",
+        body: JSON.stringify({
+          id_experiencia: idExperiencia,
+        }),
+      });
+
+      console.log("deleteStudentExperience response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error deleting student experience:", error);
+      throw error;
+    }
+  }
+
+  // Education API methods
+  async getStudentEducation(idEstudiante) {
+    try {
+      console.log(
+        "getStudentEducation called with idEstudiante:",
+        idEstudiante,
+      );
+      const response = await this.request(
+        `/estudiantes/educacion/${idEstudiante}`,
+        {
+          method: "GET",
+        },
+      );
+
+      console.log("getStudentEducation response:", response);
+      // Backend returns { estado: 1, educaciones: [...] }
+      if (
+        response &&
+        response.educaciones &&
+        Array.isArray(response.educaciones)
+      ) {
+        return response.educaciones;
+      }
+      return Array.isArray(response) ? response : [];
+    } catch (error) {
+      console.error("Error fetching student education:", error);
+      return [];
+    }
+  }
+
+  async addStudentEducation(idEstudiante) {
+    try {
+      console.log(
+        "addStudentEducation called with idEstudiante:",
+        idEstudiante,
+      );
+      const response = await this.request("/estudiantes/educacion", {
+        method: "POST",
+        body: JSON.stringify({
+          id_estudiante: idEstudiante,
+        }),
+      });
+
+      console.log("addStudentEducation response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error adding student education:", error);
+      throw error;
+    }
+  }
+
+  async updateStudentEducation(idEducacion, campo, valor) {
+    try {
+      console.log("updateStudentEducation called with:", {
+        idEducacion,
+        campo,
+        valor,
+      });
+      const response = await this.request("/estudiantes/educacion", {
+        method: "PATCH",
+        body: JSON.stringify({
+          campo: campo,
+          valor: valor,
+          id_educacion: idEducacion,
+        }),
+      });
+
+      console.log("updateStudentEducation response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error updating student education:", error);
+      throw error;
+    }
+  }
+
+  async deleteStudentEducation(idEducacion) {
+    try {
+      console.log("deleteStudentEducation called with:", idEducacion);
+      const response = await this.request("/estudiantes/educacion", {
+        method: "DELETE",
+        body: JSON.stringify({
+          id_educacion: idEducacion,
+        }),
+      });
+
+      console.log("deleteStudentEducation response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error deleting student education:", error);
       throw error;
     }
   }
