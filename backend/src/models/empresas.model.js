@@ -66,7 +66,9 @@ export const actualizarCampoEmpresa = async (id, campo, valor) => {
         'sector',
         'logo_url',
         'descripcion',
-        'telefono'
+        'telefono',
+        'tecnologia',
+        'cantidad_empleados'
     ];
 
     if (!camposPermitidos.includes(campo)) {
