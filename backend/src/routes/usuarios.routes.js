@@ -14,7 +14,7 @@ router.get('/empresas', usuarioController.obtenerEmpresas);
 router.get('/:id_usuario/estudianteInsignia', usuarioController.insigniaUsuario);
 
 //registrar un nuevo Estudiante  Recibe correo, contrasena y nombre y los almacena en la db
-router.post('/estudianteRegister', usuarioController.insertarUsuarioEstudiante);
+router.post('/estudianteRegister', usuarioController.insertarUsuarioEstudiante); 
 
 // Registrar un nuevo usuario Empresa[POSt] Recibe correo, contrasena, RUC, nombre y los almacena en la db
 router.post('/empresaRegister', usuarioController.insertarUsuarioEmpresa);
