@@ -1,4 +1,3 @@
-// mobile-app/src/utils/notifications.ts
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device'; // Importa expo-device
 import Constants from 'expo-constants'; // Importa expo-constants
@@ -57,7 +56,7 @@ export async function registerForPushNotificationsAsync(): Promise<string | unde
     // Obtener el token de Expo Push
     
     token = (await Notifications.getExpoPushTokenAsync({
-      projectId: Constants.expoConfig?.extra?.eas?.projectId || Constants.expoConfig?.owner  // Expo Router usa projectId de app.json/app.config.js o el owner
+      projectId: Constants.expoConfig?.extra?.eas?.projectId || Constants.expoConfig?.owner   // Expo Router usa projectId de app.json/app.config.js o el owner
     })).data;
 
     console.log('Expo Push Token:', token);
@@ -150,7 +149,7 @@ export async function schedulePushNotification() {
       // La propiedad 'type' podría ser necesaria para algunas configuraciones
       // pero 'seconds' ya implica un TimeIntervalTrigger.
       // Si el error persiste, intenta con esto, aunque es menos común para 'seconds':
-      // type: 'timeInterval', // Si esto da error, probemos sin él.
+      // type: 'timeInterval', // If this causes an error, try without it.
     } as Notifications.TimeIntervalTriggerInput,
   });
 }

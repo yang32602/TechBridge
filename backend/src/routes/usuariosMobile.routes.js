@@ -18,4 +18,6 @@ router.post('/empresaLogin', usuariosMobileController.autenticacionEmpresaMobile
 // Si quieres que esta ruta esté protegida, descomenta 'verifyToken'.
 router.post('/registerPushToken', verifyToken, usuariosMobileController.registerPushToken);
 
+// Nueva ruta para enviar notificaciones de prueba
+router.post('/send-test-notification', usuariosMobileController.sendTestPushNotification); // <-- ¡Añade esta ruta
 export default router;
