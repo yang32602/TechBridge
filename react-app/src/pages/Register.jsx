@@ -75,11 +75,7 @@ const Register = () => {
         console.log("Register response:", response); // Debug log
 
         // Get user ID from register response
-        const userId =
-          response.usuario?.id ||
-          response.id ||
-          response.userId ||
-          response.user?.id;
+        const userId = response.data;
 
         const userData = {
           email: formData.email,
