@@ -11,15 +11,15 @@ export const getEstudiantes = async (id_usuario) => {
   }
 };
 
-export const obtenerid_estudiante = async (id_usuario) => {
-  const sql = "SELECT id FROM estudiantes WHERE id_usuario = ?";
-  try {
-    const [rows] = await db.query(sql, [id_usuario]);
-    return rows[0].id;
-  } catch (error) {
-    console.error("Error al obtener los estudiantes:", error);
-    throw error;
-  }
+export const obtenerid_estudiante= async (id_usuario) => {
+    const sql = 'SELECT id FROM estudiantes WHERE id_usuario = ?';
+    try {
+        const [rows] = await db.query(sql,[id_usuario]);
+        return rows[0].id;
+    } catch (error) {
+        console.error('Error al obtener los estudiantes:', error);
+        throw error;
+    }
 };
 
 export const insertEstudiante = async (estudianteData, id_usuario) => {
@@ -30,14 +30,16 @@ export const insertEstudiante = async (estudianteData, id_usuario) => {
         VALUES (?, ?)
     `;
 
-  try {
-    const [result] = await db.query(sql, [nombre_completo, id_usuario]);
-    return result.insertId;
-  } catch (error) {
-    console.error("Error al agregar el estudiante:", error);
-    throw error;
-  }
+    try {
+        const [result] = await db.query(sql, [nombre_completo, id_usuario]);
+        return result.insertId;
+    } catch (error) {
+        console.error('Error al agregar el estudiante:', error);
+        throw error;
+    }
 };
+ 
+
 
 export const actualizarCampoEstudiante = async (id_usuario, campo, valor) => {
   const camposPermitidos = [
