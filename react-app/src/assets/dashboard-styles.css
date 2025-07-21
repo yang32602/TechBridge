@@ -358,8 +358,8 @@
 }
 
 .company-logo {
-  width: 48px;
-  height: 48px;
+  width: 300px;
+  height: 100%;
   border-radius: 8px;
   background: #f5f5f5;
   display: flex;
