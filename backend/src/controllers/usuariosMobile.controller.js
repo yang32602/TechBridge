@@ -1,11 +1,9 @@
+//backend/src/controllers/usuariosMobile.controller.js
 import UsuarioMobileModel from '../models/usuariosMobile.model.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { Expo } from 'expo-server-sdk';
-import admin from 'firebase-admin'; // Keep this import as it might be used elsewhere for Firebase Admin SDK features.
-
-
-const expo = new Expo();
+// Importa las funciones de notificación desde el nuevo archivo de utilidades
+import { sendPushNotification } from '../utils/pushNotifications.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -182,51 +180,29 @@ export const registerPushToken = async (req, res) => {
   }
 };
 
+// Función para enviar notificación de prueba (AHORA LLAMA A LA FUNCIÓN DE UTILS)
 export const sendTestPushNotification = async (req, res) => {
-  const { pushToken, title, body, data } = req.body;
+    const { pushToken, title, body, data } = req.body; // pushToken sigue siendo ExpoPushToken
 
-  console.log('Backend: Solicitud para enviar notificación de prueba.');
-  console.log('Token recibido:', pushToken);
-  console.log('Título:', title);
-  console.log('Cuerpo:', body);
-  console.log('Datos:', data);
+    console.log('Backend: Solicitud para enviar notificación de prueba.');
+    console.log('Token recibido:', pushToken);
+    console.log('Título:', title);
+    console.log('Cuerpo:', body);
+    console.log('Datos:', data);
 
-  if (!Expo.isExpoPushToken(pushToken)) {
-    console.error(`Token ${pushToken} no es un Expo Push Token válido.`);
-    return res.status(400).json({ mensaje: `Token ${pushToken} no es un Expo Push Token válido.` });
-  }
-
-  let messages = [];
-  messages.push({
-    to: pushToken,
-    sound: 'default',
-    title: title || 'Notificación de Prueba',
-    body: body || '¡Hola! Esta es una notificación de prueba desde tu backend.',
-    data: data || { someData: 'goes here' },
-  });
-
-  let chunks = expo.chunkPushNotifications(messages);
-  let tickets = [];
-
-  try {
-    // Revertimos la creación de Expo a como debería ser normalmente
-    const currentExpo = new Expo(); // <-- ¡Así es como debería ser! Sin accessToken aquí.
-
-    for (let chunk of chunks) {
-      let ticketChunk = await currentExpo.sendPushNotificationsAsync(chunk);
-      tickets.push(...ticketChunk);
+    if (!pushToken) {
+        return res.status(400).json({ mensaje: 'Falta el token de push.' });
     }
 
-    console.log('Backend: Notificaciones enviadas. Tickets:', tickets);
+    try {
+        // Llama a la función de utilidad para enviar la notificación
+        await sendPushNotification(pushToken, title, body, data); // Llama a la función importada
 
-    return res.status(200).json({ mensaje: 'Notificación de prueba enviada exitosamente.', tickets });
+        return res.status(200).json({ mensaje: 'Notificación de prueba enviada exitosamente.' });
 
-  } catch (error) {
-    console.error('Backend: Error al enviar la notificación de prueba:', error);
-    console.error('DETALLE DEL MENSAJE DE ERROR:', error.message);
-    if (error.stack) {
-      console.error('STACK TRACE COMPLETO:', error.stack);
+    } catch (error) {
+        console.error('Backend: Error al enviar la notificación de prueba:', error);
+        // Si la utilidad lanza un error (ej. token inválido), lo capturamos aquí
+        return res.status(500).json({ mensaje: 'Error interno del servidor al enviar la notificación.', error: error.message });
     }
-    return res.status(500).json({ mensaje: 'Error interno del servidor al enviar la notificación.', error: error.message });
-  }
 };

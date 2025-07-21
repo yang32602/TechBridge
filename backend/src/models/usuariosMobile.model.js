@@ -49,7 +49,7 @@ class UsuarioMobileModel {
 
             // Aquí el WHERE debe ser por el 'id' de la tabla 'estudiantes' o 'empresas',
             // no por 'id_usuario'. specificUserId es el id de la tabla estudiante/empresa.
-            const query = `UPDATE ${tableName} SET expoPushToken = ? WHERE id = ?`;
+            const query = `UPDATE ${tableName} SET fcmToken = ? WHERE id = ?`;
             const [result] = await db.execute(query, [expoPushToken, specificUserId]);
             return result.affectedRows; // Retorna el número de filas afectadas
         } catch (error) {

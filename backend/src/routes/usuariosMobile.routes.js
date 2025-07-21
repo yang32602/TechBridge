@@ -1,4 +1,4 @@
-// backend/src/routes/users.js
+// backend/src/routes/usuariosMobile.routes.js
 import express from 'express';
 import * as usuariosMobileController from '../controllers/usuariosMobile.controller.js';
 
