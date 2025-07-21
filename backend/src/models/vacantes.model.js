@@ -130,3 +130,15 @@ export const eliminarVacante = async (id_vacante) => {
   }
 }; 
 
+//mostrar vacante por id
+
+export const vacantePorID = async(id_vacante)=>{
+  const sql = `SELECT * FROM vacantes WHERE id = ?`;
+  try {
+    const [response] = await db.query(sql,[id_vacante]);
+    return response[0];
+  } catch (error) {
+    console.log(`error al traer la informacion de vacantes ${error}`);
+  }
+}
+
