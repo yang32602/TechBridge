@@ -1,30 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+//mobile-app/app/_layout.tsx
+import React, { useEffect} from 'react';
 import { Stack, router } from 'expo-router'; // Importa 'router' de expo-router
 import { StatusBar } from 'expo-status-bar';
 
-// Importa tus funciones de utilidad para notificaciones
-import { registerForPushNotificationsAsync, setupNotificationListeners } from '../src/utils/notifications'; // Ajusta la ruta si es necesario
+// Importa las utilidades de notificaciones de Firebase
+import { setupNotificationListeners } from '../src/utils/firebaseNotifications'; // Ajusta la ruta si es necesario
 
 export default function RootLayout() {
   useEffect(() => {
-    let cleanupListeners: (() => void) | undefined;
-
-    const setupNotifications = async () => {
-      // 1. Obtener el token y enviarlo a tu backend
-      const token = await registerForPushNotificationsAsync();
-      if (token) {
-        console.log("Expo Push Token:", token);
-        // IMPORTANTE: NO ENVÍES EL TOKEN AL BACKEND AQUÍ.
-        // Esto se hace en tu pantalla de LOGIN (app/(tabs)/index.tsx)
-        // una vez que el usuario esté autenticado y sepas su userId y userType.
-      }
-
-      // 2. Configurar listeners para notificaciones
-      // Pasamos el objeto 'router' para que la utilidad pueda navegar
-      cleanupListeners = setupNotificationListeners(router);
-    };
-
-    setupNotifications();
+    // Solo llama a la función de configuración, pasándole el router
+    const cleanupListeners = setupNotificationListeners(router);
 
     // Limpia los listeners cuando el componente se desmonte
     return () => {

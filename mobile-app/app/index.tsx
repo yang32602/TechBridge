@@ -1,3 +1,4 @@
+//mobile-app/app/index.tsx
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -12,12 +13,12 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { useFonts } from 'expo-font';
-import { router } from 'expo-router';
+import { router, type RelativePathString, type ExternalPathString } from 'expo-router';
 import * as Device from 'expo-device';
 
 // Importa tus funciones API y de notificaciones
 import { loginUser, registerPushTokenOnBackend } from '../src/services/api';
-import { registerForPushNotificationsAsync } from '../src/utils/notifications';
+import { registerForPushNotificationsAsync } from '../src/utils/firebaseNotifications';
 
 // Obtener el ancho de la pantalla para estilos responsivos si es necesario
 const { width } = Dimensions.get('window');
@@ -77,25 +78,25 @@ export default function LoginScreen() {
       // 2. Si el login es exitoso, obtener el token de notificación del dispositivo
       if (loginResponse && loginResponse.userId && loginResponse.userType && loginResponse.token) {
         // 3. Obtener el token de notificación del dispositivo
-        const expoPushToken = await registerForPushNotificationsAsync();
-        console.log('🎉 Expo Push Token OBTENIDO DESDE LA APP:', expoPushToken); // ¡IMPORTANTE!
+        const fcmToken = await registerForPushNotificationsAsync();
+        console.log('🎉 Expo Push Token OBTENIDO DESDE LA APP:', fcmToken); // ¡IMPORTANTE!
 
         // Añade una alerta para que el token se muestre en la pantalla del dispositivo/emulador
-        if (expoPushToken) {
+        if (fcmToken) {
             Alert.alert(
                 'Token Obtenido',
-                `Tu Expo Push Token es:\n\n${expoPushToken}\n\nCópialo para Postman.`,
+                `Tu Expo Push Token es:\n\n${fcmToken}\n\nCópialo para Postman.`,
                 [{ text: 'OK' }]
             );
         } else {
             Alert.alert('Error', 'No se pudo obtener el Expo Push Token.');
         }
         // 4. Enviar el token de notificación y los datos del usuario al backend
-        if (expoPushToken) {
+        if (fcmToken) {
           await registerPushTokenOnBackend(
             loginResponse.userId,
             loginResponse.userType, // Usa el userType que viene del backend
-            expoPushToken,
+            fcmToken,
             loginResponse.token // Pasa el token de sesión (JWT) para autenticar la petición
           );
           console.log('Token de notificación registrado con éxito en el backend.');
@@ -105,9 +106,9 @@ export default function LoginScreen() {
 
         // 5. Navegar a la pantalla principal después de un login exitoso y registro de token
         if (loginResponse.userType === 'estudiante') {
-          router.replace('/postulante/dashboard'); // Redirigir al dashboard del postulante
+          router.replace('/postulante/dashboard' as RelativePathString | ExternalPathString); // Redirigir al dashboard del postulante
         } else if (loginResponse.userType === 'empresa') {
-          router.replace('/empresa/dashboard'); // Redirigir al dashboard de la empresa
+          router.replace('/empresa/dashboard' as RelativePathString | ExternalPathString); // Redirigir al dashboard de la empresa
         } else {
           // En caso de que el userType devuelto por el backend no sea ni 'postulante' ni 'empresa'
           Alert.alert('Error de inicio de sesión', 'Tipo de usuario no reconocido. Por favor, contacta a soporte.');
@@ -222,7 +223,7 @@ export default function LoginScreen() {
 
         <View style={styles.alreadyHaveAn}>
           <Text style={styles.dontHaveAn}>¿No tienes una cuenta?</Text>
-          <TouchableOpacity onPress={() => router.push('/signup')}> {/* Asume una ruta de registro */}
+          <TouchableOpacity onPress={() => router.push('/signup' as RelativePathString | ExternalPathString)}> {/* Asume una ruta de registro */}
             <Text style={styles.signUp}>Crea una cuenta</Text>
           </TouchableOpacity>
         </View>

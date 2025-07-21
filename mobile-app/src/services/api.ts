@@ -85,20 +85,6 @@ export const loginUser = async (
       const errorData = await response.json();
       throw new Error(errorData.mensaje || 'Login failed'); // Usa errorData.mensaje
     }
-
-    // ***********************************************************************************
-    // *** ¡ATENCIÓN CRÍTICA AQUÍ! ***
-    // Tu backend actualmente devuelve { estado, mensaje, id }.
-    // Para que el frontend funcione correctamente (especialmente con el registro de push token
-    // y la navegación), NECESITA que el backend devuelva:
-    // { userId: number, userType: 'estudiante' | 'empresa', token: string }
-    //
-    // Por ahora, estoy simulando la respuesta esperada para que el frontend no falle,
-    // pero DEBES MODIFICAR TU BACKEND para que devuelva 'userType' y un 'token' JWT.
-    // ***********************************************************************************
-
-    // Mapea la respuesta actual del backend a la estructura que el frontend espera
-    // Esto es una SOLUCIÓN TEMPORAL hasta que modifiques el backend
     const data: FrontendLoginResponse = await response.json();
     console.log('API: Datos recibidos del backend:', data); // <-- Añade esto
     return data;
