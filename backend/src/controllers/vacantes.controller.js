@@ -113,3 +113,32 @@ export const eliminarVacanteController = async (req, res) => {
     return res.status(500).json({ estado: 0, mensaje: error.message });
   }
 };
+
+export const obtenerVacantePorID = async (req, res) => {
+  const { id_vacante } = req.body;
+
+  try {
+    const data = await vacanteModel.vacantePorID(id_vacante);
+
+    if (data) {
+      res.json({
+        estado: 1,
+        mensaje: "Vacante obtenida correctamente",
+        data
+      });
+    } else {
+      res.json({
+        estado: 0,
+        mensaje: "No se encontró ninguna vacante con ese ID"
+      });
+    }
+
+  } catch (error) {
+    res.status(500).json({
+      estado: 0,
+      mensaje: "Error al obtener la vacante",
+      error: error.message
+    });
+  }
+};
+
