@@ -9,6 +9,9 @@ router.post('/empresas', vacanteController.obtenerVacantesPorUsuario);
 //obtener los estudiantes postulados en una vacante
 router.post('/estudiantes-postulados', vacanteController.mostrarPostuladosPorVacante);
 
+//obtener todas las vacantes que se postulo un estudiante
+router.post("/vacantes-postuladas", vacanteController.getVacantesPostuladas);
+
 
 //obtener vacantes para los usuarios
 router.post('/',vacanteController.obtenerVacantesConEstadoDePostulacion)
