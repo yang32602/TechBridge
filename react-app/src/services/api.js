@@ -449,6 +449,133 @@ class ApiService {
       throw error;
     }
   }
+
+  // Vacantes API methods
+  async getVacantesForStudent(idUsuario) {
+    try {
+      console.log("getVacantesForStudent called with idUsuario:", idUsuario);
+      const response = await this.request("/vacantes/", {
+        method: "POST",
+        body: JSON.stringify({ id_usuario: idUsuario }),
+      });
+
+      console.log("getVacantesForStudent response:", response);
+      // Handle different possible response formats
+      if (Array.isArray(response.data)) {
+        return response.data;
+      } else if (Array.isArray(response.vacantes)) {
+        return response.vacantes;
+      } else if (Array.isArray(response)) {
+        return response;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error fetching vacantes for student:", error);
+      return [];
+    }
+  }
+
+  async getVacantesForCompany(idEmpresa) {
+    try {
+      console.log("getVacantesForCompany called with idEmpresa:", idEmpresa);
+      const response = await this.request("/vacantes/empresas", {
+        method: "POST",
+        body: JSON.stringify({ id_empresa: idEmpresa }),
+      });
+
+      console.log("getVacantesForCompany response:", response);
+      // Handle different possible response formats
+      if (Array.isArray(response.vacantes)) {
+        return response.vacantes;
+      } else if (Array.isArray(response.data)) {
+        return response.data;
+      } else if (Array.isArray(response)) {
+        return response;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error fetching vacantes for company:", error);
+      return [];
+    }
+  }
+
+  async postularVacante(idUsuario, idVacante) {
+    try {
+      console.log("postularVacante called with:", { idUsuario, idVacante });
+      const response = await this.request("/vacantes/postular", {
+        method: "POST",
+        body: JSON.stringify({
+          id_usuario: idUsuario,
+          id_vacante: idVacante
+        }),
+      });
+
+      console.log("postularVacante response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error applying to vacante:", error);
+      throw error;
+    }
+  }
+
+  async createVacante(idEmpresa, titulo, descripcion, ubicacion) {
+    try {
+      console.log("createVacante called with:", { idEmpresa, titulo, descripcion, ubicacion });
+      const response = await this.request("/vacantes/crearVacante", {
+        method: "POST",
+        body: JSON.stringify({
+          id_empresa: idEmpresa,
+          titulo: titulo,
+          descripcion: descripcion,
+          ubicacion: ubicacion,
+        }),
+      });
+
+      console.log("createVacante response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error creating vacante:", error);
+      throw error;
+    }
+  }
+
+  async updateVacante(idVacante, campo, valor) {
+    try {
+      console.log("updateVacante called with:", { idVacante, campo, valor });
+      const response = await this.request("/vacantes/actualizarVacante", {
+        method: "PATCH",
+        body: JSON.stringify({
+          id_vacante: idVacante,
+          campo: campo,
+          valor: valor,
+        }),
+      });
+
+      console.log("updateVacante response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error updating vacante:", error);
+      throw error;
+    }
+  }
+
+  async deleteVacante(idVacante) {
+    try {
+      console.log("deleteVacante called with:", idVacante);
+      const response = await this.request("/vacantes/eliminar", {
+        method: "DELETE",
+        body: JSON.stringify({
+          id_vacante: idVacante,
+        }),
+      });
+
+      console.log("deleteVacante response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error deleting vacante:", error);
+      throw error;
+    }
+  }
 }
 
 export default new ApiService();
