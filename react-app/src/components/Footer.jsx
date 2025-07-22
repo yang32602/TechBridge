@@ -18,33 +18,33 @@ const Footer = () => {
         <div className="footer-section">
           <h4>Navegacion</h4>
           <div className="footer-links">
-            <a href="#" className="footer-link">
+            <Link to="/postulantes" className="footer-link">
               Postulantes
-            </a>
-            <a href="#" className="footer-link">
+            </Link>
+            <Link to="/vacantes" className="footer-link">
               Vacantes
-            </a>
-            <a href="#" className="footer-link">
+            </Link>
+            <Link to="/contacto" className="footer-link">
               Contactenos
-            </a>
-            <a href="#" className="footer-link">
+            </Link>
+            <Link to="/comunidad" className="footer-link">
               Comunidad
-            </a>
+            </Link>
           </div>
         </div>
 
         <div className="footer-section">
           <h4>Legal</h4>
           <div className="footer-links">
-            <a href="#" className="footer-link">
-              Terminos de servicios
-            </a>
-            <a href="#" className="footer-link">
-              Politica de privacidad
-            </a>
-            <a href="#" className="footer-link">
-              Politica de cookies
-            </a>
+            <Link to="/terminos" className="footer-link">
+              Términos de servicios
+            </Link>
+            <Link to="/privacidad" className="footer-link">
+              Política de privacidad
+            </Link>
+            <Link to="/cookies" className="footer-link">
+              Política de cookies
+            </Link>
           </div>
         </div>
 
@@ -69,20 +69,37 @@ const Footer = () => {
           2024vbvv @ Techbridge. Todos los derechos reservados
         </p>
         <div className="social-links">
-          <a href="#" className="social-link">
+          <a
+            href="https://www.facebook.com/"
+            className="social-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             📘
           </a>
-          <a href="#" className="social-link">
+          <a
+            href="https://www.instagram.com/"
+            className="social-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             📷
           </a>
-          <a href="#" className="social-link">
-            🌐
-          </a>
-          <a href="#" className="social-link">
-            💼
-          </a>
-          <a href="#" className="social-link">
+          <a
+            href="https://twitter.com/"
+            className="social-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             🐦
+          </a>
+          <a
+            href="https://www.tiktok.com/"
+            className="social-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            🌐
           </a>
         </div>
       </div>
