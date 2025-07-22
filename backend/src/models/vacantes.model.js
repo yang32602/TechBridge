@@ -1,7 +1,7 @@
 import db from '../config/db.js'
 
 //obetenr vacantes
-export const obtenerVacantesPorUsuario = async (id_empresa) => {
+export const obtenerVacantesPorIDEmpesa = async (id_empresa) => {
   try {
     const sql = `
       SELECT 
@@ -95,12 +95,14 @@ export const actualizarCampoVacante = async (id_vacante, campo, valor) => {
 export const obtenerVacantesConPostulacion = async (idUsuario) => {
     const sql = `
                 SELECT 
-                v.*, 
-                CASE 
+                  v.*, 
+                  e.nombre AS nombre_empresa,
+                  CASE 
                     WHEN p.id IS NOT NULL THEN TRUE 
                     ELSE FALSE 
-                END AS postulado
+                  END AS postulado
                 FROM vacantes v
+                JOIN empresas e ON v.id_empresa = e.id
                 LEFT JOIN postulacion p ON v.id = p.id_vacante AND p.id_usuario = ?
                 `
   const [rows] = await db.query(sql,[idUsuario]);

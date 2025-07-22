@@ -9,7 +9,7 @@ export const obtenerVacantesPorUsuario = async (req, res) => {
   }
 
   try {
-    const resultado = await vacanteModel.obtenerVacantesPorUsuario(id_empresa);
+    const resultado = await vacanteModel.obtenerVacantesPorIDEmpesa(id_empresa);
     
     const nombre_empresa = resultado.length > 0 ? resultado[0].nombre_empresa : null;
 
