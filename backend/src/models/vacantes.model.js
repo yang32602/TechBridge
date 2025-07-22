@@ -1,7 +1,7 @@
 import db from '../config/db.js'
 
 //obetenr vacantes
-export const obtenerVacantesPorUsuario = async (id_usuario) => {
+export const obtenerVacantesPorUsuario = async (id_empresa) => {
   try {
     const sql = `
       SELECT 
@@ -13,9 +13,9 @@ export const obtenerVacantesPorUsuario = async (id_usuario) => {
         e.nombre AS nombre_empresa
       FROM vacantes v
       JOIN empresas e ON v.id_empresa = e.id
-      WHERE e.id_usuario = ?`;
+      WHERE e.id = ?`;
 
-    const [vacantes] = await db.query(sql, [id_usuario]);
+    const [vacantes] = await db.query(sql, [id_empresa]);
 
     if (vacantes.length === 0) {
       throw new Error('No se encontraron vacantes para este usuario');
@@ -130,14 +130,26 @@ export const eliminarVacante = async (id_vacante) => {
 }; 
 
 //mostrar vacante por id
-
-export const vacantePorID = async(id_vacante)=>{
-  const sql = `SELECT * FROM vacantes WHERE id = ?`;
+export const vacantePorID = async (id_vacante) => {
+  const sql = `
+    SELECT 
+      v.id, 
+      v.titulo, 
+      v.descripcion, 
+      v.ubicacion, 
+      v.fecha_publicacion,
+      v.id_empresa,
+      e.nombre AS nombre_empresa
+    FROM vacantes v
+    JOIN empresas e ON v.id_empresa = e.id
+    WHERE v.id = ?
+  `;
+  
   try {
-    const [response] = await db.query(sql,[id_vacante]);
+    const [response] = await db.query(sql, [id_vacante]);
     return response[0];
   } catch (error) {
-    console.log(`error al traer la informacion de vacantes ${error}`);
+    console.log(`Error al traer la información de la vacante: ${error}`);
   }
-}
+};
 
