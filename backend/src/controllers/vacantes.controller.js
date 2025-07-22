@@ -174,3 +174,37 @@ export const obtenerVacantePorEmpresa = async (req, res) => {
   }
 };
 
+export const mostrarPostuladosPorVacante = async (req, res) => {
+  try {
+    const { id_vacante } = req.body;
+
+    if (!id_vacante) {
+      return res.status(400).json({ mensaje: 'El id_vacante es requerido' });
+    }
+
+    const postulados = await vacanteModel.obtenerPostuladosPorVacante(id_vacante);
+
+    res.json(postulados);
+  } catch (error) {
+    console.error('Error al obtener los postulados:', error);
+    res.status(500).json({ mensaje: 'Error del servidor' });
+  }
+};
+
+export const getVacantesPostuladas = async (req, res) => {
+  try {
+    const { id_estudiante } = req.body;
+
+    if (!id_estudiante) {
+      return res.status(400).json({ mensaje: "Falta el id_estudiante en el body" });
+    }
+
+    const vacantes = await vacanteModel.obtenerVacantesPostuladasPorEstudiante(id_estudiante);
+
+    res.status(200).json(vacantes);
+  } catch (error) {
+    console.error("Error al obtener vacantes postuladas:", error);
+    res.status(500).json({ mensaje: "Error del servidor" });
+  }
+};
+
