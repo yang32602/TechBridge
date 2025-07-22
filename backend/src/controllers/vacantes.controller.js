@@ -2,19 +2,23 @@ import * as vacanteModel from '../models/vacantes.model.js'
 
 //obtener vacantes
 export const obtenerVacantesPorUsuario = async (req, res) => {
-  const { id_usuario } = req.body;
+  const { id_empresa } = req.body;
 
-  if (!id_usuario) {
-    return res.status(400).json({ estado: 0, mensaje: 'Falta id_usuario' });
+  if (!id_empresa) {
+    return res.status(400).json({ estado: 0, mensaje: 'Falta id_empresa' });
   }
 
   try {
-    const resultado = await vacanteModel.obtenerVacantesPorUsuario(id_usuario);
-    return res.status(200).json({ estado: 1, empresa: resultado.nombre_empresa, vacantes: resultado.vacantes });
+    const resultado = await vacanteModel.obtenerVacantesPorUsuario(id_empresa);
+    
+    const nombre_empresa = resultado.length > 0 ? resultado[0].nombre_empresa : null;
+
+    return res.status(200).json({ estado: 1, empresa: nombre_empresa, vacantes: resultado });
   } catch (error) {
     return res.status(500).json({ estado: 0, mensaje: error.message });
   }
 };
+
 
 //obtiene las vacantes y verifica que el estudiante este postulado o no
 export const obtenerVacantesConEstadoDePostulacion = async (req, res) => {
