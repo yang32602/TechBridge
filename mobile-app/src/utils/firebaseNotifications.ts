@@ -40,25 +40,47 @@ function handleNotificationNavigation(data: Record<string, any> | undefined, rou
     const { screen, ...params } = data;
     console.log(`Intentando navegar a ${screen} con params:`, params);
 
-    const validRoutes = [
-      'postulante/dashboard',
-      'postulante/notificaciones',
-      'empresa/dashboard',
-      'empresa/notificaciones',
-      // Agrega aquí cualquier otra ruta válida a la que quieras navegar desde las notificaciones
-    ];
+    const dynamicRouteTemplates: { [key: string]: string } = {
+      'postulante/detalle': 'postulante/detalle/[id]',
+      'empresa/detalle': 'empresa/detalle/[id]',
+    };
 
-    if (validRoutes.includes(screen)) {
-      // Usamos 'push' para añadir a la pila de navegación
-      router.push({
-        pathname: screen as any, // 'as any' workaround
-        params: params as Record<string, string | number | (string | number)[] | null | undefined>
-      });
-    } else {
-      console.warn(`Ruta desconocida para navegación desde notificación: ${screen}. Navegación cancelada.`);
+    let handledAsDynamic = false;
+    for (const basePrefix in dynamicRouteTemplates) {
+      if (screen.startsWith(`${basePrefix}/`) && params.id) {
+        const pathnameTemplate = dynamicRouteTemplates[basePrefix];
+        router.push({
+          pathname: pathnameTemplate as any, // CAMBIO: Usamos 'any' aquí para evitar el error de tipo.
+                                            // Esto le dice a TypeScript que confíe en que sabemos que el string es una ruta válida.
+          params: { id: params.id, ...params }
+        });
+        handledAsDynamic = true;
+        console.log(`Navegando a ruta dinámica: ${pathnameTemplate} con ID: ${params.id}`);
+        break;
+      }
     }
-  } else {
-    console.warn("Datos de notificación no tienen 'screen' válido para navegación o están vacíos.");
+    // Si no fue una ruta dinámica, intenta manejar como ruta estática
+    if (!handledAsDynamic) {
+      const validRoutes = [
+        'postulante/dashboard',
+        'postulante/vacantes-aplicadas',
+        'empresa/dashboard',
+        'empresa/postulaciones',
+      ];
+
+      if (validRoutes.includes(screen)) {
+        // Usamos 'push' para añadir a la pila de navegación
+        router.push({
+          pathname: screen as any, // 'as any' workaround
+          params: params as Record<string, string | number | (string | number)[] | null | undefined>
+        });
+        console.log(`Navegando a ruta estática: ${screen}`);
+      } else {
+        console.warn(`Ruta desconocida para navegación desde notificación: ${screen}. Navegación cancelada.`);
+      }
+    } else {
+      console.warn("Datos de notificación no tienen 'screen' válido para navegación o están vacíos.");
+    }
   }
 }
 
