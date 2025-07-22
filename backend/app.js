@@ -6,7 +6,7 @@ import usuarioRoutes from './src/routes/usuarios.routes.js';
 import estudiantesRoutes from './src/routes/estudiantes.routes.js';
 import empresaRoutes from './src/routes/empresas.routes.js';
 import paymentRoutes from './src/routes/payment.routes.js';
-import empresaEstudianteRoutes from './src/routes/empresaEstudiante.router.js';
+import empresaEstudianteRoutes from './src/routes/empresaEstudiante.routes.js';
 import puntosRoutes from './src/routes/puntos.routes.js';
 import vacantesRoutes from './src/routes/vacantes.routes.js';
 
