@@ -41,7 +41,9 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {},
+      "expoRouter": { 
+        "hideAppLoader": true 
+      },
       "eas": {
         "projectId": "316931be-2ce3-444d-b761-9166807370fc"
       }

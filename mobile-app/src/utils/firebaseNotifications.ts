@@ -41,34 +41,49 @@ function handleNotificationNavigation(data: Record<string, any> | undefined, rou
     console.log(`Intentando navegar a ${screen} con params:`, params);
 
     const dynamicRouteTemplates: { [key: string]: string } = {
-      'postulante/detalle': 'postulante/detalle/[id]',
-      'empresa/detalle': 'empresa/detalle/[id]',
+      'postulante/detalle/vacante': '/postulante/detalle/[id]',
+      'empresa/detalle/postulante': '/empresa/detalle/[id]',
     };
 
     let handledAsDynamic = false;
-    for (const basePrefix in dynamicRouteTemplates) {
-      if (screen.startsWith(`${basePrefix}/`) && params.id) {
-        const pathnameTemplate = dynamicRouteTemplates[basePrefix];
-        router.push({
-          pathname: pathnameTemplate as any, // CAMBIO: Usamos 'any' aquí para evitar el error de tipo.
-                                            // Esto le dice a TypeScript que confíe en que sabemos que el string es una ruta válida.
-          params: { id: params.id, ...params }
-        });
-        handledAsDynamic = true;
-        console.log(`Navegando a ruta dinámica: ${pathnameTemplate} con ID: ${params.id}`);
-        break;
+    for (const key in dynamicRouteTemplates) {
+      if (screen === key) { // Coincidencia exacta con el identificador de pantalla
+        const pathnameTemplate = dynamicRouteTemplates[key];
+        let idToPass;
+
+        // Determinar qué ID pasar basado en el tipo de ruta dinámica
+        if (key === 'postulante/detalle/vacante' && params.id) {
+          idToPass = params.id; // El ID de la vacante para el postulante
+        } else if (key === 'empresa/detalle/postulante' && params.postulanteId) {
+          idToPass = params.postulanteId; // El ID del postulante para la empresa
+        }
+
+        if (idToPass) {
+          router.push({
+            pathname: pathnameTemplate as any, // 'as any' porque el tipo generico '[id]' no es string literal
+            params: { id: idToPass, ...params } // Pasa el ID al parámetro '[id]' y el resto de los parámetros
+          });
+          handledAsDynamic = true;
+          console.log(`Navegando a ruta dinámica: ${pathnameTemplate} con ID: ${idToPass}`);
+          break;
+        } else {
+          console.warn(`Error: ID no proporcionado para la ruta dinámica ${screen}.`);
+        }
       }
     }
     // Si no fue una ruta dinámica, intenta manejar como ruta estática
     if (!handledAsDynamic) {
-      const validRoutes = [
-        'postulante/dashboard',
-        'postulante/vacantes-aplicadas',
-        'empresa/dashboard',
-        'empresa/postulaciones',
+      const validStaticRoutes = [
+        '/signup',
+        '/postulante/dashboard',
+        '/postulante/vacantes-aplicadas',
+        '/empresa/dashboard',
+        '/empresa/postulaciones', // La lista de postulaciones para la empresa
+        '/empresa/vacantes', // Si tuvieras una página para listar vacantes de la empresa
+        '/empresa/notificaciones/nueva-postulacion',
       ];
 
-      if (validRoutes.includes(screen)) {
+      if (validStaticRoutes.includes(screen)) {
         // Usamos 'push' para añadir a la pila de navegación
         router.push({
           pathname: screen as any, // 'as any' workaround

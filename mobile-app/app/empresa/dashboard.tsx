@@ -1,14 +1,25 @@
 // mobile-app/app/empresa/dashboard.tsx
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import Header from '../../src/components/Header'; // Ajusta la ruta
 import { Colors, FontFamilies, Spacing } from '../../src/constants/theme'; // Ajusta la ruta
 
+// Define una interfaz para los datos de la vacante (para el resumen de vacantes)
+interface VacancySummaryData {
+  id: string;
+  title: string;
+  status: 'Activo' | 'Cerrada';
+  type: string; // "Híbrido", "Presencial", "Remoto"
+  modality: string; // "T. Completo", "T. Parcial", "Por Contrato"
+  appliedCount: number;
+  totalSpots: number;
+}
+
 // Componente para las tarjetas de resumen (Vacantes activas, Nuevas postulaciones, Solicitudes enviadas)
-const StatCard: React.FC<{ count: number; label: string; color: string; onPress?: () => void }> = ({
+const StatCard: React.FC<{ count: number | string; label: string; color: string; onPress?: () => void }> = ({
   count,
   label,
   color,
@@ -29,9 +40,10 @@ const VacancyCard: React.FC<{
   modality: string;
   appliedCount: number;
   totalSpots: number;
-  onPress?: () => void;
-}> = ({ title, status, type, modality, appliedCount, totalSpots, onPress }) => (
-  <TouchableOpacity style={styles.vacancyCard} onPress={onPress}>
+  vacancyId: string; // Añadido para la navegación al detalle de la vacante de la empresa
+  onPress?: (vacancyId: string) => void; // Permite pasar el ID al onPress
+}> = ({ title, status, type, modality, appliedCount, totalSpots, vacancyId, onPress }) => (
+  <TouchableOpacity style={styles.vacancyCard} onPress={() => onPress && onPress(vacancyId)}>
     <View style={styles.vacancyHeader}>
       <Text style={styles.vacancyTitle}>{title}</Text>
       <View style={[styles.statusBadge, { backgroundColor: status === 'Activo' ? Colors.success : Colors.danger }]}>
@@ -47,9 +59,110 @@ const VacancyCard: React.FC<{
 );
 
 export default function EmpresaDashboard() {
+  // Estados para datos dinámicos
+  const [activeVacanciesCount, setActiveVacanciesCount] = useState<number | null>(null);
+  const [newApplicationsCount, setNewApplicationsCount] = useState<number | null>(null);
+  const [sentRequestsCount, setSentRequestsCount] = useState<number | null>(null);
+  const [vacanciesSummary, setVacanciesSummary] = useState<VacancySummaryData[]>([]);
+
+  // Estados de carga y error
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [errorStats, setErrorStats] = useState<string | null>(null);
+  const [loadingVacancies, setLoadingVacancies] = useState(true);
+  const [errorVacancies, setErrorVacancies] = useState<string | null>(null);
+
+  // Función para simular carga de estadísticas
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoadingStats(true);
+        setErrorStats(null);
+        await new Promise(resolve => setTimeout(resolve, 800)); // Simular retraso
+        setActiveVacanciesCount(3); // Ejemplo de datos reales
+        setNewApplicationsCount(12); // Ejemplo de datos reales
+        setSentRequestsCount(5);   // Ejemplo de datos reales
+      } catch (e: any) {
+        setErrorStats("Error al cargar estadísticas: " + e.message);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    const fetchVacanciesSummary = async () => {
+      try {
+        setLoadingVacancies(true);
+        setErrorVacancies(null);
+        await new Promise(resolve => setTimeout(resolve, 1200)); // Simular retraso
+        const dummyVacancies: VacancySummaryData[] = [
+          {
+            id: 'vac_fe_jr',
+            title: "Desarrollador Frontend Junior",
+            status: "Activo",
+            type: "Híbrido",
+            modality: "T. Completo",
+            appliedCount: 5,
+            totalSpots: 10,
+          },
+          {
+            id: 'vac_node_sr',
+            title: "Desarrollador Node.js",
+            status: "Cerrada",
+            type: "Presencial",
+            modality: "T. Parcial",
+            appliedCount: 10,
+            totalSpots: 10,
+          },
+          {
+            id: 'vac_android_jr',
+            title: "Desarrollador Android Junior",
+            status: "Activo", // Cambiado a activo para que veas la diferencia en el badge
+            type: "Híbrido",
+            modality: "T. Parcial",
+            appliedCount: 8, // Menos de 10 para probar
+            totalSpots: 10,
+          },
+          {
+            id: 'vac_bi_asst',
+            title: "Asistente de BI",
+            status: "Activo",
+            type: "Presencial",
+            modality: "T. Completo",
+            appliedCount: 5,
+            totalSpots: 10,
+          },
+        ];
+        setVacanciesSummary(dummyVacancies);
+      } catch (e: any) {
+        setErrorVacancies("Error al cargar resumen de vacantes: " + e.message);
+      } finally {
+        setLoadingVacancies(false);
+      }
+    };
+
+    fetchStats();
+    fetchVacanciesSummary();
+  }, []); // Se ejecuta solo una vez al montar el componente
+
   const handlePublishVacancy = () => {
-    // router.push('/empresa/publicar-vacante'); // Ruta para publicar vacantes
+    // Aquí podrías navegar a la pantalla de publicación de vacantes
+    // router.push('/empresa/publicar-vacante');
     console.log('Publicar Vacante');
+  };
+
+  const handleStatCardPress = (label: string) => {
+    console.log(`Presionaste la tarjeta: ${label}`);
+    if (label === "Nuevas postulaciones") {
+      router.push('/empresa/postulaciones'); // Navega a la pantalla de listado de postulaciones
+    } else if (label === "Vacantes activas") {
+      // router.push('/empresa/vacantes-activas'); // O a una página que liste solo las vacantes activas
+    }
+    // Añade más lógica de navegación para otras tarjetas si las necesitas
+  };
+
+  const handleVacancyCardPress = (vacancyId: string) => {
+    console.log(`Navegando al detalle de la vacante: ${vacancyId}`);
+    // Asumiendo que tienes una ruta para el detalle de la vacante de la empresa:
+    // router.push(`/empresa/vacantes/${vacancyId}`); // O una ruta similar
   };
 
   return (
@@ -70,45 +183,47 @@ export default function EmpresaDashboard() {
             <Ionicons name="add-circle-outline" size={20} color={Colors.neutrals0} />
             <Text style={styles.primaryButtonText}>Publicar Vacante</Text>
           </TouchableOpacity>
-          {/* Un botón de "Regresar a inicio" podría ser el botón de volver en el header o un tab */}
-          {/* <TouchableOpacity style={styles.secondaryButton}>
-            <Text style={styles.secondaryButtonText}>Regresar a inicio</Text>
-          </TouchableOpacity> */}
         </View>
 
         {/* Tarjetas de Estadísticas */}
         <View style={styles.statsContainer}>
-          <StatCard
-            count={3}
-            label="Vacantes activas"
-            color={Colors.primary}
-            onPress={() => console.log('Ir a vacantes activas')}
-          />
-          <StatCard
-            count={12}
-            label="Nuevas postulaciones"
-            color={Colors.success} // Ajustado a un color más adecuado
-            onPress={() => console.log('Ir a nuevas postulaciones')}//router.push('/empresa/notificaciones/nueva-postulacion')} // Ejemplo de navegación
-          />
-          <StatCard
-            count={5}
-            label="Solicitudes enviadas"
-            color={Colors.secondary} // Usamos secondary de tu theme
-            onPress={() => console.log('Ir a solicitudes enviadas')}
-          />
+          {loadingStats ? (
+            <ActivityIndicator size="large" color={Colors.primary} style={styles.loadingIndicator} />
+          ) : errorStats ? (
+            <Text style={styles.errorText}>{errorStats}</Text>
+          ) : (
+            <>
+              <StatCard
+                count={activeVacanciesCount !== null ? activeVacanciesCount : '-'}
+                label="Vacantes activas"
+                color={Colors.primary}
+                onPress={() => handleStatCardPress("Vacantes activas")}
+              />
+              <StatCard
+                count={newApplicationsCount !== null ? newApplicationsCount : '-'}
+                label="Nuevas postulaciones"
+                color={Colors.success}
+                onPress={() => handleStatCardPress("Nuevas postulaciones")} // <-- NAVEGACIÓN AQUÍ
+              />
+              <StatCard
+                count={sentRequestsCount !== null ? sentRequestsCount : '-'}
+                label="Solicitudes enviadas"
+                color={Colors.secondary}
+                onPress={() => handleStatCardPress("Solicitudes enviadas")}
+              />
+            </>
+          )}
         </View>
 
         {/* Gráfico de Postulaciones (Placeholder) */}
         <View style={styles.chartContainer}>
           <Text style={styles.sectionTitle}>Postulaciones recibidas</Text>
           <Text style={styles.chartPlaceholder}>[Espacio para Gráfico de Postulaciones]</Text>
-          {/* Aquí integrarías tu componente de gráfico real */}
         </View>
 
         {/* Postulantes Destacados (Placeholder) */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Postulantes destacados</Text>
-          {/* Puedes listar 1 o 2 en móvil, o enlazar a una página completa */}
           <Text style={styles.placeholderText}>[Lista de Postulantes Destacados]</Text>
         </View>
 
@@ -120,42 +235,33 @@ export default function EmpresaDashboard() {
               <Text style={styles.viewAllText}>Ver todo</Text>
             </TouchableOpacity>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.vacancyList}>
-            <VacancyCard
-              title="Desarrollador Frontend Junior"
-              status="Activo"
-              type="Híbrido"
-              modality="T. Completo"
-              appliedCount={5}
-              totalSpots={10}
-            />
-            <VacancyCard
-              title="Desarrollador Node.js"
-              status="Cerrada"
-              type="Presencial"
-              modality="T. Parcial"
-              appliedCount={10}
-              totalSpots={10}
-            />
-            <VacancyCard
-              title="Desarrollador Android Junior"
-              status="Cerrada"
-              type="Híbrido"
-              modality="T. Parcial"
-              appliedCount={10}
-              totalSpots={10}
-            />
-            <VacancyCard
-              title="Asistente de BI"
-              status="Activo"
-              type="Presencial"
-              modality="T. Completo"
-              appliedCount={5}
-              totalSpots={10}
-            />
-          </ScrollView>
+          {loadingVacancies ? (
+            <ActivityIndicator size="large" color={Colors.primary} style={styles.loadingIndicator} />
+          ) : errorVacancies ? (
+            <Text style={styles.errorText}>{errorVacancies}</Text>
+          ) : vacanciesSummary.length === 0 ? (
+            <View style={styles.emptyContentContainer}>
+              <Ionicons name="briefcase-outline" size={50} color={Colors.neutrals40} />
+              <Text style={styles.emptyContentText}>No hay vacantes para mostrar.</Text>
+            </View>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.vacancyList}>
+              {vacanciesSummary.map((vacancy) => (
+                <VacancyCard
+                  key={vacancy.id}
+                  title={vacancy.title}
+                  status={vacancy.status}
+                  type={vacancy.type}
+                  modality={vacancy.modality}
+                  appliedCount={vacancy.appliedCount}
+                  totalSpots={vacancy.totalSpots}
+                  vacancyId={vacancy.id} // Pasar el ID real de la vacante
+                  onPress={handleVacancyCardPress} // Pasar la función de manejo de clic
+                />
+              ))}
+            </ScrollView>
+          )}
         </View>
-
       </ScrollView>
     </View>
   );
@@ -168,7 +274,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: Spacing.md,
-    paddingBottom: Spacing.xl * 2, // Espacio extra para el final del scroll
+    paddingBottom: Spacing.xl * 2,
   },
   welcomeSection: {
     marginBottom: Spacing.lg,
@@ -186,7 +292,7 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-around', // O 'flex-start' con gap
+    justifyContent: 'space-around',
     marginBottom: Spacing.lg,
     gap: Spacing.md,
   },
@@ -204,20 +310,8 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.epilogueBold,
     fontSize: 16,
   },
-  secondaryButton: {
-    borderColor: Colors.primary,
-    borderWidth: 1,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: 5,
-  },
-  secondaryButtonText: {
-    color: Colors.primary,
-    fontFamily: FontFamilies.epilogueBold,
-    fontSize: 16,
-  },
   statsContainer: {
-    flexDirection: 'column', // Cambiado a columna para apilar en móvil
+    flexDirection: 'column',
     gap: Spacing.md,
     marginBottom: Spacing.lg,
   },
@@ -237,11 +331,11 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.epilogueRegular,
     fontSize: 16,
     color: Colors.neutrals0,
-    flex: 1, // Permite que el texto ocupe espacio
-    marginLeft: Spacing.md, // Espacio entre número y texto
+    flex: 1,
+    marginLeft: Spacing.md,
   },
   statArrow: {
-    alignSelf: 'flex-end', // Alinea la flecha a la derecha si hay espacio
+    alignSelf: 'flex-end',
   },
   section: {
     marginBottom: Spacing.lg,
@@ -263,8 +357,8 @@ const styles = StyleSheet.create({
     color: Colors.primary,
   },
   chartContainer: {
-    backgroundColor: Colors.neutrals20, // Un color de fondo para el placeholder
-    height: 200, // Altura fija para el gráfico
+    backgroundColor: Colors.neutrals20,
+    height: 200,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
@@ -284,7 +378,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   vacancyList: {
-    gap: Spacing.md, // Espacio entre las tarjetas de vacantes
+    gap: Spacing.md,
   },
   vacancyCard: {
     backgroundColor: Colors.neutrals0,
@@ -292,8 +386,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.neutrals20,
     borderRadius: 8,
     padding: Spacing.md,
-    width: 280, // Ancho fijo para las tarjetas en un scroll horizontal
-    shadowColor: '#000', // Sombra opcional para un efecto de tarjeta
+    width: 280,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -341,5 +435,28 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.epilogueRegular,
     fontSize: 14,
     color: Colors.neutrals80,
+  },
+  // Nuevos estilos para indicadores de carga y error
+  loadingIndicator: {
+    paddingVertical: Spacing.xl,
+    alignSelf: 'center',
+  },
+  errorText: {
+    fontFamily: FontFamilies.epilogueRegular,
+    fontSize: 14,
+    color: Colors.danger,
+    textAlign: 'center',
+    paddingVertical: Spacing.lg,
+  },
+  emptyContentContainer: {
+    alignItems: 'center',
+    paddingVertical: Spacing.xl,
+  },
+  emptyContentText: {
+    fontFamily: FontFamilies.epilogueRegular,
+    fontSize: 14,
+    color: Colors.neutrals40,
+    marginTop: Spacing.sm,
+    textAlign: 'center',
   },
 });
