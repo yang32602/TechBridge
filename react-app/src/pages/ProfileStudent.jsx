@@ -246,7 +246,7 @@ const ProfileStudent = () => {
                   <h2 className="student-profile-name">{userName}</h2>
                   <div className="student-profile-location">
                     <HiLocationMarker />
-                    <span>{userPais}</span>
+                    <span>{userPais}, {userProvincia}</span>
                   </div>
                   <div className="student-profile-status">
                     <HiFlag />
