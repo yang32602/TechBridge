@@ -49,7 +49,7 @@ github VARCHAR(200),
 lenguajes VARCHAR(2000),
 pais VARCHAR(100),
 contratado BOOLEAN DEFAULT FALSE,
-expoPushToken VARCHAR(255), 
+fcmToken VARCHAR(255), 
 CONSTRAINT fk_estudiante_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 
@@ -62,7 +62,7 @@ logo_url VARCHAR(150),
 descripcion VARCHAR(1000),
 telefono VARCHAR(30),
 id_usuario INT,
-expoPushToken VARCHAR(255),
+fcmToken VARCHAR(255),
 CONSTRAINT fk_empresa_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 
@@ -110,7 +110,7 @@ id INT AUTO_INCREMENT PRIMARY KEY,
 id_usuario INT NOT NULL,
 id_vacante INT NOT NULL,
 fecha_postulacion DATE,
-estado BOOLEAN DEFAULT FALSE,
+estado ENUM('En espera', 'Rechazado', 'Aprobado') DEFAULT 'En espera',
 CONSTRAINT fk_postulacion_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
 CONSTRAINT fk_postulacion_vacante FOREIGN KEY (id_vacante) REFERENCES vacantes(id)
 );
