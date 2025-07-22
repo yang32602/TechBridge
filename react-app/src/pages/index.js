@@ -10,3 +10,4 @@ export { default as TechnicalTests } from "./TechnicalTests";
 export { default as TechnicalTestQuiz } from "./TechnicalTestQuiz";
 export { default as TechnicalTestResult } from "./TechnicalTestResult";
 export { default as ComprarPuntos } from "./ComprarPuntos";
+export { default as Vacantes } from "./Vacantes";

@@ -19,6 +19,7 @@ import {
   TechnicalTestQuiz,
   TechnicalTestResult,
   ComprarPuntos,
+  Vacantes,
 } from "./pages";
 import { AuthProvider } from "./context/AuthContextProvider";
 import "./assets/styles.css";
@@ -61,6 +62,7 @@ const AppContent = () => {
           element={<TechnicalTestResult />}
         />
         <Route path="/comprar-puntos" element={<ComprarPuntos />} />
+        <Route path="/vacantes" element={<Vacantes />} />
       </Routes>
 
       {!hideHeaderFooter && <Footer />}
