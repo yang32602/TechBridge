@@ -6,6 +6,10 @@ const router = express.Router();
 // Obtener vacantes para un usuario específico 
 router.post('/empresas', vacanteController.obtenerVacantesPorUsuario);
 
+//obtener los estudiantes postulados en una vacante
+router.post('/estudiantes-postulados', vacanteController.mostrarPostuladosPorVacante);
+
+
 //obtener vacantes para los usuarios
 router.post('/',vacanteController.obtenerVacantesConEstadoDePostulacion)
  
