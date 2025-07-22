@@ -174,3 +174,19 @@ export const obtenerVacantePorEmpresa = async (req, res) => {
   }
 };
 
+export const mostrarPostuladosPorVacante = async (req, res) => {
+  try {
+    const { id_vacante } = req.body;
+
+    if (!id_vacante) {
+      return res.status(400).json({ mensaje: 'El id_vacante es requerido' });
+    }
+
+    const postulados = await vacanteModel.obtenerPostuladosPorVacante(id_vacante);
+
+    res.json(postulados);
+  } catch (error) {
+    console.error('Error al obtener los postulados:', error);
+    res.status(500).json({ mensaje: 'Error del servidor' });
+  }
+};
