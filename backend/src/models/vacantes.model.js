@@ -3,29 +3,28 @@ import db from '../config/db.js'
 //obetenr vacantes
 export const obtenerVacantesPorUsuario = async (id_usuario) => {
   try {
-    // Obtener id_empresa y nombre de la empresa asociado al id_usuario
-    const [empresaRows] = await db.query(
-      'SELECT id, nombre FROM empresas WHERE id_usuario = ?',
-      [id_usuario]
-    );
+    const sql = `
+      SELECT 
+        v.id AS id_vacante,
+        v.titulo,
+        v.descripcion,
+        v.ubicacion,
+        v.fecha_publicacion,
+        e.nombre AS nombre_empresa
+      FROM vacantes v
+      JOIN empresas e ON v.id_empresa = e.id
+      WHERE e.id_usuario = ?`;
 
-    if (empresaRows.length === 0) {
-      throw new Error('No se encontró empresa para ese usuario');
+    const [vacantes] = await db.query(sql, [id_usuario]);
+
+    if (vacantes.length === 0) {
+      throw new Error('No se encontraron vacantes para este usuario');
     }
 
-    const { id: id_empresa, nombre: nombre_empresa } = empresaRows[0];
-
-    // Obtener vacantes de esa empresa
-    const [vacantesRows] = await db.query(
-      `SELECT id, titulo, descripcion, ubicacion, fecha_publicacion 
-       FROM vacantes WHERE id_empresa = ?`,
-      [id_empresa]
-    );
-
-    return { nombre_empresa, vacantes: vacantesRows };
+    return vacantes;
   } catch (error) {
-    console.error('Error al obtener vacantes por usuario:', error);
-    throw error;
+    console.log(`Error al obtener las vacantes: ${error.message}`);
+    return [];
   }
 };
 

@@ -8,7 +8,7 @@ router.post('/empresas', vacanteController.obtenerVacantesPorUsuario);
 
 //obtener vacantes para los usuarios
 router.post('/',vacanteController.obtenerVacantesConEstadoDePostulacion)
-
+ 
 //Obtenr vacante por ID
 router.post('/porID', vacanteController.obtenerVacantePorID);
 
