@@ -11,3 +11,6 @@ export { default as TechnicalTestQuiz } from "./TechnicalTestQuiz";
 export { default as TechnicalTestResult } from "./TechnicalTestResult";
 export { default as ComprarPuntos } from "./ComprarPuntos";
 export { default as Vacantes } from "./Vacantes";
+export { default as Terminos } from "./Terminos";
+export { default as Privacidad } from "./Privacidad";
+export { default as Cookies } from "./Cookies";

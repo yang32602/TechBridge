@@ -20,7 +20,10 @@ import {
   TechnicalTestResult,
   ComprarPuntos,
   Vacantes,
-} from "./pages";
+  Terminos,
+  Privacidad,
+  Cookies,
+} from "./pages"; 
 import { AuthProvider } from "./context/AuthContextProvider";
 import "./assets/styles.css";
 import "./assets/dashboard.css";
@@ -63,6 +66,11 @@ const AppContent = () => {
         />
         <Route path="/comprar-puntos" element={<ComprarPuntos />} />
         <Route path="/vacantes" element={<Vacantes />} />
+
+        {/* ✅ added new legal routes */}
+        <Route path="/terminos" element={<Terminos />} />
+        <Route path="/privacidad" element={<Privacidad />} />
+        <Route path="/cookies" element={<Cookies />} />
       </Routes>
 
       {!hideHeaderFooter && <Footer />}
