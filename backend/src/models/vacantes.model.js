@@ -173,3 +173,41 @@ SELECT
   const [rows] = await db.query(sql, [idVacante]);
   return rows;
 };
+
+// export const obtenerVacantesPostuladasPorEstudiante = async (id_usuario) => {
+//   const sql = `
+//     SELECT 
+//       v.id AS id_vacante,
+//       v.titulo,
+//       v.descripcion,
+//       v.fecha_publicacion,
+//       v.ubicacion,
+//       emp.nombre AS nombre_empresa
+//     FROM postulacion p
+//     JOIN vacantes v ON p.id_vacante = v.id
+//     JOIN empresas emp ON v.id_empresa = emp.id
+//     WHERE p.id_usuario = ?
+//   `;
+//   const [rows] = await db.query(sql, [id_usuario]);
+//   return rows;
+// };
+
+
+export const obtenerVacantesPostuladasPorEstudiante = async (id_estudiante) => {
+  const sql = `
+    SELECT 
+      v.id AS id_vacante,
+      v.titulo,
+      v.descripcion,
+      v.fecha_publicacion,
+      v.ubicacion,
+      emp.nombre AS nombre_empresa
+    FROM postulacion p
+    JOIN vacantes v ON p.id_vacante = v.id
+    JOIN empresas emp ON v.id_empresa = emp.id
+    JOIN estudiantes e ON p.id_usuario = e.id_usuario
+    WHERE e.id = ?
+  `;
+  const [rows] = await db.query(sql, [id_estudiante]);
+  return rows;
+};
