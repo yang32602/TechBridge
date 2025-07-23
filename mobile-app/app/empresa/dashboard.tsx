@@ -1,8 +1,9 @@
 // mobile-app/app/empresa/dashboard.tsx
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react'; // Importa useCallback
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform, BackHandler, Alert } from 'react-native'; // Importa BackHandler y Alert
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Para manejar la sesión
 
 import Header from '../../src/components/Header'; // Ajusta la ruta
 import { Colors, FontFamilies, Spacing } from '../../src/constants/theme'; // Ajusta la ruta
@@ -71,6 +72,72 @@ export default function EmpresaDashboard() {
   const [loadingVacancies, setLoadingVacancies] = useState(true);
   const [errorVacancies, setErrorVacancies] = useState<string | null>(null);
 
+  // Función para manejar el cierre de sesión
+  const handleLogout = useCallback(async () => {
+    Alert.alert(
+      "Cerrar Sesión",
+      "¿Estás seguro de que quieres cerrar tu sesión?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        {
+          text: "Sí, cerrar sesión",
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem('userToken'); // Elimina el token de sesión
+              // Elimina cualquier otro dato de sesión si es necesario
+              // await AsyncStorage.clear(); // Opcional: para limpiar todo lo de AsyncStorage
+
+              router.replace('/'); // Redirige a la pantalla de login (index.tsx)
+            } catch (e) {
+              console.error("Error al cerrar sesión:", e);
+              Alert.alert("Error", "No se pudo cerrar la sesión.");
+            }
+          },
+          style: 'destructive'
+        }
+      ]
+    );
+  }, []);
+
+  // Hook para manejar el botón de retroceso físico del dispositivo (Android)
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert(
+        "Salir de la aplicación",
+        "¿Estás seguro de que quieres cerrar la sesión o salir de la aplicación?",
+        [
+          {
+            text: "Cancelar",
+            onPress: () => null,
+            style: "cancel"
+          },
+          {
+            text: "Cerrar Sesión",
+            onPress: handleLogout, // Llama a la función de cerrar sesión
+          },
+          {
+            text: "Salir",
+            onPress: () => BackHandler.exitApp(), // Cierra la aplicación
+            style: 'destructive'
+          }
+        ],
+        { cancelable: false }
+      );
+      return true; // Indica que hemos manejado el evento de retroceso
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove(); // Limpia el listener al desmontar
+  }, [handleLogout]);
+
+
   // Función para simular carga de estadísticas
   useEffect(() => {
     const fetchStats = async () => {
@@ -80,7 +147,7 @@ export default function EmpresaDashboard() {
         await new Promise(resolve => setTimeout(resolve, 800)); // Simular retraso
         setActiveVacanciesCount(3); // Ejemplo de datos reales
         setNewApplicationsCount(12); // Ejemplo de datos reales
-        setSentRequestsCount(5);   // Ejemplo de datos reales
+        setSentRequestsCount(5);    // Ejemplo de datos reales
       } catch (e: any) {
         setErrorStats("Error al cargar estadísticas: " + e.message);
       } finally {
@@ -115,10 +182,10 @@ export default function EmpresaDashboard() {
           {
             id: 'vac_android_jr',
             title: "Desarrollador Android Junior",
-            status: "Activo", // Cambiado a activo para que veas la diferencia en el badge
+            status: "Activo",
             type: "Híbrido",
             modality: "T. Parcial",
-            appliedCount: 8, // Menos de 10 para probar
+            appliedCount: 8,
             totalSpots: 10,
           },
           {
@@ -167,11 +234,17 @@ export default function EmpresaDashboard() {
 
   return (
     <View style={styles.container}>
-      <Header userType="empresa" showLogo={true} />
+      {/* Pasa showLogo en true y onLogoutPress */}
+      <Header
+        userType="empresa"
+        showLogo={true}
+        onNotificationsPress={() => router.push('/empresa/notificaciones')} // Ajusta esta ruta si es diferente
+        onLogoutPress={handleLogout} // PASAR LA FUNCIÓN AQUÍ para que aparezca el botón
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeTitle}>Bienvenida, María</Text>
+          <Text style={styles.welcomeTitle}>Te damos la bienvenida</Text>
           <Text style={styles.welcomeSubtitle}>
             A continuación se muestran las estadísticas generales de tu empresa.
           </Text>
@@ -203,7 +276,7 @@ export default function EmpresaDashboard() {
                 count={newApplicationsCount !== null ? newApplicationsCount : '-'}
                 label="Nuevas postulaciones"
                 color={Colors.success}
-                onPress={() => handleStatCardPress("Nuevas postulaciones")} // <-- NAVEGACIÓN AQUÍ
+                onPress={() => handleStatCardPress("Nuevas postulaciones")}
               />
               <StatCard
                 count={sentRequestsCount !== null ? sentRequestsCount : '-'}
@@ -271,7 +344,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.neutrals0,
-    paddingTop: Platform.OS === 'ios' ? Spacing.xl + 15 : Spacing.md + 20,
+    // Elimina paddingTop de aquí. El Header ya maneja su propio paddingTop
+    // paddingTop: Platform.OS === 'ios' ? Spacing.xl + 15 : Spacing.md + 20,
   },
   scrollContent: {
     padding: Spacing.md,

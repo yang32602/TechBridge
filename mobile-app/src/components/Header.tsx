@@ -12,6 +12,7 @@ interface HeaderProps {
   onMenuPress?: () => void; // Para un posible menú hamburguesa
   userType?: 'estudiante' | 'empresa'; // Para adaptar iconos/rutas
   showBackButton?: boolean; // <-- AÑADIR ESTA LÍNEA
+   onLogoutPress?: () => void; // NUEVO: Prop para la función de cerrar sesión
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -20,7 +21,8 @@ const Header: React.FC<HeaderProps> = ({
   onNotificationsPress,
   onMenuPress,
   userType,
-  showBackButton = false
+  showBackButton = false,
+  onLogoutPress
 }) => {
   const handleNotificationsPress = () => {
     if (onNotificationsPress) {
@@ -76,6 +78,11 @@ const Header: React.FC<HeaderProps> = ({
               {/* <View style={styles.notificationBadge}><Text style={styles.badgeText}>1</Text></View> */}
             </TouchableOpacity>
           )}
+          {onLogoutPress && ( // NUEVO: Muestra el botón de cerrar sesión si la prop está presente
+            <TouchableOpacity onPress={onLogoutPress} style={styles.iconButton}>
+              <Ionicons name="log-out-outline" size={24} color={Colors.danger} /> {/* Usar un color distintivo */}
+            </TouchableOpacity>
+          )}
       </View>
     </View>
   );
@@ -101,30 +108,19 @@ const styles = StyleSheet.create({
   },
   centerContainer: {
     flex: 1,
-    // --- CAMBIO CLAVE AQUÍ ---
-    // Eliminamos el marginLeft/marginRight de centerContainer para que el logo tenga más libertad.
-    // La alineación la manejaremos directamente en el estilo del logo o del título.
-    // ANTES: marginLeft: Spacing.sm,
-    // ANTES: marginRight: Spacing.sm,
   },
   rightContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    width: 40, // Mantenemos un ancho fijo para que los iconos siempre tengan su espacio
+    width: 'auto', // Mantenemos un ancho fijo para que los iconos siempre tengan su espacio
     justifyContent: 'flex-end',
-    // marginLeft: Spacing.md, // Esto se puede quitar si el gap ya es suficiente y el flex: 1 de centerContainer hace su trabajo
   },
   logo: {
     width: 120,
     height: 40,
     resizeMode: 'contain',
-    // --- CAMBIO CLAVE AQUÍ ---
-    // Añadimos un marginLeft negativo o ajustamos un paddingLeft para acercarlo.
-    // Experimenta con estos valores. Spacing.sm es un buen punto de partida.
     marginLeft: -Spacing.sm * 2, // Mueve el logo más a la izquierda, puedes ajustar el multiplicador
-    // O podrías usar paddingLeft en centerContainer en lugar de marginLeft negativo aquí,
-    // pero para un control más fino del logo, un marginLeft negativo es efectivo.
   },
   headerTitle: {
     fontFamily: FontFamilies.leagueSpartanSemiBold,

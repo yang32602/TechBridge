@@ -1,8 +1,9 @@
 // mobile-app/app/postulante/dashboard.tsx 
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, {useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, BackHandler, Alert, Button} from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Para manejar la sesión
 
 import Header from '../../src/components/Header'; // Asegúrate de la ruta correcta
 import { Colors, FontFamilies, Spacing } from '../../src/constants/theme'; // Asegúrate de la ruta correcta
@@ -71,11 +72,80 @@ export default function PostulanteDashboard() {
     console.log('Iniciar Test de Orientación');
     // router.push('/postulante/test-orientacion');
   };
+  // Función para manejar el cierre de sesión
+  const handleLogout = useCallback(async () => {
+    Alert.alert(
+      "Cerrar Sesión",
+      "¿Estás seguro de que quieres cerrar tu sesión?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        {
+          text: "Sí, cerrar sesión",
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem('userToken'); // Elimina el token de sesión
+              // Elimina cualquier otro dato de sesión si es necesario
+              // await AsyncStorage.clear(); // Opcional: para limpiar todo lo de AsyncStorage
+
+              router.replace('/'); // Redirige a la pantalla de login (index.tsx)
+            } catch (e) {
+              console.error("Error al cerrar sesión:", e);
+              Alert.alert("Error", "No se pudo cerrar la sesión.");
+            }
+          },
+          style: 'destructive'
+        }
+      ]
+    );
+  }, []); // El useCallback envuelve la función para que no se recree en cada render
+
+  // Hook para manejar el botón de retroceso físico del dispositivo (Android)
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert(
+        "Salir de la aplicación",
+        "¿Estás seguro de que quieres cerrar la sesión o salir de la aplicación?",
+        [
+          {
+            text: "Cancelar",
+            onPress: () => null,
+            style: "cancel"
+          },
+          {
+            text: "Cerrar Sesión",
+            onPress: handleLogout, // Llama a la función de cerrar sesión
+          },
+          {
+            text: "Salir",
+            onPress: () => BackHandler.exitApp(), // Cierra la aplicación
+            style: 'destructive'
+          }
+        ],
+        { cancelable: false }
+      );
+      return true; // Indica que hemos manejado el evento de retroceso
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove(); // Limpia el listener al desmontar
+  }, [handleLogout]); // Asegúrate de que handleLogout esté en las dependencias
 
   return (
     <View style={styles.container}>
-      {/* El Header para estudiantes, con el logo y el icono de notificaciones */}
-      <Header userType="estudiante" showLogo={true} />
+      {/* El Header para estudiantes, con el logo, notificaciones y el botón de cerrar sesión */}
+      <Header
+        userType="estudiante"
+        showLogo={true}
+        onNotificationsPress={() => router.push('/postulante/notificaciones')} // Asume esta ruta
+        onLogoutPress={handleLogout} // PASAR LA FUNCIÓN AQUÍ para que aparezca el botón
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.welcomeSection}>
@@ -152,13 +222,13 @@ export default function PostulanteDashboard() {
               modality="Híbrido"
               vacancyId="2" // ID de ejemplo
             />
-             <VacancySummaryCard
+              <VacancySummaryCard
               title="Project Manager"
               companyName="Consulting Group"
               modality="Presencial"
               vacancyId="3" // ID de ejemplo
             />
-             <VacancySummaryCard
+              <VacancySummaryCard
               title="Senior Desarrollador Backend"
               companyName="Software Factory"
               modality="Remoto"
