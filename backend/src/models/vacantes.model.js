@@ -1,31 +1,30 @@
 import db from '../config/db.js'
 
 //obetenr vacantes
-export const obtenerVacantesPorUsuario = async (id_usuario) => {
+export const obtenerVacantesPorIDEmpesa = async (id_empresa) => {
   try {
-    // Obtener id_empresa y nombre de la empresa asociado al id_usuario
-    const [empresaRows] = await db.query(
-      'SELECT id, nombre FROM empresas WHERE id_usuario = ?',
-      [id_usuario]
-    );
+    const sql = `
+      SELECT 
+        v.id AS id_vacante,
+        v.titulo,
+        v.descripcion,
+        v.ubicacion,
+        v.fecha_publicacion,
+        e.nombre AS nombre_empresa
+      FROM vacantes v
+      JOIN empresas e ON v.id_empresa = e.id
+      WHERE e.id = ?`;
 
-    if (empresaRows.length === 0) {
-      throw new Error('No se encontró empresa para ese usuario');
+    const [vacantes] = await db.query(sql, [id_empresa]);
+
+    if (vacantes.length === 0) {
+      throw new Error('No se encontraron vacantes para este usuario');
     }
 
-    const { id: id_empresa, nombre: nombre_empresa } = empresaRows[0];
-
-    // Obtener vacantes de esa empresa
-    const [vacantesRows] = await db.query(
-      `SELECT id, titulo, descripcion, ubicacion, fecha_publicacion 
-       FROM vacantes WHERE id_empresa = ?`,
-      [id_empresa]
-    );
-
-    return { nombre_empresa, vacantes: vacantesRows };
+    return vacantes;
   } catch (error) {
-    console.error('Error al obtener vacantes por usuario:', error);
-    throw error;
+    console.log(`Error al obtener las vacantes: ${error.message}`);
+    return [];
   }
 };
 
@@ -96,12 +95,14 @@ export const actualizarCampoVacante = async (id_vacante, campo, valor) => {
 export const obtenerVacantesConPostulacion = async (idUsuario) => {
     const sql = `
                 SELECT 
-                v.*, 
-                CASE 
+                  v.*, 
+                  e.nombre AS nombre_empresa,
+                  CASE 
                     WHEN p.id IS NOT NULL THEN TRUE 
                     ELSE FALSE 
-                END AS postulado
+                  END AS postulado
                 FROM vacantes v
+                JOIN empresas e ON v.id_empresa = e.id
                 LEFT JOIN postulacion p ON v.id = p.id_vacante AND p.id_usuario = ?
                 `
   const [rows] = await db.query(sql,[idUsuario]);
@@ -130,3 +131,84 @@ export const eliminarVacante = async (id_vacante) => {
   }
 }; 
 
+//mostrar vacante por id
+export const vacantePorID = async (id_vacante) => {
+  const sql = `
+    SELECT 
+      v.id, 
+      v.titulo, 
+      v.descripcion, 
+      v.ubicacion, 
+      v.fecha_publicacion,
+      v.id_empresa,
+      e.nombre AS nombre_empresa
+    FROM vacantes v
+    JOIN empresas e ON v.id_empresa = e.id
+    WHERE v.id = ?
+  `;
+  
+  try {
+    const [response] = await db.query(sql, [id_vacante]);
+    return response[0];
+  } catch (error) {
+    console.log(`Error al traer la información de la vacante: ${error}`);
+  }
+};
+export const obtenerPostuladosPorVacante = async (idVacante) => {
+  const sql = `
+SELECT 
+      u.id as id_usuario,
+      e.id as id_estudiante,
+      e.nombre_completo,
+      u.correo,
+      e.telefono,
+      e.cv,
+      emp.nombre AS nombre_empresa
+    FROM postulacion p
+    JOIN estudiantes e ON p.id_usuario = e.id_usuario
+    JOIN usuarios u ON e.id_usuario = u.id
+    JOIN vacantes v ON p.id_vacante = v.id
+    JOIN empresas emp ON v.id_empresa = emp.id
+    WHERE p.id_vacante = ?
+  `;
+  const [rows] = await db.query(sql, [idVacante]);
+  return rows;
+};
+
+// export const obtenerVacantesPostuladasPorEstudiante = async (id_usuario) => {
+//   const sql = `
+//     SELECT 
+//       v.id AS id_vacante,
+//       v.titulo,
+//       v.descripcion,
+//       v.fecha_publicacion,
+//       v.ubicacion,
+//       emp.nombre AS nombre_empresa
+//     FROM postulacion p
+//     JOIN vacantes v ON p.id_vacante = v.id
+//     JOIN empresas emp ON v.id_empresa = emp.id
+//     WHERE p.id_usuario = ?
+//   `;
+//   const [rows] = await db.query(sql, [id_usuario]);
+//   return rows;
+// };
+
+
+export const obtenerVacantesPostuladasPorEstudiante = async (id_estudiante) => {
+  const sql = `
+    SELECT 
+      v.id AS id_vacante,
+      v.titulo,
+      v.descripcion,
+      v.fecha_publicacion,
+      v.ubicacion,
+      emp.nombre AS nombre_empresa
+    FROM postulacion p
+    JOIN vacantes v ON p.id_vacante = v.id
+    JOIN empresas emp ON v.id_empresa = emp.id
+    JOIN estudiantes e ON p.id_usuario = e.id_usuario
+    WHERE e.id = ?
+  `;
+  const [rows] = await db.query(sql, [id_estudiante]);
+  return rows;
+};

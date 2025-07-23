@@ -79,7 +79,8 @@ const Login = () => {
           userType: activeTab,
           name: activeTab === "postulantes" ? "Estudiante" : "Empresa",
           id: userId,
-          ...response, // Include all login response data for reference
+          ...response, // Include all login r
+          // onse data for reference
         };
 
         console.log("Final user data:", userData); // Debug log

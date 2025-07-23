@@ -1,0 +1,296 @@
+/* Vacantes Aplicadas Page Styles */
+.vacantes-aplicadas-page {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.vacantes-aplicadas-container {
+  flex: 1;
+  margin-left: 272px;
+  max-width: 1200px;
+  margin-right: auto;
+  padding: 2rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.vacantes-aplicadas-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.vacantes-aplicadas-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.vacantes-aplicadas-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Vacantes Grid */
+.vacantes-aplicadas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.vacante-aplicada-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.vacante-aplicada-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.vacante-aplicada-header {
+  margin-bottom: 1rem;
+}
+
+.vacante-aplicada-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.company-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: #0a5cb8;
+  font-weight: 600;
+}
+
+.company-info .icon {
+  font-size: 1rem;
+}
+
+.company-name {
+  font-size: 0.95rem;
+}
+
+.vacante-aplicada-location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: #6b7280;
+}
+
+.vacante-aplicada-location .icon {
+  font-size: 0.9rem;
+}
+
+.vacante-aplicada-description {
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.vacante-aplicada-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.vacante-aplicada-date .icon {
+  font-size: 0.85rem;
+}
+
+.application-status {
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.applied {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+/* Loading and No Results */
+.loading-state {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+  grid-column: 1 / -1;
+}
+
+.no-results p {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.no-results-hint {
+  font-size: 1rem !important;
+  color: #9ca3af;
+}
+
+.no-results-hint a {
+  color: #0a5cb8;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.no-results-hint a:hover {
+  text-decoration: underline;
+}
+
+.error-state {
+  text-align: center;
+  padding: 3rem;
+  color: #ef4444;
+  font-size: 1.1rem;
+}
+
+/* Pagination Styles */
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem 0;
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  color: #6b7280;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-numbers {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pagination-number {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  color: #6b7280;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-number:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.pagination-number.active {
+  background: #0a5cb8;
+  color: white;
+}
+
+.pagination-number.active:hover {
+  background: #0952a3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .vacantes-aplicadas-page {
+    flex-direction: column;
+  }
+
+  .vacantes-aplicadas-container {
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  .vacantes-aplicadas-title {
+    font-size: 2rem;
+  }
+
+  .vacantes-aplicadas-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .vacante-aplicada-card {
+    padding: 1rem;
+  }
+
+  .company-info {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .vacantes-aplicadas-title {
+    font-size: 1.75rem;
+  }
+
+  .vacantes-aplicadas-subtitle {
+    font-size: 1rem;
+  }
+
+  .vacante-aplicada-title {
+    font-size: 1.1rem;
+  }
+
+  .vacante-aplicada-description {
+    font-size: 0.9rem;
+  }
+
+  .status-badge {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+}

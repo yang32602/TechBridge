@@ -37,10 +37,10 @@ const Postulantes = () => {
       console.log("Postulantes: User type:", user?.userType);
       console.log(
         "Postulantes: Is company user:",
-        user?.userType === "company",
+        user?.userType === "empresas",
       );
-      if (!user?.id) {
-        console.log("Postulantes: No user ID, returning early");
+      if (!user?.id || user?.userType !== "empresas") {
+        console.log("Postulantes: No company user ID, returning early");
         setLoading(false);
         clearTimeout(timeout);
         return;
@@ -48,7 +48,19 @@ const Postulantes = () => {
 
       setLoading(true);
       try {
-        const data = await apiService.getCompanyApplicants(user.id);
+        // First get the company data to get the company id (id_empresa)
+        const companyData = await apiService.getCompanyByUserId(user.id);
+        console.log("Postulantes: Company data:", companyData);
+
+        if (!companyData?.id) {
+          console.log("Postulantes: No company id found");
+          setLoading(false);
+          clearTimeout(timeout);
+          return;
+        }
+
+        // Use the company id (id_empresa) instead of user id (id_usuario)
+        const data = await apiService.getCompanyApplicants(companyData.id);
         console.log(
           "Postulantes: Data received:",
           data?.length ? `${data.length} applicants` : "No applicants",
