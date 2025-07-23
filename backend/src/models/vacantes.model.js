@@ -163,6 +163,7 @@ SELECT
       u.correo,
       e.telefono,
       e.cv,
+      p.estado,
       emp.nombre AS nombre_empresa
     FROM postulacion p
     JOIN estudiantes e ON p.id_usuario = e.id_usuario

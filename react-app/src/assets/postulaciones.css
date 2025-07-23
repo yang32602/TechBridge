@@ -1,0 +1,435 @@
+/* Postulaciones Page Styles */
+.postulaciones-page {
+  display: flex;
+  min-height: 100vh;
+  background: #fff;
+}
+
+.postulaciones-container {
+  flex: 1;
+  margin-left: 272px;
+  max-width: 1200px;
+  margin-right: auto;
+  padding: 2rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.postulaciones-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.postulaciones-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.postulaciones-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Vacantes Grid - Stage 1 */
+.vacantes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.vacante-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.vacante-card.clickable {
+  cursor: pointer;
+}
+
+.vacante-card.clickable:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  border-color: #0a5cb8;
+}
+
+.vacante-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.vacante-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.view-icon {
+  color: #0a5cb8;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.vacante-location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: #6b7280;
+}
+
+.vacante-location .icon {
+  font-size: 0.9rem;
+}
+
+.vacante-description {
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.vacante-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.vacante-date .icon {
+  font-size: 0.85rem;
+}
+
+.click-hint {
+  font-size: 0.875rem;
+  color: #0a5cb8;
+  font-weight: 500;
+  text-align: center;
+  padding: 0.5rem;
+  background: #f0f8ff;
+  border-radius: 6px;
+  border: 1px solid #e0f2fe;
+}
+
+/* Aplicantes Section - Stage 2 */
+.aplicantes-header {
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.back-button:hover {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.back-button .icon {
+  font-size: 1rem;
+}
+
+.aplicantes-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.aplicantes-subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Aplicantes Grid */
+.aplicantes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.aplicante-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.aplicante-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.aplicante-info {
+  flex: 1;
+}
+
+.aplicante-name-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.aplicante-name-section .icon {
+  color: #0a5cb8;
+  font-size: 1.1rem;
+}
+
+.aplicante-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.aplicante-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.contact-item .icon {
+  color: #6b7280;
+  font-size: 0.9rem;
+  width: 16px;
+}
+
+.empresa-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #0a5cb8;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: #f0f8ff;
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+
+.empresa-info .icon {
+  font-size: 0.9rem;
+}
+
+.view-profile-btn {
+  background: #0a5cb8;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-profile-btn:hover {
+  background: #0952a3;
+  transform: translateY(-1px);
+}
+
+/* Loading and No Results */
+.loading-state {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+  grid-column: 1 / -1;
+}
+
+.no-results p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.error-state {
+  text-align: center;
+  padding: 3rem;
+  color: #ef4444;
+  font-size: 1.1rem;
+}
+
+/* Pagination Styles */
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem 0;
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  color: #6b7280;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-numbers {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pagination-number {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  color: #6b7280;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-number:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.pagination-number.active {
+  background: #0a5cb8;
+  color: white;
+}
+
+.pagination-number.active:hover {
+  background: #0952a3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .postulaciones-page {
+    flex-direction: column;
+  }
+
+  .postulaciones-container {
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  .postulaciones-title {
+    font-size: 2rem;
+  }
+
+  .aplicantes-title {
+    font-size: 1.75rem;
+  }
+
+  .vacantes-grid,
+  .aplicantes-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .vacante-card,
+  .aplicante-card {
+    padding: 1rem;
+  }
+
+  .vacante-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .vacante-title {
+    margin-right: 0;
+  }
+
+  .view-icon {
+    align-self: flex-end;
+  }
+
+  .aplicante-contact {
+    gap: 0.75rem;
+  }
+
+  .contact-item {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .postulaciones-title {
+    font-size: 1.75rem;
+  }
+
+  .aplicantes-title {
+    font-size: 1.5rem;
+  }
+
+  .postulaciones-subtitle,
+  .aplicantes-subtitle {
+    font-size: 1rem;
+  }
+
+  .back-button {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9rem;
+  }
+}

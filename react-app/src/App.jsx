@@ -23,7 +23,9 @@ import {
   Terminos,
   Privacidad,
   Cookies,
-} from "./pages"; 
+  Postulaciones,
+  VacantesAplicadas,
+} from "./pages";
 import { AuthProvider } from "./context/AuthContextProvider";
 import "./assets/styles.css";
 import "./assets/dashboard.css";
@@ -66,11 +68,11 @@ const AppContent = () => {
         />
         <Route path="/comprar-puntos" element={<ComprarPuntos />} />
         <Route path="/vacantes" element={<Vacantes />} />
-
-        {/* ✅ added new legal routes */}
         <Route path="/terminos" element={<Terminos />} />
         <Route path="/privacidad" element={<Privacidad />} />
         <Route path="/cookies" element={<Cookies />} />
+        <Route path="/postulaciones" element={<Postulaciones />} />
+        <Route path="/vacantes-aplicadas" element={<VacantesAplicadas />} />
       </Routes>
 
       {!hideHeaderFooter && <Footer />}
