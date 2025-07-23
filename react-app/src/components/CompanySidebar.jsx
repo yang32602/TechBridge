@@ -57,16 +57,10 @@ const CompanySidebar = ({ activeSection = "dashboard" }) => {
       onClick: handleProfileClick,
     },
     {
-      id: "applications",
-      icon: HiUsers,
-      label: "Solicitudes",
-      onClick: () => {},
-    },
-    {
       id: "job-posts",
       icon: HiBriefcase,
-      label: "Vacantes",
-      onClick: () => {},
+      label: "Postulaciones",
+      onClick: () => navigate("/postulaciones"),
     },
     {
       id: "comprar-puntos",
