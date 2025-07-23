@@ -36,20 +36,21 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-       <View style={styles.headerContainer}>
+    <View style={styles.headerContainer}>
       {/* Contenedor Izquierdo: Botón de retroceso O Botón de Menú */}
-      <View style={styles.leftContainer}>
+      <View style={[
+        styles.leftContainer,
+        { width: showBackButton ? 40 : Spacing.xs } // Aplica el ancho aquí dinámicamente
+      ]}>
         {showBackButton ? (
           <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
             <Ionicons name="arrow-back" size={24} color={Colors.neutrals100} />
           </TouchableOpacity>
-        ) : onMenuPress ? ( // Only show menu button if no back button and onMenuPress is provided
+        ) : onMenuPress ? (
           <TouchableOpacity onPress={onMenuPress} style={styles.iconButton}>
             <Ionicons name="menu-outline" size={28} color={Colors.neutrals100} />
           </TouchableOpacity>
         ) : (
-          // Esto es para mantener el espacio si no hay botón a la izquierda y el contenido central se va a alinear
-          // Puedes ajustarlo, por ejemplo, poner una View con un width fijo.
           <View style={styles.placeholder} />
         )}
       </View>
@@ -58,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({
       <View style={styles.centerContainer}>
         {showLogo ? (
           <Image
-            style={styles.logo}
+            style={styles.logo} // El estilo `logo` ahora controlará la posición directamente
             source={{ uri: 'https://c.animaapp.com/mOfRBxl8/img/logo-3.png' }} // Tu logo
           />
         ) : (
@@ -68,13 +69,13 @@ const Header: React.FC<HeaderProps> = ({
 
       {/* Contenedor Derecho: Iconos */}
       <View style={styles.rightContainer}>
-         {onNotificationsPress !== null && ( // Permite que se oculte explícitamente
-          <TouchableOpacity onPress={handleNotificationsPress} style={styles.iconButton}>
-            <Ionicons name="notifications-outline" size={24} color={Colors.neutrals100} />
-            {/* Opcional: Contador de notificaciones */}
-            {/* <View style={styles.notificationBadge}><Text style={styles.badgeText}>1</Text></View> */}
-          </TouchableOpacity>
-        )}
+          {onNotificationsPress !== null && ( // Permite que se oculte explícitamente
+            <TouchableOpacity onPress={handleNotificationsPress} style={styles.iconButton}>
+              <Ionicons name="notifications-outline" size={24} color={Colors.neutrals100} />
+              {/* Opcional: Contador de notificaciones */}
+              {/* <View style={styles.notificationBadge}><Text style={styles.badgeText}>1</Text></View> */}
+            </TouchableOpacity>
+          )}
       </View>
     </View>
   );
@@ -85,9 +86,8 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start', // Cambio clave aquí para el posicionamiento
-    paddingHorizontal: Spacing.md,
-    paddingTop: Platform.OS === 'ios' ? Spacing.xl + 10 : Spacing.md,
+    justifyContent: 'flex-start',
+    paddingHorizontal: Spacing.md, // Ya tiene padding aquí
     paddingBottom: Spacing.md,
     backgroundColor: Colors.neutrals0,
     borderBottomWidth: 1,
@@ -97,44 +97,47 @@ const styles = StyleSheet.create({
   leftContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: 40,
     justifyContent: 'flex-start'
   },
   centerContainer: {
     flex: 1,
-    // Elimina o comenta estas líneas si estaban aquí, ya que son de texto:
-    // alignItems: 'center',
-    // justifyContent: 'center',
-    // CAMBIO: Asegúrate de que solo propiedades de ViewStyle estén aquí
-    marginLeft: Spacing.sm, // Ajusta este valor si necesitas más o menos desplazamiento
-    marginRight: Spacing.sm, // Para que el título no se pegue demasiado a la derecha
+    // --- CAMBIO CLAVE AQUÍ ---
+    // Eliminamos el marginLeft/marginRight de centerContainer para que el logo tenga más libertad.
+    // La alineación la manejaremos directamente en el estilo del logo o del título.
+    // ANTES: marginLeft: Spacing.sm,
+    // ANTES: marginRight: Spacing.sm,
   },
   rightContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    width: 40,
+    width: 40, // Mantenemos un ancho fijo para que los iconos siempre tengan su espacio
     justifyContent: 'flex-end',
-    marginLeft: Spacing.md,
+    // marginLeft: Spacing.md, // Esto se puede quitar si el gap ya es suficiente y el flex: 1 de centerContainer hace su trabajo
   },
   logo: {
     width: 120,
     height: 40,
     resizeMode: 'contain',
+    // --- CAMBIO CLAVE AQUÍ ---
+    // Añadimos un marginLeft negativo o ajustamos un paddingLeft para acercarlo.
+    // Experimenta con estos valores. Spacing.sm es un buen punto de partida.
+    marginLeft: -Spacing.sm * 2, // Mueve el logo más a la izquierda, puedes ajustar el multiplicador
+    // O podrías usar paddingLeft en centerContainer en lugar de marginLeft negativo aquí,
+    // pero para un control más fino del logo, un marginLeft negativo es efectivo.
   },
   headerTitle: {
     fontFamily: FontFamilies.leagueSpartanSemiBold,
     fontSize: 20,
     color: Colors.neutrals100,
     flexShrink: 1,
-    // AHORA ESTA PROPIEDAD DE TEXTO DEBE ESTAR SOLAMENTE AQUÍ:
-    textAlign: 'left' // <--- DEBE ESTAR EN headerTitle, NO en centerContainer
+    textAlign: 'left'
   },
   iconButton: {
-    padding: Spacing.xs,
+    padding: Spacing.xs, // Este padding es el que da espacio alrededor de la campanita
   },
   placeholder: {
-    width: 40,
+    width: Spacing.md, // Ajusta este ancho para controlar el espacio cuando no hay botón izquierdo
   },
 });
 
