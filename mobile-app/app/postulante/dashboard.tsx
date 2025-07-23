@@ -1,6 +1,6 @@
 // mobile-app/app/postulante/dashboard.tsx 
 import React, {useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, BackHandler, Alert, Button} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, BackHandler, Alert, Button, Platform} from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Para manejar la sesión
@@ -270,6 +270,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.neutrals0,
+    paddingTop: Platform.OS === 'ios' ? Spacing.xl + 15 : Spacing.md + 25,
   },
   scrollContent: {
     padding: Spacing.md,

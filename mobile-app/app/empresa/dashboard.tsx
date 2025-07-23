@@ -344,8 +344,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.neutrals0,
-    // Elimina paddingTop de aquí. El Header ya maneja su propio paddingTop
-    // paddingTop: Platform.OS === 'ios' ? Spacing.xl + 15 : Spacing.md + 20,
+    paddingTop: Platform.OS === 'ios' ? Spacing.xl + 15 : Spacing.md + 25,
   },
   scrollContent: {
     padding: Spacing.md,
