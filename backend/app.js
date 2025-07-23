@@ -15,9 +15,10 @@ import usuarioRoutes from './src/routes/usuarios.routes.js';
 import estudiantesRoutes from './src/routes/estudiantes.routes.js';
 import empresaRoutes from './src/routes/empresas.routes.js';
 import paymentRoutes from './src/routes/payment.routes.js';
-import empresaEstudianteRoutes from './src/routes/empresaEstudiante.router.js';
+import empresaEstudianteRoutes from './src/routes/empresaEstudiante.routes.js';
 import puntosRoutes from './src/routes/puntos.routes.js';
 import vacantesRoutes from './src/routes/vacantes.routes.js';
+import techpointsRoutes from './src/routes/techPoints.routes.js';
 import usuariosMobile from './src/routes/usuariosMobile.routes.js';
 import admin from 'firebase-admin'; // Importa el SDK de Admin
 
@@ -76,6 +77,7 @@ app.use('/api/usuariosMobile', usuariosMobile);
 app.use('/api/empresa-estudiante', empresaEstudianteRoutes);
 app.use('/api/puntos', puntosRoutes);
 app.use('/api/vacantes', vacantesRoutes);
+app.use('/api/techpoint', techpointsRoutes);
 
 // Servidor
 const PORT = process.env.PORT || 3000;

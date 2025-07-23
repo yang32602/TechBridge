@@ -188,7 +188,7 @@ const ProfileStudent = () => {
   // Use studentDetails if available (read-only mode or own profile), fallback to current user
   const userName = studentDetails?.nombre_completo || user?.name || "Jake Gyll";
   const userEmail = isReadOnly
-    ? studentDetails?.email || "No especificado"
+    ? studentDetails?.correo || "No especificado"
     : user?.email || "usuario@email.com";
   const userCedula = studentDetails?.cedula || "No especificado";
   const userFechaNacimiento =
@@ -246,7 +246,7 @@ const ProfileStudent = () => {
                   <h2 className="student-profile-name">{userName}</h2>
                   <div className="student-profile-location">
                     <HiLocationMarker />
-                    <span>{userPais}</span>
+                    <span>{userPais}, {userProvincia}</span>
                   </div>
                   <div className="student-profile-status">
                     <HiFlag />
