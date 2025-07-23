@@ -576,6 +576,55 @@ class ApiService {
       throw error;
     }
   }
+
+  // New methods for company postulaciones and student applied vacantes
+  async getStudentsAppliedToVacante(idVacante) {
+    try {
+      console.log("getStudentsAppliedToVacante called with idVacante:", idVacante);
+      const response = await this.request("/vacantes/estudiantes-postulados", {
+        method: "POST",
+        body: JSON.stringify({ id_vacante: idVacante }),
+      });
+
+      console.log("getStudentsAppliedToVacante response:", response);
+      // Handle different possible response formats
+      if (Array.isArray(response.data)) {
+        return response.data;
+      } else if (Array.isArray(response.estudiantes)) {
+        return response.estudiantes;
+      } else if (Array.isArray(response)) {
+        return response;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error fetching students applied to vacante:", error);
+      return [];
+    }
+  }
+
+  async getStudentAppliedVacantes(idEstudiante) {
+    try {
+      console.log("getStudentAppliedVacantes called with idEstudiante:", idEstudiante);
+      const response = await this.request("/vacantes/vacantes-postuladas", {
+        method: "POST",
+        body: JSON.stringify({ id_estudiante: idEstudiante }),
+      });
+
+      console.log("getStudentAppliedVacantes response:", response);
+      // Handle different possible response formats
+      if (Array.isArray(response.data)) {
+        return response.data;
+      } else if (Array.isArray(response.vacantes)) {
+        return response.vacantes;
+      } else if (Array.isArray(response)) {
+        return response;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error fetching student applied vacantes:", error);
+      return [];
+    }
+  }
 }
 
 export default new ApiService();

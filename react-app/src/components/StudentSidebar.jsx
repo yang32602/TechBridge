@@ -66,13 +66,13 @@ const StudentSidebar = ({ activeSection = "" }) => {
       id: "explore-jobs",
       icon: HiSearch,
       label: "Explorar Vacantes",
-      onClick: () => {},
+      onClick: () => navigate("/vacantes"),
     },
     {
       id: "recommended-jobs",
       icon: HiOfficeBuilding,
-      label: "Vacantes Recomendadas",
-      onClick: () => {},
+      label: "Vacantes Aplicadas",
+      onClick: () => navigate("/vacantes-aplicadas"),
     },
     {
       id: "profile",
