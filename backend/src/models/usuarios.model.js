@@ -3,7 +3,7 @@ import db from '../config/db.js';
 export const getEstudiantes = async (id_empresa) => {
     const sql = `SELECT 
                     u.id AS id_usuario,
-                    u.email,
+                    u.correo as email,
                     u.foto_perfil,
                     u.biografia,
                     u.validado,
