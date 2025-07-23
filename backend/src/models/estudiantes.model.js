@@ -1,7 +1,17 @@
 import db from "../config/db.js";
 
 export const getEstudiantes = async (id_usuario) => {
-  const sql = "SELECT * FROM estudiantes WHERE id_usuario = ?";
+  const sql = `
+    SELECT 
+      e.*, 
+      u.correo 
+    FROM 
+      estudiantes e
+    JOIN 
+      usuarios u ON e.id_usuario = u.id
+    WHERE 
+      e.id_usuario = ?
+  `;
   try {
     const [rows] = await db.query(sql, [id_usuario]);
     return rows;
@@ -10,6 +20,7 @@ export const getEstudiantes = async (id_usuario) => {
     throw error;
   }
 };
+
 
 export const obtenerid_estudiante= async (id_usuario) => {
     const sql = 'SELECT id FROM estudiantes WHERE id_usuario = ?';

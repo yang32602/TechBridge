@@ -9,6 +9,7 @@ import paymentRoutes from './src/routes/payment.routes.js';
 import empresaEstudianteRoutes from './src/routes/empresaEstudiante.routes.js';
 import puntosRoutes from './src/routes/puntos.routes.js';
 import vacantesRoutes from './src/routes/vacantes.routes.js';
+import techpointsRoutes from './src/routes/techPoints.routes.js';
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/empresa-estudiante', empresaEstudianteRoutes);
 app.use('/api/puntos', puntosRoutes);
 app.use('/api/vacantes', vacantesRoutes);
+app.use('/api/techpoint', techpointsRoutes);
 
 
 // Servidor
