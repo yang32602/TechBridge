@@ -1,13 +1,14 @@
-// mobile-app/app/empresa/_layout.tsx (y similar para postulante/_layout.tsx)
+// mobile-app/app/postulante/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function PostulanteLayout() {
   return (
-    <Stack>
-      {/* Aquí podrías definir pantallas específicas para el grupo de empresa */}
-      {/* <Stack.Screen name="dashboard" options={{ headerShown: false }} /> */}
-      {/* <Stack.Screen name="notificaciones" options={{ title: 'Notificaciones Empresa' }} /> */}
-      {/* Si ya los declaras en el _layout raíz, no hace falta aquí, a menos que quieras una sub-navegación específica */}
+    // Igual que con 'empresa', este asegura que no haya un header por defecto
+    // para las pantallas de postulante.
+    <Stack screenOptions={{ headerShown: false }}>
+      {/* Opcional: Aquí podrías definir pantallas específicas para el grupo de postulante
+          o cualquier opción particular para sub-rutas anidadas dentro de postulante.
+      */}
     </Stack>
   );
 }

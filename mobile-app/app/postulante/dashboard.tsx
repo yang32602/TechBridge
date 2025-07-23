@@ -1,4 +1,4 @@
-// mobile-app/app/postulante/dashboard.tsx (ACTUALIZADO)
+// mobile-app/app/postulante/dashboard.tsx 
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';

@@ -1,7 +1,7 @@
 // mobile-app/app/empresa/detalle/[id].tsx (NUEVO ARCHIVO)
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, Platform } from 'react-native';
 import { useLocalSearchParams } from 'expo-router'; // Importar useLocalSearchParams
 import { Ionicons } from '@expo/vector-icons';
 
@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.neutrals0,
+    paddingTop: Platform.OS === 'ios' ? Spacing.xl + 15 : Spacing.md + 20,
   },
   loadingContainer: {
     justifyContent: 'center',

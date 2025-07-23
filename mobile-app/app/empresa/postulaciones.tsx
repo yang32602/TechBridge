@@ -1,7 +1,7 @@
-// mobile-app/app/empresa/postulaciones.tsx (NUEVO ARCHIVO)
+// mobile-app/app/empresa/postulaciones.tsx 
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Image, Platform} from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.neutrals0,
+    paddingTop: Platform.OS === 'ios' ? Spacing.xl + 15 : Spacing.md + 20,
   },
   scrollContent: {
     padding: Spacing.md,
