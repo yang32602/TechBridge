@@ -157,6 +157,7 @@ export const vacantePorID = async (id_vacante) => {
 export const obtenerPostuladosPorVacante = async (idVacante) => {
   const sql = `
 SELECT 
+      u.id as id_usuario,
       e.id as id_estudiante,
       e.nombre_completo,
       u.correo,
