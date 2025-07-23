@@ -14,3 +14,5 @@ export { default as Vacantes } from "./Vacantes";
 export { default as Terminos } from "./Terminos";
 export { default as Privacidad } from "./Privacidad";
 export { default as Cookies } from "./Cookies";
+export { default as Postulaciones } from "./Postulaciones";
+export { default as VacantesAplicadas } from "./VacantesAplicadas";
