@@ -20,6 +20,9 @@ import {
   TechnicalTestResult,
   ComprarPuntos,
   Vacantes,
+  Terminos,
+  Privacidad,
+  Cookies,
   Postulaciones,
   VacantesAplicadas,
 } from "./pages";
@@ -65,6 +68,9 @@ const AppContent = () => {
         />
         <Route path="/comprar-puntos" element={<ComprarPuntos />} />
         <Route path="/vacantes" element={<Vacantes />} />
+        <Route path="/terminos" element={<Terminos />} />
+        <Route path="/privacidad" element={<Privacidad />} />
+        <Route path="/cookies" element={<Cookies />} />
         <Route path="/postulaciones" element={<Postulaciones />} />
         <Route path="/vacantes-aplicadas" element={<VacantesAplicadas />} />
       </Routes>
