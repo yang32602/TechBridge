@@ -1,16 +1,21 @@
 import db from '../config/db.js';
 
-export const asingarPuntos = async (id_usuario, id_techpoints) => {
+export const asingarPuntos = async (id_empresa, id_techpoints) => {
   const connection = await db.getConnection();
   try {
     await connection.beginTransaction();
+
+    const [id_usuario] = await db.query(
+      "SELECT id_usuario FROM empresas WHERE id = ?",
+      [id_empresa]
+    );
 
     // 1. Insertar el registro en el historial de asignaciones
     const insertPagoSQL = `
       INSERT INTO usuario_techpoint_pago (id_usuario, id_techpoints, fecha_asignacion, tipo_pago)
       VALUES (?, ?, CURDATE(), 'paypal')
     `;
-    await connection.query(insertPagoSQL, [id_usuario, id_techpoints]);
+    await connection.query(insertPagoSQL, [id_usuario[0].id_usuario, id_techpoints]);
 
     // 2. Obtener la cantidad de puntos que corresponden a ese techpoint
     const puntosSQL = `SELECT puntos FROM techpoints WHERE id = ?`;
@@ -20,20 +25,20 @@ export const asingarPuntos = async (id_usuario, id_techpoints) => {
 
     // 3. Actualizar o insertar en wallet el saldo actual
     const walletSQL = `SELECT puntos_actuales FROM wallet WHERE id_usuario = ?`;
-    const [walletRows] = await connection.query(walletSQL, [id_usuario]);
+    const [walletRows] = await connection.query(walletSQL, [id_usuario[0].id_usuario]);
 
     if (walletRows.length > 0) {
       // Ya tiene wallet, actualiza puntos
       const updateWalletSQL = `
         UPDATE wallet SET puntos_actuales = puntos_actuales + ? WHERE id_usuario = ?
       `;
-      await connection.query(updateWalletSQL, [puntosASumar, id_usuario]);
+      await connection.query(updateWalletSQL, [puntosASumar, id_usuario[0].id_usuario]);
     } else {
       // No tiene wallet, insertar nuevo
       const insertWalletSQL = `
         INSERT INTO wallet (id_usuario, puntos_actuales) VALUES (?, ?)
       `;
-      await connection.query(insertWalletSQL, [id_usuario, puntosASumar]);
+      await connection.query(insertWalletSQL, [id_usuario[0].id_usuario, puntosASumar]);
     }
 
     await connection.commit();
@@ -86,17 +91,32 @@ export const registrarGasto = async (id_usuario, puntos_utilizados, descripcion)
   }
 };
 
-export const puntosRestantes = async (id_usuario) => {
-  const sql = `
+export const puntosRestantes = async (id_empresa) => {
+  const queryUsuario = `
+    SELECT id_usuario FROM empresas WHERE id = ?
+  `;
+
+  const queryPuntos = `
     SELECT puntos_actuales FROM wallet WHERE id_usuario = ?
   `;
 
   try {
-    const [rows] = await db.query(sql, [id_usuario]);
-    if (rows.length === 0) return 0;
-    return rows[0].puntos_actuales;
+    const [empresaRows] = await db.query(queryUsuario, [id_empresa]);
+
+    if (empresaRows.length === 0) {
+      throw new Error("Empresa no encontrada");
+    }
+
+    const id_usuario = empresaRows[0].id_usuario;
+
+    const [walletRows] = await db.query(queryPuntos, [id_usuario]);
+
+    if (walletRows.length === 0) return 0;
+
+    return walletRows[0].puntos_actuales;
   } catch (error) {
     console.error('Error al obtener puntos restantes:', error);
     throw error;
   }
 };
+

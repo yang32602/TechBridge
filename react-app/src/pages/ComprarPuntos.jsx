@@ -1,88 +1,183 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { CompanySidebar } from "../components";
-import { HiSparkles, HiStar, HiLightningBolt } from "react-icons/hi";
+import { HiSparkles, HiStar, HiLightningBolt, HiCheckCircle, HiXCircle } from "react-icons/hi";
+import api from "../services/api";
 import "../assets/comprar-puntos.css";
 
 const ComprarPuntos = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const [userBalance] = useState(500); // Current balance - could come from API
+  const [userBalance, setUserBalance] = useState(0);
+  const [packages, setPackages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationType, setNotificationType] = useState('success'); // 'success' or 'error'
+  const [companyData, setCompanyData] = useState(null);
 
-  const packages = [
-    {
-      id: 1,
-      price: "$1.99",
-      coins: 100,
-      bonus: null,
-      popular: false,
-    },
-    {
-      id: 2,
-      price: "$4.99",
-      coins: 300,
-      bonus: "+50 Bonus",
-      popular: false,
-    },
-    {
-      id: 3,
-      price: "$9.99",
-      coins: 700,
-      bonus: "+150 Bonus",
-      popular: false,
-    },
-    {
-      id: 4,
-      price: "$19.99",
-      coins: 1500,
-      bonus: "+400 Bonus",
-      popular: true,
-      recommended: "Más Popular",
-    },
-    {
-      id: 5,
-      price: "$49.99",
-      coins: 4000,
-      bonus: "+1200 Bonus",
-      popular: false,
-    },
-    {
-      id: 6,
-      price: "$99.99",
-      coins: 8500,
-      bonus: "+2800 Bonus",
-      popular: false,
-      bestValue: "Mejor Valor",
-    },
-  ];
+  // 加载数据
+  useEffect(() => {
+    const loadData = async () => {
+      // 等待认证加载完成
+      if (authLoading) {
+        return;
+      }
+
+      if (!user || (user.tipoUsuario !== 'empresa' && user.userType !== 'empresas')) {
+        navigate('/login');
+        return;
+      }
+
+      try {
+        // 获取公司数据
+        const company = await api.getCompanyByUserId(user.id);
+        if (company) {
+          setCompanyData(company);
+          // 获取可购买的 techpoints
+          const techPointsData = await api.getTechPoints();
+          setPackages(techPointsData);
+
+          // 获取当前公司的 techpoints 数量
+          const balance = await api.getCompanyTechPoints(company.id);
+          setUserBalance(balance);
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [user, navigate, authLoading]);
+
+  // 检测支付状态
+  useEffect(() => {
+    const checkPaymentStatus = () => {
+      const urlParams = new URLSearchParams(location.search);
+      const paymentId = urlParams.get('paymentId');
+      const payerId = urlParams.get('PayerID');
+      const token = urlParams.get('token');
+      const paymentStatus = urlParams.get('payment');
+
+      // 如果有这些参数，说明是从 PayPal 返回的
+      if (paymentId || payerId || token || paymentStatus) {
+        // 检查是否有成功的支付参数
+        if (paymentId && payerId && token && payerId === 'success') {
+          // 支付成功
+          setNotificationType('success');
+          setShowNotification(true);
+          // 重新加载余额
+          if (companyData) {
+            api.getCompanyTechPoints(companyData.id)
+              .then(balance => setUserBalance(balance))
+              .catch(console.error);
+          }
+        } else if (paymentStatus === 'cancelled' || paymentStatus === 'failed') {
+          // 支付取消或失败
+          setNotificationType('error');
+          setShowNotification(true);
+        }
+
+        // 清理 URL 参数
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+
+        // 3秒后自动关闭通知
+        setTimeout(() => {
+          setShowNotification(false);
+        }, 3000);
+      }
+    };
+
+    checkPaymentStatus();
+  }, [location.search, companyData]);
 
   const handlePackageSelect = (pkg) => {
     setSelectedPackage(pkg);
   };
 
-  const handlePurchase = () => {
-    if (selectedPackage) {
-      // Here you would integrate with payment gateway
-      alert(
-        `Comprando ${selectedPackage.coins} puntos por ${selectedPackage.price}`,
-      );
-    } else {
+  const handlePurchase = async () => {
+    if (!selectedPackage || !companyData) {
       alert("Por favor selecciona un paquete primero");
+      return;
+    }
+
+    try {
+      const response = await api.createPaymentOrder(
+        companyData.id,
+        selectedPackage.id
+      );
+
+      if (response && response.links) {
+        const approveLink = response.links.find(link => link.rel === 'approve');
+        if (approveLink) {
+          window.location.href = approveLink.href;
+        } else {
+          alert('Error: No se pudo obtener el enlace de pago');
+        }
+      } else {
+        alert('Error: Respuesta de pago inválida');
+      }
+    } catch (error) {
+      console.error('Error creating payment order:', error);
+      alert('Error al crear la orden de pago. Inténtalo de nuevo.');
     }
   };
+
+  const closeNotification = () => {
+    setShowNotification(false);
+  };
+
+  if (authLoading || loading) {
+    return (
+      <div className="comprar-puntos-container">
+        <CompanySidebar activeSection="comprar-puntos" />
+        <div className="comprar-puntos-main">
+          <div className="loading-container">
+            <HiSparkles className="loading-icon" />
+            <p>{authLoading ? 'Verificando autenticación...' : 'Cargando paquetes...'}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="comprar-puntos-container">
       <CompanySidebar activeSection="comprar-puntos" />
+
+      {/* Notification */}
+      {showNotification && (
+        <div className={`notification ${notificationType}`}>
+          <div className="notification-content">
+            {notificationType === 'success' ? (
+              <>
+                <HiCheckCircle className="notification-icon" />
+                <span>✅ ¡Pago realizado con éxito!</span>
+              </>
+            ) : (
+              <>
+                <HiXCircle className="notification-icon" />
+                <span>❌ El pago fue cancelado.</span>
+              </>
+            )}
+            <button className="notification-close" onClick={closeNotification}>
+              ×
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="comprar-puntos-main">
         {/* Header */}
         <div className="comprar-puntos-header">
           <div className="balance-display">
             <HiSparkles className="balance-icon" />
-            <span>Balance Actual: {userBalance.toLocaleString()} Puntos</span>
+            <span>Balance Actual: {userBalance.toLocaleString()} TechPoints</span>
           </div>
         </div>
 
@@ -99,49 +194,41 @@ const ComprarPuntos = () => {
 
         {/* Packages Grid */}
         <div className="packages-grid">
-          {packages.map((pkg) => (
-            <div
-              key={pkg.id}
-              className={`package-card ${pkg.popular ? "popular" : ""} ${selectedPackage?.id === pkg.id ? "selected" : ""}`}
-              onClick={() => handlePackageSelect(pkg)}
-            >
-              {/* Special Labels */}
-              {pkg.recommended && (
-                <div className="package-label recommended">
-                  <HiStar />
-                  {pkg.recommended}
+          {packages.length > 0 ? (
+            packages.map((pkg) => (
+              <div
+                key={pkg.id}
+                className={`package-card ${selectedPackage?.id === pkg.id ? "selected" : ""}`}
+                onClick={() => handlePackageSelect(pkg)}
+              >
+                {/* Coin Icon */}
+                <div className="coin-icon">
+                  <div className="coin-image">
+                    <HiSparkles />
+                  </div>
                 </div>
-              )}
-              {pkg.bestValue && (
-                <div className="package-label best-value">
-                  <HiSparkles />
-                  {pkg.bestValue}
-                </div>
-              )}
 
-              {/* Coin Icon */}
-              <div className="coin-icon">
-                <div className="coin-image">
-                  <HiSparkles />
+                {/* Package Content */}
+                <div className="package-content">
+                  <div className="price">${pkg.precio}</div>
+                  <div className="coins-amount">
+                    <span className="coins-number">
+                      {pkg.puntos?.toLocaleString() || 0}
+                    </span>
+                    <span className="coins-text">TechPoints</span>
+                  </div>
+                  {pkg.descripcion && <div className="bonus-text">{pkg.descripcion}</div>}
                 </div>
+
+                {/* Glow Effect */}
+                <div className="package-glow"></div>
               </div>
-
-              {/* Package Content */}
-              <div className="package-content">
-                <div className="price">{pkg.price}</div>
-                <div className="coins-amount">
-                  <span className="coins-number">
-                    {pkg.coins.toLocaleString()}
-                  </span>
-                  <span className="coins-text">Puntos</span>
-                </div>
-                {pkg.bonus && <div className="bonus-text">{pkg.bonus}</div>}
-              </div>
-
-              {/* Glow Effect */}
-              <div className="package-glow"></div>
+            ))
+          ) : (
+            <div className="no-packages">
+              <p>No hay paquetes disponibles en este momento.</p>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Purchase Button */}
@@ -152,7 +239,7 @@ const ComprarPuntos = () => {
             disabled={!selectedPackage}
           >
             {selectedPackage
-              ? `Comprar por ${selectedPackage.price}`
+              ? `Comprar por $${selectedPackage.precio}`
               : "Selecciona un Paquete"}
           </button>
 
@@ -161,7 +248,7 @@ const ComprarPuntos = () => {
             <div className="payment-icons">
               <div className="payment-icon">💳</div>
               <div className="payment-icon">🏦</div>
-              <div className="payment-icon">📱</div>
+              <div className="payment-icon">��</div>
             </div>
           </div>
         </div>
