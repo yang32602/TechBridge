@@ -7,6 +7,12 @@ export const obtenerTodosLosTechpoints = async () => {
 };
 
 export const obtenerPrecioPuntos = async(id_techPoint)=>{
-  const sql = `SELECT precio FROM techpoints where id = ?)`
+  const sql = `SELECT precio FROM techpoints where id = ?`
 
+  try {
+    const [response] = await db.query(sql, [id_techPoint]);
+    return response[0].precio;
+  } catch (error) {
+    console.log(`error al traer los puntos ${error}`)
+  }
 }
