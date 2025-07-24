@@ -625,6 +625,59 @@ class ApiService {
       return [];
     }
   }
+
+  // TechPoints API methods
+  async getTechPoints() {
+    try {
+      console.log("getTechPoints called");
+      const response = await this.request("/techpoint", {
+        method: "GET",
+      });
+
+      console.log("getTechPoints response:", response);
+      return Array.isArray(response) ? response : [];
+    } catch (error) {
+      console.error("Error fetching techpoints:", error);
+      return [];
+    }
+  }
+
+  // Puntos API methods
+  async getCompanyTechPoints(idEmpresa) {
+    try {
+      console.log("getCompanyTechPoints called with idEmpresa:", idEmpresa);
+      const response = await this.request("/puntos/puntosCantidad", {
+        method: "POST",
+        body: JSON.stringify({ id_empresa: idEmpresa }),
+      });
+
+      console.log("getCompanyTechPoints response:", response);
+      return response.cantidad || 0;
+    } catch (error) {
+      console.error("Error fetching company techpoints:", error);
+      return 0;
+    }
+  }
+
+  // Payment API methods
+  async createPaymentOrder(idEmpresa, idTechpoints) {
+    try {
+      console.log("createPaymentOrder called with:", { idEmpresa, idTechpoints });
+      const response = await this.request("/payment/create-order", {
+        method: "POST",
+        body: JSON.stringify({
+          id_empresa: idEmpresa,
+          id_techpoints: idTechpoints,
+        }),
+      });
+
+      console.log("createPaymentOrder response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error creating payment order:", error);
+      throw error;
+    }
+  }
 }
 
 export default new ApiService();

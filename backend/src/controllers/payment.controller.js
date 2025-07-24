@@ -1,4 +1,3 @@
-
 import dotenv from 'dotenv';
 import * as puntosModel from '../models/puntos.model.js';
 import * as techPointsModel from '../models/techPoints.model.js';
@@ -89,7 +88,11 @@ export const captureOrder = async (req, res) => {
       return res.status(400).json({ error: "custom_id malformado o no encontrado" });
     }
 
-    await puntosModel.asingarPuntos(id_empresa, id_techpoints);
+      await puntosModel.asingarPuntos(id_empresa, id_techpoints);
+        return res.redirect(`http://localhost:5173/comprar-puntos?paymentId=${token}&PayerID=success&token=${token}`);
+    } else {
+      return res.redirect(`http://localhost:5173/comprar-puntos?payment=failed`);
+    }
 
     return res.redirect("http://localhost:5173/comprar-puntos");
   } catch (error) {
@@ -101,7 +104,7 @@ export const captureOrder = async (req, res) => {
 
 
 export const cancelOrder = async (req, res) =>{
-        return res.redirect(`http://localhost:5173/comprar-puntos`);
+        return res.redirect(`http://localhost:5173/comprar-puntos?payment=cancelled`);
 }
 
 
