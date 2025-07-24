@@ -34,7 +34,7 @@ import "./assets/dashboard-styles.css";
 // Componente wrapper para usar hooks dentro del router
 const AppContent = () => {
   const location = useLocation();
-  const hideHeaderFooter = /^\/(login|register)(\/.*)?$/.test(
+  const hideHeaderFooter = /^\/(login|register|dashboard|comprar-puntos|technical-tests|postulaciones|vacantes-aplicadas|profile-company|profile-student)(\/.*)?$/.test(
     location.pathname,
   );
 

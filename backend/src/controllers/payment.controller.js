@@ -1,4 +1,3 @@
-
 import dotenv from 'dotenv';
 import * as puntosModel from '../models/puntos.model.js';
 import * as techPointsModel from '../models/techPoints.model.js';
@@ -83,9 +82,9 @@ export const captureOrder = async (req, res) => {
       }
 
       await puntosModel.asingarPuntos(id_empresa, id_techpoints);
-        return res.redirect(`http://localhost:5173/comprar-puntos`);
+        return res.redirect(`http://localhost:5173/comprar-puntos?paymentId=${token}&PayerID=success&token=${token}`);
     } else {
-      return res.status(400).json({ estado: 0, mensaje: 'Pago NO completado', data });
+      return res.redirect(`http://localhost:5173/comprar-puntos?payment=failed`);
     }
 
   } catch (error) {
@@ -96,7 +95,7 @@ export const captureOrder = async (req, res) => {
 
 
 export const cancelOrder = async (req, res) =>{
-        return res.redirect(`http://localhost:5173/comprar-puntos`);
+        return res.redirect(`http://localhost:5173/comprar-puntos?payment=cancelled`);
 }
 
 
