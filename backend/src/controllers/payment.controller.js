@@ -73,7 +73,7 @@ export const captureOrder = async (req, res) => {
     const data = await response.json();
 
     if (data.status !== "COMPLETED") {
-      return res.status(400).json({ estado: 0, mensaje: "Pago NO completado", data });
+      return res.redirect(`http://localhost:5173/comprar-puntos?payment=failed`);
     }
 
     // Buscar el custom_id desde distintas rutas posibles
@@ -88,18 +88,16 @@ export const captureOrder = async (req, res) => {
       return res.status(400).json({ error: "custom_id malformado o no encontrado" });
     }
 
-      await puntosModel.asingarPuntos(id_empresa, id_techpoints);
-        return res.redirect(`http://localhost:5173/comprar-puntos?paymentId=${token}&PayerID=success&token=${token}`);
-    } else {
-      return res.redirect(`http://localhost:5173/comprar-puntos?payment=failed`);
-    }
+    await puntosModel.asingarPuntos(id_empresa, id_techpoints);
 
-    return res.redirect("http://localhost:5173/comprar-puntos");
+    return res.redirect(`http://localhost:5173/comprar-puntos?paymentId=${token}&PayerID=success&token=${token}`);
+
   } catch (error) {
     console.error("Error al capturar la orden:", error);
     return res.status(500).json({ error: "Error interno al capturar la orden" });
   }
 };
+
 
 
 
