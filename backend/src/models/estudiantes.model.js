@@ -21,6 +21,46 @@ export const getEstudiantes = async (id_usuario) => {
   }
 };
 
+// Obtener estudiante por ID (id de estudiantes)
+export const getEstudianteById = async (id) => {
+  const sql = `
+    SELECT 
+      e.*, 
+      u.correo, 
+      u.foto_perfil 
+    FROM 
+      estudiantes e
+    JOIN 
+      usuarios u ON e.id_usuario = u.id
+    WHERE 
+      e.id = ?
+  `;
+  try {
+    const [rows] = await db.query(sql, [id]);
+    return rows[0];
+  } catch (error) {
+    console.error("Error al obtener estudiante por ID:", error);
+    throw error;
+  }
+};
+
+// Obtener insignias (badges) por id_usuario
+export const obtenerInsigniasPorUsuario = async (id_usuario) => {
+  const sql = `
+    SELECT i.id, i.nombre, i.descripcion
+    FROM usuario_insignia ui
+    JOIN insignias i ON ui.id_insignia = i.id
+    WHERE ui.id_usuario = ?
+  `;
+  try {
+    const [rows] = await db.query(sql, [id_usuario]);
+    return rows;
+  } catch (error) {
+    console.error("Error al obtener insignias por usuario:", error);
+    throw error;
+  }
+};
+
 
 export const obtenerid_estudiante= async (id_usuario) => {
     const sql = 'SELECT id FROM estudiantes WHERE id_usuario = ?';

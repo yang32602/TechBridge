@@ -1,48 +1,57 @@
 // mobile-app/app/empresa/postulaciones.tsx 
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Image, Platform} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform, Image } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Header from '../../src/components/Header';
 import { Colors, FontFamilies, Spacing } from '../../src/constants/theme';
+import { getPostulantesPorEmpresa } from '../../src/services/api';
 
 // Define una interfaz para los datos de cada postulante
 interface PostulanteData {
-  id: string; // ID del postulante
-  firstName: string;
-  lastName: string;
-  languages: string[]; // Array de lenguajes (ej: ['JavaScript', 'Python'])
-  country: string;
+  id_usuario: string; // ID del postulante
+  nombre_completo: string;
+  pais: string;
+  provincia?: string;
+  foto_perfil?: string;
   // Puedes añadir más campos aquí según lo que tu API devuelva
 }
 
 // Componente para una fila de postulante en la lista
 const PostulanteListItem: React.FC<PostulanteData & { onPress: (id: string) => void }> = ({
-  id,
-  firstName,
-  lastName,
-  languages,
-  country,
+  id_usuario,
+  nombre_completo,
+  pais,
+  provincia,
+  foto_perfil,
   onPress,
 }) => {
-  // Generar iniciales para el avatar
-  const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  // Generar iniciales para el avatar si no hay foto
+  const initials = nombre_completo
+    ? nombre_completo
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+    : '';
 
   return (
-    <TouchableOpacity style={styles.postulanteItem} onPress={() => onPress(id)}>
+    <TouchableOpacity style={styles.postulanteItem} onPress={() => onPress(id_usuario)}>
       <View style={styles.avatarContainer}>
-        {/* Aquí podrías usar una Image real si tu postulante tiene URL de foto */}
-        {/* De lo contrario, este es un buen placeholder de iniciales */}
-        <Text style={styles.avatarInitials}>{initials}</Text>
+        {foto_perfil ? (
+          <Image source={{ uri: foto_perfil }} style={styles.avatarImage} />
+        ) : (
+          <Text style={styles.avatarInitials}>{initials}</Text>
+        )}
       </View>
       <View style={styles.postulanteInfo}>
-        <Text style={styles.postulanteName}>{`${firstName} ${lastName}`}</Text>
-        <Text style={styles.postulanteLanguages}>{languages.join(', ')}</Text>
+        <Text style={styles.postulanteName}>{nombre_completo}</Text>
         <View style={styles.postulanteLocation}>
           <Ionicons name="location-outline" size={14} color={Colors.neutrals80} />
-          <Text style={styles.postulanteCountry}>{country}</Text>
+          <Text style={styles.postulanteCountry}>{provincia ? provincia + ', ' : ''}{pais}</Text>
         </View>
       </View>
       <Ionicons name="chevron-forward-outline" size={20} color={Colors.neutrals40} />
@@ -62,50 +71,18 @@ export default function PostulacionesScreen() {
         setLoading(true);
         setError(null);
 
-        // --- SIMULACIÓN DE LLAMADA A API PARA OBTENER EL LISTADO DE POSTULANTES ---
-        // En una aplicación real:
-        // const response = await fetch('TU_API_URL/empresa/postulaciones/listado');
-        // const data = await response.json();
-        // setPostulantes(data);
+        const idEmpresa = await AsyncStorage.getItem('userId');
+        if (!idEmpresa) {
+          setError('ID de empresa no disponible');
+          setLoading(false);
+          return;
+        }
 
-        // Datos de ejemplo para simular la respuesta de una API
-        const dummyPostulantes: PostulanteData[] = [
-          {
-            id: 'postu001',
-            firstName: 'Ana',
-            lastName: 'López',
-            languages: ['JavaScript', 'React'],
-            country: 'España',
-          },
-          {
-            id: 'postu002',
-            firstName: 'Carlos',
-            lastName: 'García',
-            languages: ['Python', 'Django', 'SQL'],
-            country: 'México',
-          },
-          {
-            id: 'postu003',
-            firstName: 'María',
-            lastName: 'Martínez',
-            languages: ['Java', 'Spring Boot'],
-            country: 'Colombia',
-          },
-          {
-            id: 'postu004',
-            firstName: 'Juan',
-            lastName: 'Pérez',
-            languages: ['Node.js', 'Express', 'MongoDB'],
-            country: 'Argentina',
-          },
-        ];
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simular retraso
-        setPostulantes(dummyPostulantes);
-        // --- FIN SIMULACIÓN ---
-
-      } catch (e: any) { // Captura el error para tiparlo como 'any' o 'Error'
-        console.error("Error al cargar postulaciones:", e);
-        setError(e.message || "No se pudieron cargar las postulaciones.");
+        const data = await getPostulantesPorEmpresa(idEmpresa);
+        setPostulantes(data);
+      } catch (e: any) {
+        console.error('Error al cargar postulaciones:', e);
+        setError(e.message || 'No se pudieron cargar las postulaciones.');
       } finally {
         setLoading(false);
       }
@@ -124,7 +101,7 @@ export default function PostulacionesScreen() {
 
   return (
     <View style={styles.container}>
-      <Header userType="empresa" showLogo={false} title="Nuevas Postulaciones" showBackButton={true} /> {/* Añade un título y botón de retroceso */}
+      <Header userType="empresa" showLogo={false} title="Nuevas Postulaciones" showBackButton={true} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.pageTitle}>Listado de Postulaciones Recientes</Text>
@@ -145,7 +122,7 @@ export default function PostulacionesScreen() {
           <View>
             {postulantes.map((postulante) => (
               <PostulanteListItem
-                key={postulante.id}
+                key={postulante.id_usuario}
                 {...postulante} // Pasa todas las propiedades del objeto postulante como props
                 onPress={handlePostulantePress} // Pasa la función de navegación
               />
@@ -213,6 +190,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: Spacing.md,
   },
+  avatarImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
   avatarInitials: {
     fontFamily: FontFamilies.leagueSpartanSemiBold,
     fontSize: 20,
@@ -227,12 +209,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.neutrals100,
   },
-  postulanteLanguages: {
-    fontFamily: FontFamilies.epilogueRegular,
-    fontSize: 12,
-    color: Colors.neutrals80,
-    marginTop: Spacing.xs / 2,
-  },
   postulanteLocation: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -243,33 +219,5 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.epilogueRegular,
     fontSize: 12,
     color: Colors.neutrals80,
-  },
-  // Reutiliza los estilos de Header si es necesario o crea los tuyos
-  section: {
-    marginBottom: Spacing.lg,
-    backgroundColor: Colors.neutrals0,
-    borderRadius: 8,
-    padding: Spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-  sectionTitle: {
-    fontFamily: FontFamilies.epilogueSemiBold,
-    fontSize: 18,
-    color: Colors.neutrals100,
-  },
-  viewAllText: {
-    fontFamily: FontFamilies.epilogueRegular,
-    fontSize: 14,
-    color: Colors.primary,
   },
 });
