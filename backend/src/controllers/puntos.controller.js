@@ -16,20 +16,20 @@ export const cantidadPuntos = async (req, res) => {
 };
 
 export const gastarPuntos = async (req, res) => {
-  const { id_usuario, puntos, descripcion } = req.body;
+  const { id_empresa, puntos, descripcion } = req.body;
 
-  if (!id_usuario || !puntos || puntos <= 0) {
+  if (!id_empresa || !puntos || puntos <= 0) {
     return res.status(400).json({ estado: 0, mensaje: 'Datos inválidos para gastar puntos' });
   }
 
   try {
-    const puntosDisponibles = await puntosModel.puntosRestantes(id_usuario);
+    const puntosDisponibles = await puntosModel.puntosRestantes(id_empresa);
 
     if (puntos > puntosDisponibles) {
       return res.status(400).json({ estado: 0, mensaje: 'No tienes suficientes puntos' });
     }
 
-    await puntosModel.registrarGasto(id_usuario, puntos, descripcion);
+    await puntosModel.registrarGasto(id_empresa, puntos, descripcion);
 
     return res.status(200).json({ estado: 1, mensaje: 'Puntos gastados correctamente' });
   } catch (error) {
