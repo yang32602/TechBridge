@@ -142,87 +142,90 @@ export default function EmpresaDashboard() {
 
 
   // Función para cargar estadísticas reales
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        setLoadingStats(true);
-        setErrorStats(null);
-        
-        const idEmpresa = await AsyncStorage.getItem('userId');
-        if (!idEmpresa) {
-          setErrorStats('ID de empresa no disponible');
-          setLoadingStats(false);
-          return;
-        }
-
-        // Obtener conteo real de nuevas postulaciones (por semana)
-        const nuevasPostulacionesData = await getNuevasPostulaciones(idEmpresa, 'semana');
-        setNewApplicationsCount(nuevasPostulacionesData.count);
-        
-        // Mantener datos simulados para las otras estadísticas por ahora
-        setActiveVacanciesCount(3);
-        setSentRequestsCount(5);
-      } catch (e: any) {
-        setErrorStats("Error al cargar estadísticas: " + e.message);
-      } finally {
+  const fetchStats = async () => {
+    try {
+      setLoadingStats(true);
+      setErrorStats(null);
+      
+      const idEmpresa = await AsyncStorage.getItem('userId');
+      if (!idEmpresa) {
+        setErrorStats('ID de empresa no disponible');
         setLoadingStats(false);
+        return;
       }
-    };
 
-    const fetchVacanciesSummary = async () => {
-      try {
-        setLoadingVacancies(true);
-        setErrorVacancies(null);
-        await new Promise(resolve => setTimeout(resolve, 1200)); // Simular retraso
-        const dummyVacancies: VacancySummaryData[] = [
-          {
-            id: 'vac_fe_jr',
-            title: "Desarrollador Frontend Junior",
-            status: "Activo",
-            type: "Híbrido",
-            modality: "T. Completo",
-            appliedCount: 5,
-            totalSpots: 10,
-          },
-          {
-            id: 'vac_node_sr',
-            title: "Desarrollador Node.js",
-            status: "Cerrada",
-            type: "Presencial",
-            modality: "T. Parcial",
-            appliedCount: 10,
-            totalSpots: 10,
-          },
-          {
-            id: 'vac_android_jr',
-            title: "Desarrollador Android Junior",
-            status: "Activo",
-            type: "Híbrido",
-            modality: "T. Parcial",
-            appliedCount: 8,
-            totalSpots: 10,
-          },
-          {
-            id: 'vac_bi_asst',
-            title: "Asistente de BI",
-            status: "Activo",
-            type: "Presencial",
-            modality: "T. Completo",
-            appliedCount: 5,
-            totalSpots: 10,
-          },
-        ];
-        setVacanciesSummary(dummyVacancies);
-      } catch (e: any) {
-        setErrorVacancies("Error al cargar resumen de vacantes: " + e.message);
-      } finally {
-        setLoadingVacancies(false);
-      }
-    };
+      // Obtener conteo real de nuevas postulaciones (por semana)
+      const nuevasPostulacionesData = await getNuevasPostulaciones(idEmpresa, 'semana');
+      setNewApplicationsCount(nuevasPostulacionesData.count);
+      
+      // Mantener datos simulados para las otras estadísticas por ahora
+      setActiveVacanciesCount(3);
+      setSentRequestsCount(5);
+    } catch (e: any) {
+      setErrorStats("Error al cargar estadísticas: " + e.message);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
 
-    fetchStats();
-    fetchVacanciesSummary();
-  }, []); // Se ejecuta solo una vez al montar el componente
+  const fetchVacanciesSummary = async () => {
+    try {
+      setLoadingVacancies(true);
+      setErrorVacancies(null);
+      await new Promise(resolve => setTimeout(resolve, 1200)); // Simular retraso
+      const dummyVacancies: VacancySummaryData[] = [
+        {
+          id: 'vac_fe_jr',
+          title: "Desarrollador Frontend Junior",
+          status: "Activo",
+          type: "Híbrido",
+          modality: "T. Completo",
+          appliedCount: 5,
+          totalSpots: 10,
+        },
+        {
+          id: 'vac_node_sr',
+          title: "Desarrollador Node.js",
+          status: "Cerrada",
+          type: "Presencial",
+          modality: "T. Parcial",
+          appliedCount: 10,
+          totalSpots: 10,
+        },
+        {
+          id: 'vac_android_jr',
+          title: "Desarrollador Android Junior",
+          status: "Activo",
+          type: "Híbrido",
+          modality: "T. Parcial",
+          appliedCount: 8,
+          totalSpots: 10,
+        },
+        {
+          id: 'vac_bi_asst',
+          title: "Asistente de BI",
+          status: "Activo",
+          type: "Presencial",
+          modality: "T. Completo",
+          appliedCount: 5,
+          totalSpots: 10,
+        },
+      ];
+      setVacanciesSummary(dummyVacancies);
+    } catch (e: any) {
+      setErrorVacancies("Error al cargar resumen de vacantes: " + e.message);
+    } finally {
+      setLoadingVacancies(false);
+    }
+  };
+
+  // Actualizar cuando la pantalla se enfoca
+  useFocusEffect(
+    useCallback(() => {
+      fetchStats();
+      fetchVacanciesSummary();
+    }, [])
+  );
 
   const handlePublishVacancy = () => {
     // Aquí podrías navegar a la pantalla de publicación de vacantes

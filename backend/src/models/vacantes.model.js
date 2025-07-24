@@ -7,6 +7,7 @@ export const obtenerPostulantesPorEmpresa = async (id_empresa) => {
   const sql = `
     SELECT 
       u.id AS id_usuario,
+      e.id AS id_estudiante,
       e.nombre_completo,
       e.pais,
       e.provincia,
@@ -16,7 +17,7 @@ export const obtenerPostulantesPorEmpresa = async (id_empresa) => {
     JOIN usuarios u ON p.id_usuario = u.id
     JOIN estudiantes e ON u.id = e.id_usuario
     WHERE v.id_empresa = ?
-    GROUP BY u.id, e.nombre_completo, e.pais, e.provincia, u.foto_perfil
+    GROUP BY u.id, e.id, e.nombre_completo, e.pais, e.provincia, u.foto_perfil
   `;
   try {
     const [rows] = await db.query(sql, [id_empresa]);
