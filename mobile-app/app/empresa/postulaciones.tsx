@@ -1,6 +1,6 @@
 // mobile-app/app/empresa/postulaciones.tsx 
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform, Image } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,10 +9,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../../src/components/Header';
 import { Colors, FontFamilies, Spacing } from '../../src/constants/theme';
 import { getPostulantesPorEmpresa } from '../../src/services/api';
+import { useFocusEffect } from '@react-navigation/native';
 
 // Define una interfaz para los datos de cada postulante
 interface PostulanteData {
   id_usuario: string; // ID del postulante
+  id_estudiante: string; // ID del estudiante para detalle
   nombre_completo: string;
   pais: string;
   provincia?: string;
@@ -65,38 +67,53 @@ export default function PostulacionesScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchPostulaciones = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  useFocusEffect(
+    useCallback(() => {
+  const fetchPostulaciones = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        const idEmpresa = await AsyncStorage.getItem('userId');
-        if (!idEmpresa) {
-          setError('ID de empresa no disponible');
-          setLoading(false);
-          return;
-        }
-
-        const data = await getPostulantesPorEmpresa(idEmpresa);
-        setPostulantes(data);
-      } catch (e: any) {
-        console.error('Error al cargar postulaciones:', e);
-        setError(e.message || 'No se pudieron cargar las postulaciones.');
-      } finally {
+      const idEmpresa = await AsyncStorage.getItem('userId');
+      if (!idEmpresa) {
+        setError('ID de empresa no disponible');
         setLoading(false);
+        return;
       }
-    };
 
-    fetchPostulaciones();
-  }, []);
+      const data = await getPostulantesPorEmpresa(idEmpresa);
+
+      // Mapear para usar id_estudiante en lugar de id_usuario para detalle
+      const mappedData = data.map((postulante: any) => ({
+        ...postulante,
+        id: postulante.id_estudiante, // Usar id_estudiante para detalle
+      }));
+
+      setPostulantes(mappedData);
+    } catch (e: any) {
+      console.error('Error al cargar postulaciones:', e);
+      setError(e.message || 'No se pudieron cargar las postulaciones.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+      fetchPostulaciones();
+    }, [])
+  );
 
   const handlePostulantePress = (postulanteId: string) => {
     console.log(`Navegando al perfil del postulante: ${postulanteId}`);
-    router.push({
-      pathname: '/empresa/detalle/[id]', // <<-- RUTA ABSOLUTA AL PERFIL DEL POSTULANTE
-      params: { id: postulanteId }, // Pasa el ID del postulante
-    });
+    // Como el id en detalle es id_estudiante, no id_usuario, pasamos id_estudiante
+    const postulanteSeleccionado = postulantes.find(p => p.id_usuario === postulanteId);
+    if (postulanteSeleccionado && postulanteSeleccionado.id_estudiante) {
+      router.push({
+        pathname: '/empresa/detalle/[id]',
+        params: { id: postulanteSeleccionado.id_estudiante.toString() },
+      });
+    } else {
+      console.error('No se encontró el id_estudiante para el postulante seleccionado');
+    }
   };
 
   return (

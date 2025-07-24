@@ -134,9 +134,9 @@ export const loginUser = async (
 
 // NUEVAS FUNCIONES PARA LOS ENDPOINTS CREADOS
 
-export const getDetalleEstudiante = async (id: string) => {
+export const getDetalleEstudiante = async (idEstudiante: string) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/estudiantes/detalle/${id}`);
+    const response = await fetch(`${API_BASE_URL}/api/estudiantes/detalle/${idEstudiante}`);
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Error al obtener detalle del estudiante, response text:', errorText);

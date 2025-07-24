@@ -1,7 +1,7 @@
 // mobile-app/app/empresa/detalle/[id].tsx (NUEVO ARCHIVO)
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Platform, TextProps } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -16,6 +16,8 @@ interface PostulanteProfileData {
   telefono?: string;
   pais: string;
   provincia?: string;
+  fecha_nacimiento?: string;
+  cedula?: string;
   sobremi?: string;
   experiencia?: Array<{
     titulo: string;
@@ -30,6 +32,15 @@ interface PostulanteProfileData {
     fecha_fin?: string;
   }>;
   github?: string;
+  insignias?: Array<{
+    nombre: string;
+    descripcion: string;
+  }>;
+  lenguajes?: String | Array<{
+    nombre: string;
+    nivel: string;
+  }>;
+  cv?: string;
 }
 
 export default function PostulanteDetailScreen() {
@@ -82,10 +93,22 @@ export default function PostulanteDetailScreen() {
     );
   }
 
+
   // Función para mostrar texto bloqueado con efecto borroso
   const TextoBloqueado: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <Text style={[styles.sectionContentText, styles.textoBloqueado]}>{children}</Text>
   );
+
+  // Función para mostrar texto visible
+  const TextoVisible: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <Text style={styles.sectionContentText}>{children}</Text>
+  );
+  const lenguajesArray =
+    typeof postulante.lenguajes === "string"
+    ? postulante.lenguajes.split(",").map((nombre: string) => ({ nombre: nombre.trim() }))
+    : Array.isArray(postulante.lenguajes)
+    ? postulante.lenguajes
+    : [];
 
   return (
     <View style={styles.container}>
@@ -113,18 +136,29 @@ export default function PostulanteDetailScreen() {
           </View>
         </View>
 
+        {/* Datos VISIBLES */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Información Personal</Text>
+          <TextoVisible><Ionicons name="person-outline" size={14} /> Nombre: {postulante.nombre_completo}</TextoVisible>
+          <TextoVisible><Ionicons name="calendar-outline" size={14} /> Fecha de nacimiento: {postulante.fecha_nacimiento ? postulante.fecha_nacimiento.split('T')[0] : 'No disponible'}</TextoVisible>
+          <TextoVisible><Ionicons name="id-card-outline" size={14} /> Cédula: {postulante.cedula || 'No disponible'}</TextoVisible>
+          <TextoVisible><Ionicons name="location-outline" size={14} /> País: {postulante.pais}</TextoVisible>
+          {postulante.provincia && (
+            <TextoVisible><Ionicons name="map-outline" size={14} /> Provincia: {postulante.provincia}</TextoVisible>
+          )}
+        </View>
+
+        {/* Datos BLOQUEADOS */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Sobre Mí</Text>
-          <TextoBloqueado>{postulante.sobremi || 'Información bloqueada'}</TextoBloqueado>
+          <TextoBloqueado>{postulante.sobremi ? 'Información bloqueada' : 'No disponible'}</TextoBloqueado>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Contacto</Text>
-          <TextoBloqueado>Email: {postulante.correo || 'Información bloqueada'}</TextoBloqueado>
-          <TextoBloqueado>Teléfono: {postulante.telefono || 'Información bloqueada'}</TextoBloqueado>
-          {postulante.github && (
-            <TextoBloqueado>GitHub: {postulante.github}</TextoBloqueado>
-          )}
+          <TextoBloqueado><Ionicons name="mail-outline" size={14} /> Email: {postulante.correo ? 'Información bloqueada' : 'No disponible'}</TextoBloqueado>
+          <TextoBloqueado><Ionicons name="call-outline" size={14} /> Teléfono: {postulante.telefono ? 'Información bloqueada' : 'No disponible'}</TextoBloqueado>
+          <TextoBloqueado><Ionicons name="logo-github" size={14} /> GitHub: {postulante.github ? 'Información bloqueada' : 'No disponible'}</TextoBloqueado>
         </View>
 
         <View style={styles.section}>
@@ -132,8 +166,8 @@ export default function PostulanteDetailScreen() {
           {postulante.experiencia && postulante.experiencia.length > 0 ? (
             postulante.experiencia.map((exp, index) => (
               <View key={index} style={styles.detailItem}>
-                <TextoBloqueado>{exp.titulo}</TextoBloqueado>
-                <TextoBloqueado>{exp.empresa_o_institucion} - {exp.fecha_inicio} a {exp.fecha_fin || 'Presente'}</TextoBloqueado>
+                <TextoBloqueado><Ionicons name="briefcase-outline" size={14} /> {exp.titulo ? 'Información bloqueada' : 'No disponible'}</TextoBloqueado>
+                <TextoBloqueado>{exp.empresa_o_institucion ? 'Información bloqueada' : 'No disponible'} - {exp.fecha_inicio.split('T')[0] ? 'Información bloqueada' : 'No disponible'} a {exp.fecha_fin ? 'Información bloqueada' : 'No disponible'}</TextoBloqueado>
               </View>
             ))
           ) : (
@@ -146,8 +180,8 @@ export default function PostulanteDetailScreen() {
           {postulante.educacion && postulante.educacion.length > 0 ? (
             postulante.educacion.map((edu, index) => (
               <View key={index} style={styles.detailItem}>
-                <TextoBloqueado>{edu.nombre}</TextoBloqueado>
-                <TextoBloqueado>{edu.institucion} ({edu.fecha_inicio} - {edu.fecha_fin || 'Presente'})</TextoBloqueado>
+                <TextoBloqueado><Ionicons name="school-outline" size={14} /> {edu.nombre ? 'Información bloqueada' : 'No disponible'}</TextoBloqueado>
+                <TextoBloqueado>{edu.institucion ? 'Información bloqueada' : 'No disponible'} ({edu.fecha_inicio ? 'Información bloqueada' : 'No disponible'} - {edu.fecha_fin ? 'Información bloqueada' : 'No disponible'})</TextoBloqueado>
               </View>
             ))
           ) : (
@@ -155,7 +189,35 @@ export default function PostulanteDetailScreen() {
           )}
         </View>
 
-        {/* Aquí puedes añadir más secciones como habilidades, idiomas, etc. visibles o bloqueadas según necesidad */}
+        {/* Insignias - VISIBLES */}
+        {postulante.insignias && postulante.insignias.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Insignias</Text>
+            <View style={styles.skillsContainer}>
+              {postulante.insignias.map((insignia, index) => (
+                <View key={index} style={styles.skillBadge}>
+                  <Text style={styles.skillText}>{insignia.nombre}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* Lenguajes - BLOQUEADOS */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Lenguajes</Text>
+          <TextoBloqueado>
+            {lenguajesArray.length > 0
+              ? lenguajesArray.map(lang => lang.nombre ? 'Información bloqueada' : 'No disponible').filter(Boolean).join(', ')
+              : "Información bloqueada"}
+          </TextoBloqueado>
+        </View>
+
+        {/* CV - BLOQUEADO */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Curriculum Vitae</Text>
+          <TextoBloqueado>CV bloqueado</TextoBloqueado>
+        </View>
 
       </ScrollView>
     </View>
@@ -263,5 +325,23 @@ const styles = StyleSheet.create({
   textoBloqueado: {
     color: Colors.neutrals40,
     fontStyle: 'italic',
+  },
+  skillsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  skillBadge: {
+    backgroundColor: Colors.primaryLight,
+    paddingVertical: Spacing.xs / 2,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: 15,
+    marginRight: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  skillText: {
+    fontFamily: FontFamilies.epilogueRegular,
+    fontSize: 12,
+    color: Colors.primary,
   },
 });
