@@ -1,3 +1,4 @@
+// backend/app.js
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -55,6 +56,7 @@ if (!admin.apps.length) {
 console.log('admin.apps.length DESPUÉS:', admin.apps.length); // Debería ser 1
 console.log('admin.app() después de inicializar:', admin.app() ? 'Inicializado' : 'NO INICIALIZADO');
 console.log('--- app.js: Fin diagnóstico ---');
+
 const app = express(); 
 
 const FEPORT = process.env.FEPORT || 5173

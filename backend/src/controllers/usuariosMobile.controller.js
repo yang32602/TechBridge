@@ -151,28 +151,36 @@ export const autenticacionEmpresaMobile = async (req, res) => {
 
 // Lógica para registrar el token de notificación (MOVIDA DESDE LAS RUTAS)
 export const registerPushToken = async (req, res) => {
-  // Cuando el frontend envía userId para esta ruta, se espera que sea el ID
-  // de la tabla `estudiantes` o `empresas`, NO el `id` de la tabla `usuarios`.
+  console.log('--- BACKEND LOG ---');
+    console.log('B. Controlador usuariosMobileController.registerPushToken alcanzado.');
+    
+    console.log('B.1. Datos recibidos en req.user (del JWT):', req.user);
+    console.log('B.2. Datos recibidos en req.body (el FCM token):', req.body);
+
   const { userId, userType } = req.user;
 
   /// expoPushToken siempre vendrá en el body (o deberías enviarlo así desde el frontend)
-  const { expoPushToken } = req.body;
+  const { fcmToken } = req.body;
 
-  if (!userId || !userType || !expoPushToken) {
-    return res.status(400).json({ message: 'Faltan campos requeridos: userId, userType, expoPushToken' });
+  if (!userId || !userType || !fcmToken) {
+    console.log('B.3. ERROR: Faltan campos requeridos en la petición.');
+    return res.status(400).json({ message: 'Faltan campos requeridos: userId, userType, fcmToken' });
   }
 
   try {
     // Usamos el modelo para actualizar el token en la BD
     // El userId que recibimos aquí es el ID de la tabla `estudiantes` o `empresas`
-    const affectedRows = await UsuarioMobileModel.updateExpoPushToken(userId, userType, expoPushToken);
+    const affectedRows = await UsuarioMobileModel.updateExpoPushToken(userId, userType, fcmToken);
+    console.log('B.4. Resultado de updateExpoPushToken (filas afectadas):', affectedRows);
 
     if (affectedRows === 0) {
       // Esto podría significar que el userId no existe en la tabla correspondiente
       // o que el token ya es el mismo.
+      console.log('B.5. ADVERTENCIA: Usuario no encontrado o token ya registrado (0 filas afectadas).');
       return res.status(404).json({ message: 'Usuario no encontrado o token ya registrado.' });
     }
 
+    console.log('B.6. Token de notificación registrado exitosamente.');
     return res.status(200).json({ message: 'Token de notificación registrado exitosamente.' });
   } catch (error) {
     console.error('Error al registrar el token de push:', error);
