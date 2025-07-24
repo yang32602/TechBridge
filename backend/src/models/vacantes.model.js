@@ -1,5 +1,63 @@
 // backend/src/models/vacantes.model.js
+// Agregar al inicio del archivo
 import db from '../config/db.js'
+
+// Obtener lista de postulantes para una empresa
+export const obtenerPostulantesPorEmpresa = async (id_empresa) => {
+  const sql = `
+    SELECT 
+      u.id AS id_usuario,
+      e.nombre_completo,
+      e.pais,
+      e.provincia,
+      u.foto_perfil
+    FROM postulacion p
+    JOIN vacantes v ON p.id_vacante = v.id
+    JOIN usuarios u ON p.id_usuario = u.id
+    JOIN estudiantes e ON u.id = e.id_usuario
+    WHERE v.id_empresa = ?
+    GROUP BY u.id, e.nombre_completo, e.pais, e.provincia, u.foto_perfil
+  `;
+  try {
+    const [rows] = await db.query(sql, [id_empresa]);
+    return rows;
+  } catch (error) {
+    console.error("Error al obtener postulantes por empresa:", error);
+    throw error;
+  }
+};
+
+// Contar nuevas postulaciones por periodo (día o semana)
+export const contarNuevasPostulaciones = async (id_empresa, periodo) => {
+  let fechaInicio;
+  if (periodo === 'dia') {
+    fechaInicio = new Date();
+    fechaInicio.setHours(0, 0, 0, 0);
+  } else if (periodo === 'semana') {
+    fechaInicio = new Date();
+    const day = fechaInicio.getDay();
+    const diff = fechaInicio.getDate() - day + (day === 0 ? -6 : 1);
+    fechaInicio.setDate(diff);
+    fechaInicio.setHours(0, 0, 0, 0);
+  } else {
+    throw new Error("Periodo inválido. Use 'dia' o 'semana'.");
+  }
+
+  const sql = `
+    SELECT COUNT(*) AS count
+    FROM postulacion p
+    JOIN vacantes v ON p.id_vacante = v.id
+    WHERE v.id_empresa = ? AND p.fecha_postulacion >= ?
+  `;
+
+  try {
+    const [rows] = await db.query(sql, [id_empresa, fechaInicio]);
+    return rows[0].count;
+  } catch (error) {
+    console.error("Error al contar nuevas postulaciones:", error);
+    throw error;
+  }
+};
 
 //obetenr vacantes
 export const obtenerVacantesPorIDEmpesa = async (id_empresa) => {

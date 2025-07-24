@@ -1,33 +1,39 @@
 // mobile-app/app/empresa/detalle/[id].tsx (NUEVO ARCHIVO)
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, Platform } from 'react-native';
-import { useLocalSearchParams } from 'expo-router'; // Importar useLocalSearchParams
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Platform } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-import Header from '../../../src/components/Header'; // Ajusta la ruta si es necesario
+import Header from '../../../src/components/Header';
 import { Colors, FontFamilies, Spacing } from '../../../src/constants/theme';
+import { getDetalleEstudiante } from '../../../src/services/api';
 
 interface PostulanteProfileData {
   id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  country: string;
-  city: string;
-  bio: string;
-  experience: { title: string; company: string; years: number }[];
-  education: { degree: string; institution: string; year: number }[];
-  skills: string[];
-  languages: string[];
-  portfolioUrl?: string; // Opcional
-  linkedinUrl?: string; // Opcional
-  // Puedes añadir más campos que un perfil completo tendría
+  nombre_completo: string;
+  correo?: string;
+  telefono?: string;
+  pais: string;
+  provincia?: string;
+  sobremi?: string;
+  experiencia?: Array<{
+    titulo: string;
+    empresa_o_institucion: string;
+    fecha_inicio: string;
+    fecha_fin?: string;
+  }>;
+  educacion?: Array<{
+    nombre: string;
+    institucion: string;
+    fecha_inicio: string;
+    fecha_fin?: string;
+  }>;
+  github?: string;
 }
 
 export default function PostulanteDetailScreen() {
-  const { id } = useLocalSearchParams(); // Obtiene el ID del postulante de la URL
+  const { id } = useLocalSearchParams();
   const [postulante, setPostulante] = useState<PostulanteProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +41,7 @@ export default function PostulanteDetailScreen() {
   useEffect(() => {
     if (!id) {
       setLoading(false);
-      setError("ID de postulante no proporcionado.");
+      setError('ID de postulante no proporcionado.');
       return;
     }
 
@@ -44,50 +50,19 @@ export default function PostulanteDetailScreen() {
         setLoading(true);
         setError(null);
 
-        // --- SIMULACIÓN DE LLAMADA A API PARA OBTENER DETALLES DEL POSTULANTE ---
-        // En una aplicación real:
-        // const response = await fetch(`TU_API_URL/postulantes/${id}`);
-        // const data = await response.json();
-        // setPostulante(data);
-
-        // Datos de ejemplo para simular la respuesta de una API
-        // Adaptar estos datos para que coincidan con la interfaz PostulanteProfileData
-        const dummyPostulanteData: PostulanteProfileData = {
-          id: id as string, // Aseguramos que 'id' es string
-          firstName: 'Ana',
-          lastName: 'López',
-          email: 'ana.lopez@example.com',
-          phone: '+507 6123-4567',
-          country: 'Panamá',
-          city: 'Ciudad de Panamá',
-          bio: 'Desarrolladora frontend apasionada por crear experiencias de usuario intuitivas y responsivas. Experiencia en React y JavaScript moderno.',
-          experience: [
-            { title: 'Desarrolladora Frontend', company: 'Innovate Solutions', years: 3 },
-            { title: 'Diseñadora Web Junior', company: 'Creative Studio', years: 1 },
-          ],
-          education: [
-            { degree: 'Ingeniería de Software', institution: 'Universidad Tecnológica de Panamá', year: 2020 },
-          ],
-          skills: ['React', 'JavaScript', 'HTML', 'CSS', 'Figma', 'Git', 'Redux', 'APIs REST'],
-          languages: ['Español (nativo)', 'Inglés (avanzado)'],
-          portfolioUrl: 'https://ana.dev',
-          linkedinUrl: 'https://linkedin.com/in/analopez',
-        };
-
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setPostulante(dummyPostulanteData);
-        // --- FIN SIMULACIÓN ---
-
+        const idString = Array.isArray(id) ? id[0] : id;
+        const data = await getDetalleEstudiante(idString);
+        setPostulante(data);
       } catch (e: any) {
         console.error(`Error al cargar detalles del postulante ${id}:`, e);
-        setError(e.message || "No se pudieron cargar los detalles del postulante.");
+        setError(e.message || 'No se pudieron cargar los detalles del postulante.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchPostulanteDetails();
-  }, [id]); // Vuelve a cargar si el ID cambia
+  }, [id]);
 
   if (loading) {
     return (
@@ -102,10 +77,15 @@ export default function PostulanteDetailScreen() {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
         <Ionicons name="alert-circle-outline" size={60} color={Colors.danger} />
-        <Text style={styles.errorText}>{error || "Perfil no encontrado."}</Text>
+        <Text style={styles.errorText}>{error || 'Perfil no encontrado.'}</Text>
       </View>
     );
   }
+
+  // Función para mostrar texto bloqueado con efecto borroso
+  const TextoBloqueado: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <Text style={[styles.sectionContentText, styles.textoBloqueado]}>{children}</Text>
+  );
 
   return (
     <View style={styles.container}>
@@ -113,97 +93,69 @@ export default function PostulanteDetailScreen() {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.profileHeader}>
-          {/* Avatar con iniciales o Image si hay URL de perfil */}
           <View style={styles.profileAvatar}>
-            <Text style={styles.profileInitials}>{`${postulante.firstName.charAt(0)}${postulante.lastName.charAt(0)}`.toUpperCase()}</Text>
+            <Text style={styles.profileInitials}>
+              {postulante.nombre_completo
+                ? postulante.nombre_completo
+                    .split(' ')
+                    .map((n: string) => n[0])
+                    .join('')
+                    .toUpperCase()
+                : ''}
+            </Text>
           </View>
-          <Text style={styles.profileName}>{`${postulante.firstName} ${postulante.lastName}`}</Text>
+          <Text style={styles.profileName}>{postulante.nombre_completo}</Text>
           <View style={styles.profileLocation}>
             <Ionicons name="location-outline" size={16} color={Colors.neutrals80} />
-            <Text style={styles.profileLocationText}>{`${postulante.city}, ${postulante.country}`}</Text>
+            <Text style={styles.profileLocationText}>
+              {postulante.provincia ? postulante.provincia + ', ' : ''}{postulante.pais}
+            </Text>
           </View>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Sobre Mí</Text>
-          <Text style={styles.sectionContentText}>{postulante.bio}</Text>
+          <TextoBloqueado>{postulante.sobremi || 'Información bloqueada'}</TextoBloqueado>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Contacto</Text>
-          <Text style={styles.sectionContentText}>Email: {postulante.email}</Text>
-          <Text style={styles.sectionContentText}>Teléfono: {postulante.phone}</Text>
-          {postulante.linkedinUrl && (
-            <Text style={[styles.sectionContentText, styles.linkText]} onPress={() => console.log('Abrir LinkedIn')}>
-              LinkedIn: {postulante.linkedinUrl}
-            </Text>
-          )}
-          {postulante.portfolioUrl && (
-            <Text style={[styles.sectionContentText, styles.linkText]} onPress={() => console.log('Abrir Portafolio')}>
-              Portafolio: {postulante.portfolioUrl}
-            </Text>
+          <TextoBloqueado>Email: {postulante.correo || 'Información bloqueada'}</TextoBloqueado>
+          <TextoBloqueado>Teléfono: {postulante.telefono || 'Información bloqueada'}</TextoBloqueado>
+          {postulante.github && (
+            <TextoBloqueado>GitHub: {postulante.github}</TextoBloqueado>
           )}
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Experiencia</Text>
-          {postulante.experience.length > 0 ? (
-            postulante.experience.map((exp, index) => (
+          {postulante.experiencia && postulante.experiencia.length > 0 ? (
+            postulante.experiencia.map((exp, index) => (
               <View key={index} style={styles.detailItem}>
-                <Text style={styles.detailItemTitle}>{exp.title}</Text>
-                <Text style={styles.detailItemSubtitle}>{exp.company} - {exp.years} años</Text>
+                <TextoBloqueado>{exp.titulo}</TextoBloqueado>
+                <TextoBloqueado>{exp.empresa_o_institucion} - {exp.fecha_inicio} a {exp.fecha_fin || 'Presente'}</TextoBloqueado>
               </View>
             ))
           ) : (
-            <Text style={styles.sectionContentText}>Sin experiencia registrada.</Text>
+            <TextoBloqueado>Información bloqueada</TextoBloqueado>
           )}
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Educación</Text>
-          {postulante.education.length > 0 ? (
-            postulante.education.map((edu, index) => (
+          {postulante.educacion && postulante.educacion.length > 0 ? (
+            postulante.educacion.map((edu, index) => (
               <View key={index} style={styles.detailItem}>
-                <Text style={styles.detailItemTitle}>{edu.degree}</Text>
-                <Text style={styles.detailItemSubtitle}>{edu.institution} ({edu.year})</Text>
+                <TextoBloqueado>{edu.nombre}</TextoBloqueado>
+                <TextoBloqueado>{edu.institucion} ({edu.fecha_inicio} - {edu.fecha_fin || 'Presente'})</TextoBloqueado>
               </View>
             ))
           ) : (
-            <Text style={styles.sectionContentText}>Sin educación registrada.</Text>
+            <TextoBloqueado>Información bloqueada</TextoBloqueado>
           )}
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Habilidades</Text>
-          <View style={styles.skillsContainer}>
-            {postulante.skills.length > 0 ? (
-              postulante.skills.map((skill, index) => (
-                <View key={index} style={styles.skillBadge}>
-                  <Text style={styles.skillText}>{skill}</Text>
-                </View>
-              ))
-            ) : (
-              <Text style={styles.sectionContentText}>Sin habilidades registradas.</Text>
-            )}
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Idiomas</Text>
-          <View style={styles.skillsContainer}>
-            {postulante.languages.length > 0 ? (
-              postulante.languages.map((lang, index) => (
-                <View key={index} style={styles.skillBadge}>
-                  <Text style={styles.skillText}>{lang}</Text>
-                </View>
-              ))
-            ) : (
-              <Text style={styles.sectionContentText}>Sin idiomas registrados.</Text>
-            )}
-          </View>
-        </View>
-
-        {/* Aquí puedes añadir más secciones como proyectos, certificaciones, etc. */}
+        {/* Aquí puedes añadir más secciones como habilidades, idiomas, etc. visibles o bloqueadas según necesidad */}
 
       </ScrollView>
     </View>
@@ -308,31 +260,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.neutrals20,
   },
-  detailItemTitle: {
-    fontFamily: FontFamilies.epilogueBold,
-    fontSize: 16,
-    color: Colors.neutrals100,
-  },
-  detailItemSubtitle: {
-    fontFamily: FontFamilies.epilogueRegular,
-    fontSize: 14,
-    color: Colors.neutrals80,
-    marginTop: Spacing.xs / 2,
-  },
-  skillsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-  },
-  skillBadge: {
-    backgroundColor: Colors.primaryLight,
-    paddingVertical: Spacing.xs / 2,
-    paddingHorizontal: Spacing.sm,
-    borderRadius: 15,
-  },
-  skillText: {
-    fontFamily: FontFamilies.epilogueRegular,
-    fontSize: 12,
-    color: Colors.primary,
+  textoBloqueado: {
+    color: Colors.neutrals40,
+    fontStyle: 'italic',
   },
 });

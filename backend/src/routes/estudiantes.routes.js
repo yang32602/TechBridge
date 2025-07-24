@@ -35,6 +35,10 @@ router.patch('/educacion', estudiantesController.actualizarCampoEducacion);
 
 // Rutas para eliminar
 router.delete('/experiencia', estudiantesController.eliminarExperienciaController);
+
 router.delete('/educacion', estudiantesController.eliminarEducacionController);
+
+// Nuevo endpoint para detalle completo del estudiante
+router.get('/detalle/:id', estudiantesController.getDetalleEstudiante);
 
 export default router;

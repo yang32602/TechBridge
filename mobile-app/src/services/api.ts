@@ -131,3 +131,56 @@ export const loginUser = async (
 };
 
 // Puedes añadir aquí otras funciones para interactuar con tu API...
+
+// NUEVAS FUNCIONES PARA LOS ENDPOINTS CREADOS
+
+export const getDetalleEstudiante = async (id: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/estudiantes/detalle/${id}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al obtener detalle del estudiante, response text:', errorText);
+      throw new Error('Error al obtener detalle del estudiante');
+    }
+    const data = await response.json();
+    console.log('getDetalleEstudiante data:', data);
+    return data;
+  } catch (error) {
+    console.error('Error en getDetalleEstudiante:', error);
+    throw error;
+  }
+};
+
+export const getPostulantesPorEmpresa = async (idEmpresa: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/empresas/${idEmpresa}/postulantes`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al obtener postulantes por empresa, response text:', errorText);
+      throw new Error('Error al obtener postulantes por empresa');
+    }
+    const data = await response.json();
+    console.log('getPostulantesPorEmpresa data:', data);
+    return data;
+  } catch (error) {
+    console.error('Error en getPostulantesPorEmpresa:', error);
+    throw error;
+  }
+};
+
+export const getNuevasPostulaciones = async (idEmpresa: string, periodo: 'dia' | 'semana') => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/empresas/${idEmpresa}/nuevas-postulaciones?periodo=${periodo}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al obtener nuevas postulaciones, response text:', errorText);
+      throw new Error('Error al obtener nuevas postulaciones');
+    }
+    const data = await response.json();
+    console.log('getNuevasPostulaciones data:', data);
+    return data;
+  } catch (error) {
+    console.error('Error en getNuevasPostulaciones:', error);
+    throw error;
+  }
+};

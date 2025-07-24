@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // Para ma
 
 import Header from '../../src/components/Header'; // Ajusta la ruta
 import { Colors, FontFamilies, Spacing } from '../../src/constants/theme'; // Ajusta la ruta
+import { getNuevasPostulaciones } from '../../src/services/api'; // Importar función API
 
 // Define una interfaz para los datos de la vacante (para el resumen de vacantes)
 interface VacancySummaryData {
@@ -140,16 +141,27 @@ export default function EmpresaDashboard() {
   ); // <-- Cerrado de useFocusEffect
 
 
-  // Función para simular carga de estadísticas
+  // Función para cargar estadísticas reales
   useEffect(() => {
     const fetchStats = async () => {
       try {
         setLoadingStats(true);
         setErrorStats(null);
-        await new Promise(resolve => setTimeout(resolve, 800)); // Simular retraso
-        setActiveVacanciesCount(3); // Ejemplo de datos reales
-        setNewApplicationsCount(12); // Ejemplo de datos reales
-        setSentRequestsCount(5);    // Ejemplo de datos reales
+        
+        const idEmpresa = await AsyncStorage.getItem('userId');
+        if (!idEmpresa) {
+          setErrorStats('ID de empresa no disponible');
+          setLoadingStats(false);
+          return;
+        }
+
+        // Obtener conteo real de nuevas postulaciones (por semana)
+        const nuevasPostulacionesData = await getNuevasPostulaciones(idEmpresa, 'semana');
+        setNewApplicationsCount(nuevasPostulacionesData.count);
+        
+        // Mantener datos simulados para las otras estadísticas por ahora
+        setActiveVacanciesCount(3);
+        setSentRequestsCount(5);
       } catch (e: any) {
         setErrorStats("Error al cargar estadísticas: " + e.message);
       } finally {
