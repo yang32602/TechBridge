@@ -213,3 +213,4 @@ export const obtenerVacantesPostuladasPorEstudiante = async (id_estudiante) => {
   const [rows] = await db.query(sql, [id_estudiante]);
   return rows;
 };
+
