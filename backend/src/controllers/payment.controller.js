@@ -1,6 +1,6 @@
-
 import dotenv from 'dotenv';
-import * as puntosModel from '../models/puntos.model.js'
+import * as puntosModel from '../models/puntos.model.js';
+import * as techPointsModel from '../models/techPoints.model.js';
 dotenv.config();
 
 const PAY_PAL_API = process.env.PAY_PAL_API;
@@ -8,7 +8,8 @@ const PAY_PAL_CLIENTID = process.env.PAY_PAL_CLIENTID;
 const PAY_PAL_SECRETKEYS = process.env.PAY_PAL_SECRETKEYS;
 
 export const createOrder = async (req, res) => {
-  const { valor, id_empresa, id_techpoints } = req.body;
+  const {id_empresa, id_techpoints } = req.body;
+  const valor = await techPointsModel.obtenerPrecioPuntos(id_techpoints);
   const host = req.get('host');
   const protocol = req.protocol;
 
@@ -51,9 +52,12 @@ const order = {
   }
   
 };
-
 export const captureOrder = async (req, res) => {
   const { token } = req.query;
+
+  if (!token) {
+    return res.status(400).json({ error: "Token no proporcionado" });
+  }
 
   try {
     const access_token = await getAccessToken();
@@ -61,40 +65,44 @@ export const captureOrder = async (req, res) => {
     const response = await fetch(`${PAY_PAL_API}/v1/checkout/orders/${token}/capture`, {
       method: "POST",
       headers: {
-        'Authorization': `Bearer ${access_token}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      },
     });
 
     const data = await response.json();
 
-    if (data.status === 'COMPLETED') {
-      const customId = data.purchase_units?.[0]?.payments?.captures?.[0]?.custom_id;
-
-      // ⚠️ A veces viene en purchase_units directamente, si no está en captures
-      const fallbackCustomId = data.purchase_units?.[0]?.custom_id || "";
-
-      const [id_empresa, id_techpoints] = (customId || fallbackCustomId || "").split("-");
-
-      if (!id_empresa || !id_techpoints) {
-        return res.status(400).json({ error: 'custom_id malformado o no encontrado' });
-      }
-
-      await puntosModel.asingarPuntos(id_empresa, id_techpoints);
-        return res.redirect(`${process.env.FE_URL}`);
-    } else {
-      return res.status(400).json({ estado: 0, mensaje: 'Pago NO completado', data });
+    if (data.status !== "COMPLETED") {
+      return res.redirect(`http://localhost:5173/comprar-puntos?payment=failed`);
     }
+
+    // Buscar el custom_id desde distintas rutas posibles
+    const capture = data?.purchase_units?.[0]?.payments?.captures?.[0];
+    const purchaseUnit = data?.purchase_units?.[0];
+
+    const customId = capture?.custom_id || purchaseUnit?.custom_id || "";
+
+    const [id_empresa, id_techpoints] = customId.split("-");
+
+    if (!id_empresa || !id_techpoints) {
+      return res.status(400).json({ error: "custom_id malformado o no encontrado" });
+    }
+
+    await puntosModel.asingarPuntos(id_empresa, id_techpoints);
+
+    return res.redirect(`http://localhost:5173/comprar-puntos?paymentId=${token}&PayerID=success&token=${token}`);
 
   } catch (error) {
     console.error("Error al capturar la orden:", error);
-    return res.status(500).json({ error: "Error al capturar la orden" });
+    return res.status(500).json({ error: "Error interno al capturar la orden" });
   }
 };
 
 
+
+
 export const cancelOrder = async (req, res) =>{
-    return res.status(200).json({mensaje: 'todo chillc el man cancelo'});
+        return res.redirect(`http://localhost:5173/comprar-puntos?payment=cancelled`);
 }
 
 

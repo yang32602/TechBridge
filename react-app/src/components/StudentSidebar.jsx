@@ -63,12 +63,6 @@ const StudentSidebar = ({ activeSection = "" }) => {
       onClick: handleTechnicalTestsClick,
     },
     {
-      id: "explore-jobs",
-      icon: HiSearch,
-      label: "Explorar Vacantes",
-      onClick: () => navigate("/vacantes"),
-    },
-    {
       id: "recommended-jobs",
       icon: HiOfficeBuilding,
       label: "Vacantes Aplicadas",
