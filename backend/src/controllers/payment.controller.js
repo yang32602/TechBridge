@@ -53,9 +53,12 @@ const order = {
   }
   
 };
-
 export const captureOrder = async (req, res) => {
   const { token } = req.query;
+
+  if (!token) {
+    return res.status(400).json({ error: "Token no proporcionado" });
+  }
 
   try {
     const access_token = await getAccessToken();
@@ -63,36 +66,38 @@ export const captureOrder = async (req, res) => {
     const response = await fetch(`${PAY_PAL_API}/v1/checkout/orders/${token}/capture`, {
       method: "POST",
       headers: {
-        'Authorization': `Bearer ${access_token}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      },
     });
 
     const data = await response.json();
 
-    if (data.status === 'COMPLETED') {
-      const customId = data.purchase_units?.[0]?.payments?.captures?.[0]?.custom_id;
-
-      // ⚠️ A veces viene en purchase_units directamente, si no está en captures
-      const fallbackCustomId = data.purchase_units?.[0]?.custom_id || "";
-
-      const [id_empresa, id_techpoints] = (customId || fallbackCustomId || "").split("-");
-
-      if (!id_empresa || !id_techpoints) {
-        return res.status(400).json({ error: 'custom_id malformado o no encontrado' });
-      }
-
-      await puntosModel.asingarPuntos(id_empresa, id_techpoints);
-        return res.redirect(`http://localhost:5173/comprar-puntos`);
-    } else {
-      return res.status(400).json({ estado: 0, mensaje: 'Pago NO completado', data });
+    if (data.status !== "COMPLETED") {
+      return res.status(400).json({ estado: 0, mensaje: "Pago NO completado", data });
     }
 
+    // Buscar el custom_id desde distintas rutas posibles
+    const capture = data?.purchase_units?.[0]?.payments?.captures?.[0];
+    const purchaseUnit = data?.purchase_units?.[0];
+
+    const customId = capture?.custom_id || purchaseUnit?.custom_id || "";
+
+    const [id_empresa, id_techpoints] = customId.split("-");
+
+    if (!id_empresa || !id_techpoints) {
+      return res.status(400).json({ error: "custom_id malformado o no encontrado" });
+    }
+
+    await puntosModel.asingarPuntos(id_empresa, id_techpoints);
+
+    return res.redirect("http://localhost:5173/comprar-puntos");
   } catch (error) {
     console.error("Error al capturar la orden:", error);
-    return res.status(500).json({ error: "Error al capturar la orden" });
+    return res.status(500).json({ error: "Error interno al capturar la orden" });
   }
 };
+
 
 
 export const cancelOrder = async (req, res) =>{
