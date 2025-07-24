@@ -1,6 +1,7 @@
 
 import dotenv from 'dotenv';
-import * as puntosModel from '../models/puntos.model.js'
+import * as puntosModel from '../models/puntos.model.js';
+import * as techPointsModel from '../models/techPoints.model.js';
 dotenv.config();
 
 const PAY_PAL_API = process.env.PAY_PAL_API;
@@ -8,7 +9,8 @@ const PAY_PAL_CLIENTID = process.env.PAY_PAL_CLIENTID;
 const PAY_PAL_SECRETKEYS = process.env.PAY_PAL_SECRETKEYS;
 
 export const createOrder = async (req, res) => {
-  const { valor, id_empresa, id_techpoints } = req.body;
+  const {id_empresa, id_techpoints } = req.body;
+  const valor = await techPointsModel.obtenerPrecioPuntos(id_techpoints);
   const host = req.get('host');
   const protocol = req.protocol;
 
