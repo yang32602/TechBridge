@@ -81,7 +81,7 @@ export const captureOrder = async (req, res) => {
       }
 
       await puntosModel.asingarPuntos(id_empresa, id_techpoints);
-        return res.redirect(`${process.env.FE_URL}`);
+        return res.redirect(`http://localhost:5173/comprar-puntos`);
     } else {
       return res.status(400).json({ estado: 0, mensaje: 'Pago NO completado', data });
     }
@@ -94,7 +94,7 @@ export const captureOrder = async (req, res) => {
 
 
 export const cancelOrder = async (req, res) =>{
-    return res.status(200).json({mensaje: 'todo chillc el man cancelo'});
+        return res.redirect(`http://localhost:5173/comprar-puntos`);
 }
 
 
