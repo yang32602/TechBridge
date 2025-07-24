@@ -36,7 +36,7 @@ class UsuarioMobileModel {
     }
 
     // Mantener la función de actualización de Expo Push Token (ahora buscará en estudiantes/empresas)
-    static async updateExpoPushToken(specificUserId, userType, expoPushToken) {
+    static async updateExpoPushToken(specificUserId, userType, fcmToken) {
         try {
             let tableName;
             if (userType === 'estudiante') {
@@ -50,10 +50,48 @@ class UsuarioMobileModel {
             // Aquí el WHERE debe ser por el 'id' de la tabla 'estudiantes' o 'empresas',
             // no por 'id_usuario'. specificUserId es el id de la tabla estudiante/empresa.
             const query = `UPDATE ${tableName} SET fcmToken = ? WHERE id = ?`;
-            const [result] = await db.execute(query, [expoPushToken, specificUserId]);
+            const [result] = await db.execute(query, [fcmToken, specificUserId]);
             return result.affectedRows; // Retorna el número de filas afectadas
         } catch (error) {
             console.error('Error en updateExpoPushToken:', error);
+            throw error;
+        }
+    }
+    /*
+    // Nueva función para obtener el FCM Token de una empresa por su ID de empresa
+    static async getEmpresaFcmToken(idEmpresa) {
+        try {
+            const [rows] = await db.execute(
+                'SELECT fcmToken FROM empresas WHERE id = ?',
+                [idEmpresa]
+            );
+            return rows.length > 0 ? rows[0].fcmToken : null; // Retorna el token o null
+        } catch (error) {
+            console.error('Error en getEmpresaFcmToken:', error);
+            throw error;
+        }
+    }*/
+
+    // Nueva función para eliminar (poner a NULL) el token FCM
+    static async deleteFCMToken(specificUserId, userType) { // <--- AQUÍ VA LA FUNCIÓN, COMO MÉTODO ESTÁTICO
+        try {
+            let tableName;
+            if (userType === 'estudiante') {
+                tableName = 'estudiantes';
+            } else if (userType === 'empresa') {
+                tableName = 'empresas';
+            } else {
+                console.warn(`[DB Delete FCM] Tipo de usuario inválido: ${userType}`);
+                throw new Error('Tipo de usuario inválido para eliminar FCM Token.');
+            }
+
+            const query = `UPDATE ${tableName} SET fcmToken = NULL WHERE id = ?`;
+            const [result] = await db.execute(query, [specificUserId]);
+
+            console.log(`DB: Token FCM puesto a NULL para ${userType} ID ${specificUserId}. Filas afectadas: ${result.affectedRows}`);
+            return result.affectedRows;
+        } catch (error) {
+            console.error('Error en deleteFCMToken (modelo):', error); // Añadido (modelo) para distinguir logs
             throw error;
         }
     }

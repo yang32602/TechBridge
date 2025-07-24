@@ -4,6 +4,16 @@
 import messaging from '@react-native-firebase/messaging';
 import { Alert, Platform } from 'react-native';
 import { Router } from 'expo-router'; // Importa Router desde expo-router
+import { registerPushTokenOnBackend } from '../services/api'; // <--- ¡Importa tu función de API!
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
+
+// Define la interfaz para la información mínima del usuario que necesitamos
+interface UserInfoForFCM {
+  id: number;
+  userType: 'estudiante' | 'empresa';
+}
+
+
 /**
  * Solicita permisos para recibir notificaciones push y obtiene el token FCM del dispositivo.
  * @returns {Promise<string | undefined>} Token FCM o undefined si no se pudo obtener.
@@ -29,6 +39,22 @@ export async function registerForPushNotificationsAsync(): Promise<string | unde
     return undefined;
   }
 }
+
+async function getLoggedInUserInfo(): Promise<UserInfoForFCM | null> {
+  try {
+    const userId = await AsyncStorage.getItem('userId');
+    const userType = await AsyncStorage.getItem('userType'); // 'estudiante' o 'empresa'
+
+    if (userId && userType && (userType === 'estudiante' || userType === 'empresa')) {
+      return { id: parseInt(userId, 10), userType: userType as 'estudiante' | 'empresa' };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error al obtener info de usuario de AsyncStorage:', error);
+    return null;
+  }
+}
+
 
 /**
  * Función auxiliar para manejar la navegación basada en la carga útil de la notificación.
@@ -135,10 +161,18 @@ export function setupNotificationListeners(router: Router) {
   // Listener para tokens refrescados
   const unsubscribeOnTokenRefresh = messaging().onTokenRefresh(async token => {
     console.log('FCM Token refrescado:', token);
-    // Aquí deberías enviar el nuevo token a tu backend para actualizarlo
-    // Si el usuario está logeado, podrías usar registerPushTokenOnBackend aquí.
-    // Esto es crucial para asegurar que siempre tengas un token válido en tu DB.
-    // Considera una estrategia para reenviar el token si la app está en segundo plano.
+    // Intentar obtener la información del usuario ANTES de enviar el token
+    const userInfo = await getLoggedInUserInfo();
+    if (userInfo) {
+      try {
+        await registerPushTokenOnBackend(userInfo.id, userInfo.userType, token);
+        console.log('Token FCM refrescado enviado al backend con éxito para usuario:', userInfo.id);
+      } catch (error) {
+        console.error('Error al enviar FCM Token refrescado al backend:', error);
+      }
+    } else {
+      console.warn('Usuario no logeado o sin info en AsyncStorage para enviar token FCM refrescado.');
+    }
   });
 
   return () => {

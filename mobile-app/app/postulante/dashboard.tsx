@@ -1,7 +1,7 @@
 // mobile-app/app/postulante/dashboard.tsx 
 import React, {useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, BackHandler, Alert, Button, Platform} from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Para manejar la sesión
 
@@ -102,40 +102,41 @@ export default function PostulanteDashboard() {
     );
   }, []); // El useCallback envuelve la función para que no se recree en cada render
 
-  // Hook para manejar el botón de retroceso físico del dispositivo (Android)
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert(
-        "Salir de la aplicación",
-        "¿Estás seguro de que quieres cerrar la sesión o salir de la aplicación?",
-        [
-          {
-            text: "Cancelar",
-            onPress: () => null,
-            style: "cancel"
-          },
-          {
-            text: "Cerrar Sesión",
-            onPress: handleLogout, // Llama a la función de cerrar sesión
-          },
-          {
-            text: "Salir",
-            onPress: () => BackHandler.exitApp(), // Cierra la aplicación
-            style: 'destructive'
-          }
-        ],
-        { cancelable: false }
+  useFocusEffect( // <-- Cambiado de useEffect
+    useCallback(() => {
+      const backAction = () => {
+        Alert.alert(
+          "Salir de la aplicación",
+          "¿Estás seguro de que quieres cerrar la sesión o salir de la aplicación?",
+          [
+            {
+              text: "Cancelar",
+              onPress: () => null,
+              style: "cancel"
+            },
+            {
+              text: "Cerrar Sesión",
+              onPress: handleLogout,
+            },
+            {
+              text: "Salir",
+              onPress: () => BackHandler.exitApp(),
+              style: 'destructive'
+            }
+          ],
+          { cancelable: false }
+        );
+        return true;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
       );
-      return true; // Indica que hemos manejado el evento de retroceso
-    };
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove(); // Limpia el listener al desmontar
-  }, [handleLogout]); // Asegúrate de que handleLogout esté en las dependencias
+      return () => backHandler.remove();
+    }, [handleLogout]) // El useCallback interno asegura que el efecto solo se re-ejecute si handleLogout cambia
+  ); // <-- Cerrado de useFocusEffect
 
   return (
     <View style={styles.container}>

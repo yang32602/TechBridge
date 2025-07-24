@@ -15,6 +15,7 @@ import {
 import { useFonts } from 'expo-font';
 import { router, type RelativePathString, type ExternalPathString } from 'expo-router';
 import * as Device from 'expo-device';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Importa tus funciones API y de notificaciones
 import { loginUser, registerPushTokenOnBackend } from '../src/services/api';
@@ -77,49 +78,62 @@ export default function LoginScreen() {
       console.log('LoginScreen: loginResponse después de llamar a loginUser:', loginResponse); // <-- Añade esto
       // 2. Si el login es exitoso, obtener el token de notificación del dispositivo
       if (loginResponse && loginResponse.userId && loginResponse.userType && loginResponse.token) {
-        // 3. Obtener el token de notificación del dispositivo
-        const fcmToken = await registerForPushNotificationsAsync();
-        console.log('🎉 Expo Push Token OBTENIDO DESDE LA APP:', fcmToken); // ¡IMPORTANTE!
+        // --- INICIO: LÓGICA CLAVE PARA ALMACENAR Y REGISTRAR FCM TOKEN ---
 
-        // Añade una alerta para que el token se muestre en la pantalla del dispositivo/emulador
+        // 2. Guardar la información del usuario en AsyncStorage
+        // Esto es CRUCIAL para que _layout.tsx y firebaseNotifications.ts puedan acceder a ellos
+        await AsyncStorage.setItem('userToken', loginResponse.token);
+        await AsyncStorage.setItem('userId', String(loginResponse.userId)); // Guardar como string
+        await AsyncStorage.setItem('userType', loginResponse.userType);
+
+        // 3. Obtener el token de notificación del dispositivo (FCM Token)
+        const fcmToken = await registerForPushNotificationsAsync();
+        console.log('🎉 FCM Token OBTENIDO DESPUÉS DEL LOGIN:', fcmToken); // Log importante
+
+        // Opcional: Mostrar el token en una alerta para depuración. ¡Remover en producción!
         if (fcmToken) {
-            Alert.alert(
-                'Token Obtenido',
-                `Tu Expo Push Token es:\n\n${fcmToken}\n\nCópialo para Postman.`,
-                [{ text: 'OK' }]
+            // Alert.alert(
+            //     'Token FCM Obtenido',
+            //     `Tu FCM Token es:\n\n${fcmToken}\n\nCópialo para Postman/Firebase Console.`,
+            //     [{ text: 'OK' }]
+            // );
+        } else {
+            console.warn('No se pudo obtener el FCM Token después del login.');
+            // Alert.alert('Error', 'No se pudo obtener el token de notificaciones. Las notificaciones podrían no funcionar.');
+        }
+
+        // 4. Enviar el token FCM y los datos del usuario al backend
+        if (fcmToken) {
+          try {
+            await registerPushTokenOnBackend(
+              loginResponse.userId,
+              loginResponse.userType,
+              fcmToken,
+              loginResponse.token // Pasa el token de sesión (JWT) para autenticar la petición
             );
-        } else {
-            Alert.alert('Error', 'No se pudo obtener el Expo Push Token.');
+            console.log('Token FCM registrado con éxito en el backend después del login.');
+          } catch (fcmRegisterError) {
+            console.error('Error al registrar FCM Token en backend después del login:', fcmRegisterError);
+            Alert.alert('Error de Notificaciones', 'No se pudo registrar el dispositivo para notificaciones push. Por favor, reintenta más tarde.');
+          }
         }
-        // 4. Enviar el token de notificación y los datos del usuario al backend
-        if (fcmToken) {
-          await registerPushTokenOnBackend(
-            loginResponse.userId,
-            loginResponse.userType, // Usa el userType que viene del backend
-            fcmToken,
-            loginResponse.token // Pasa el token de sesión (JWT) para autenticar la petición
-          );
-          console.log('Token de notificación registrado con éxito en el backend.');
-        } else {
-          console.warn('No se pudo obtener el token de Expo Push para registrar.');
-        }
+
+        // --- FIN: LÓGICA CLAVE PARA ALMACENAR Y REGISTRAR FCM TOKEN ---
+
 
         // 5. Navegar a la pantalla principal después de un login exitoso y registro de token
         if (loginResponse.userType === 'estudiante') {
-          router.replace('/postulante/dashboard' as RelativePathString | ExternalPathString); // Redirigir al dashboard del postulante
+          router.replace('/postulante/dashboard' as RelativePathString | ExternalPathString);
         } else if (loginResponse.userType === 'empresa') {
-          router.replace('/empresa/dashboard' as RelativePathString | ExternalPathString); // Redirigir al dashboard de la empresa
+          router.replace('/empresa/dashboard' as RelativePathString | ExternalPathString);
         } else {
-          // En caso de que el userType devuelto por el backend no sea ni 'postulante' ni 'empresa'
           Alert.alert('Error de inicio de sesión', 'Tipo de usuario no reconocido. Por favor, contacta a soporte.');
         }
 
       } else {
-        // En caso de una respuesta exitosa pero con datos incompletos (raro si el backend está bien)
-        console.log('LoginScreen: loginResponse es incompleto o falsy:', loginResponse); // <-- Añade esto
+        console.log('LoginScreen: loginResponse es incompleto o falsy:', loginResponse);
         Alert.alert('Error de inicio de sesión', loginResponse?.mensaje || 'Credenciales inválidas o datos de usuario incompletos recibidos.');
       }
-
     } catch (error: any) {
       // Manejo de errores de la API (ej. 401 Credenciales inválidas, Network request failed)
       console.error('Error durante el inicio de sesión o registro de token:', error);
