@@ -141,7 +141,10 @@ export const vacantePorID = async (id_vacante) => {
       v.ubicacion, 
       v.fecha_publicacion,
       v.id_empresa,
-      e.nombre AS nombre_empresa
+      e.nombre AS nombre_empresa,
+      v.responsabilidades,
+      v.requisitos,
+      v.beneficios
     FROM vacantes v
     JOIN empresas e ON v.id_empresa = e.id
     WHERE v.id = ?
