@@ -140,7 +140,7 @@ export default function PostulanteDetailScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Información Personal</Text>
           <TextoVisible><Ionicons name="person-outline" size={14} /> Nombre: {postulante.nombre_completo}</TextoVisible>
-          <TextoVisible><Ionicons name="calendar-outline" size={14} /> Fecha de nacimiento: {postulante.fecha_nacimiento ? postulante.fecha_nacimiento.split('T')[0] : 'No disponible'}</TextoVisible>
+          <TextoVisible><Ionicons name="calendar-outline" size={14} /> Fecha de nacimiento: {postulante.fecha_nacimiento && postulante.fecha_nacimiento.includes('T') ? postulante.fecha_nacimiento.split('T')[0] : postulante.fecha_nacimiento || 'No disponible'}</TextoVisible>
           <TextoVisible><Ionicons name="id-card-outline" size={14} /> Cédula: {postulante.cedula || 'No disponible'}</TextoVisible>
           <TextoVisible><Ionicons name="location-outline" size={14} /> País: {postulante.pais}</TextoVisible>
           {postulante.provincia && (
@@ -167,7 +167,7 @@ export default function PostulanteDetailScreen() {
             postulante.experiencia.map((exp, index) => (
               <View key={index} style={styles.detailItem}>
                 <TextoBloqueado><Ionicons name="briefcase-outline" size={14} /> {exp.titulo ? 'Información bloqueada' : 'No disponible'}</TextoBloqueado>
-                <TextoBloqueado>{exp.empresa_o_institucion ? 'Información bloqueada' : 'No disponible'} - {exp.fecha_inicio.split('T')[0] ? 'Información bloqueada' : 'No disponible'} a {exp.fecha_fin ? 'Información bloqueada' : 'No disponible'}</TextoBloqueado>
+                <TextoBloqueado>{exp.empresa_o_institucion ? 'Información bloqueada' : 'No disponible'} - {exp.fecha_inicio && exp.fecha_inicio.includes('T') ? 'Información bloqueada' : exp.fecha_inicio || 'No disponible'} a {exp.fecha_fin ? 'Información bloqueada' : 'No disponible'}</TextoBloqueado>
               </View>
             ))
           ) : (

@@ -18,7 +18,7 @@ import * as Device from 'expo-device';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Importa tus funciones API y de notificaciones
-import { loginUser, registerPushTokenOnBackend } from '../src/services/api';
+import { loginUser, registerPushTokenOnBackend, validateToken, clearSession } from '../src/services/api';
 import { registerForPushNotificationsAsync } from '../src/utils/firebaseNotifications';
 
 // Obtener el ancho de la pantalla para estilos responsivos si es necesario
@@ -55,7 +55,8 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'estudiante' | 'empresa'>('estudiante');
-  const [rememberMe, setRememberMe] = useState(false); // Para el checkbox
+  const [showPassword, setShowPassword] = useState(false);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
 
   // Carga de fuentes (asegúrate de que los archivos estén en assets/fonts)
   const [fontsLoaded] = useFonts({
@@ -65,6 +66,49 @@ export default function LoginScreen() {
     'LeagueSpartan-SemiBold': require('../assets/fonts/LeagueSpartan-SemiBold.ttf'), // Ajusta la ruta
     'Inter-SemiBold': require('../assets/fonts/Inter_28pt-SemiBold.ttf'),        // Ajusta la ruta
   });
+
+  // Verificar si ya hay una sesión activa al cargar la pantalla
+  useEffect(() => {
+    const checkExistingSession = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('userId');
+        const userType = await AsyncStorage.getItem('userType');
+        const userToken = await AsyncStorage.getItem('userToken');
+
+        if (userId && userType && userToken && (userType === 'estudiante' || userType === 'empresa')) {
+          console.log('Sesión existente encontrada en login screen. Validando token...');
+          
+          // Validar si el token sigue siendo válido
+          const isTokenValid = await validateToken();
+          
+          if (isTokenValid) {
+            console.log('Token válido en login screen. Redirigiendo...');
+            
+            // Pequeño delay para evitar conflictos con navegación de notificaciones
+            setTimeout(() => {
+              // Redirigir al dashboard correspondiente
+              if (userType === 'estudiante') {
+                router.replace('/postulante/dashboard' as RelativePathString | ExternalPathString);
+              } else if (userType === 'empresa') {
+                router.replace('/empresa/dashboard' as RelativePathString | ExternalPathString);
+              }
+            }, 100);
+          } else {
+            console.log('Token expirado en login screen. Limpiando sesión...');
+            // Limpiar la sesión si el token no es válido
+            await clearSession();
+          }
+        }
+      } catch (error) {
+        console.error('Error al verificar sesión existente:', error);
+      }
+    };
+
+    if (fontsLoaded) {
+      // Verificar inmediatamente sin esperar
+      checkExistingSession();
+    }
+  }, [fontsLoaded]);
 
   const handleLogin = async () => {
     setIsLoading(true); // Mostrar indicador de carga
@@ -203,24 +247,18 @@ export default function LoginScreen() {
                 placeholderTextColor={Colors.neutrals40}
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry
+                secureTextEntry={!showPassword}
               />
+              <TouchableOpacity
+                style={styles.eyeIcon}
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <Text style={styles.eyeIconText}>
+                  {showPassword ? '🙈' : '👁️'}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-          
-          <TouchableOpacity style={styles.rememberMe} onPress={() => setRememberMe(!rememberMe)}>
-            <View style={styles.checkbox}>
-              <Image
-                style={styles.checkboxChecked}
-                source={{
-                  uri: rememberMe
-                    ? 'https://c.animaapp.com/mOfRBxl8/img/checkbox-checked3.svg'
-                    : 'https://c.animaapp.com/mOfRBxl8/img/checkbox-unchecked.svg', // Asegúrate de tener esta imagen
-                }}
-              />
-              <Text style={styles.div}>Recordarme en este dispositivo</Text>
-            </View>
-          </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.divWrapper}
@@ -406,28 +444,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.neutrals100,
   },
-  rememberMe: {
-    width: '100%',
-    height: 26,
+  eyeIcon: {
+    padding: 8,
     justifyContent: 'center',
-  },
-  checkbox: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
   },
-  checkboxChecked: {
-    width: 24,
-    height: 24,
-    resizeMode: 'contain',
-  },
-  div: {
-    fontFamily: FontFamilies.epilogueRegular,
-    fontSize: 16,
-    letterSpacing: 0,
-    lineHeight: 16 * 1.6,
-    color: Colors.neutrals80,
-    marginTop: -1,
+  eyeIconText: {
+    fontSize: 18,
   },
   divWrapper: {
     paddingVertical: 12,
