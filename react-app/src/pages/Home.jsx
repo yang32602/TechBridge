@@ -198,7 +198,7 @@ const Home = () => {
                 }}
               ></div>
               <div className="testimonial-content">
-                <h4 className="testimonial-name">Pepe Ganga</h4>
+                <h4 className="testimonial-name">Hernesto Perez</h4>
                 <p className="testimonial-text">
                   "me pareció una plataforma súper útil. Me ayudó a mostrar mis
                   habilidades reales con pruebas técnicas"
@@ -215,7 +215,7 @@ const Home = () => {
                 }}
               ></div>
               <div className="testimonial-content">
-                <h4 className="testimonial-name">Pepe Ganga</h4>
+                <h4 className="testimonial-name">Francisco Clark</h4>
                 <p className="testimonial-text">
                   "me pareció una plataforma súper útil. Me ayudó a mostrar mis
                   habilidades reales con pruebas técnicas"
@@ -232,7 +232,7 @@ const Home = () => {
                 }}
               ></div>
               <div className="testimonial-content">
-                <h4 className="testimonial-name">Pepe Ganga</h4>
+                <h4 className="testimonial-name">Mike Foreman</h4>
                 <p className="testimonial-text">
                   "me pareció una plataforma súper útil. Me ayudó a mostrar mis
                   habilidades reales con pruebas técnicas"
@@ -251,7 +251,7 @@ const Home = () => {
                 }}
               ></div>
               <div className="testimonial-content">
-                <h4 className="testimonial-name">Pepe Ganga</h4>
+                <h4 className="testimonial-name">Astrid Johnson</h4>
                 <p className="testimonial-text">
                   "me pareció una plataforma súper útil. Me ayudó a mostrar mis
                   habilidades reales con pruebas técnicas"
@@ -268,9 +268,9 @@ const Home = () => {
                 }}
               ></div>
               <div className="testimonial-content">
-                <h4 className="testimonial-name">Pepe Ganga</h4>
+                <h4 className="testimonial-name">James Medina</h4>
                 <p className="testimonial-text">
-                  "me pareció una plataforma súper ��til. Me ayudó a mostrar mis
+                  "me pareció una plataforma súper útil. Me ayudó a mostrar mis
                   habilidades reales con pruebas técnicas"
                 </p>
               </div>
@@ -285,7 +285,7 @@ const Home = () => {
                 }}
               ></div>
               <div className="testimonial-content">
-                <h4 className="testimonial-name">Pepe Ganga</h4>
+                <h4 className="testimonial-name">Hugo Rovira</h4>
                 <p className="testimonial-text">
                   "me pareció una plataforma súper útil. Me ayudó a mostrar mis
                   habilidades reales con pruebas técnicas"
