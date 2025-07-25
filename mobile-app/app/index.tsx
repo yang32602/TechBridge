@@ -16,6 +16,7 @@ import { useFonts } from 'expo-font';
 import { router, type RelativePathString, type ExternalPathString } from 'expo-router';
 import * as Device from 'expo-device';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 
 // Importa tus funciones API y de notificaciones
 import { loginUser, registerPushTokenOnBackend, validateToken, clearSession } from '../src/services/api';
@@ -134,18 +135,6 @@ export default function LoginScreen() {
         const fcmToken = await registerForPushNotificationsAsync();
         console.log('🎉 FCM Token OBTENIDO DESPUÉS DEL LOGIN:', fcmToken); // Log importante
 
-        // Opcional: Mostrar el token en una alerta para depuración. ¡Remover en producción!
-        if (fcmToken) {
-            // Alert.alert(
-            //     'Token FCM Obtenido',
-            //     `Tu FCM Token es:\n\n${fcmToken}\n\nCópialo para Postman/Firebase Console.`,
-            //     [{ text: 'OK' }]
-            // );
-        } else {
-            console.warn('No se pudo obtener el FCM Token después del login.');
-            // Alert.alert('Error', 'No se pudo obtener el token de notificaciones. Las notificaciones podrían no funcionar.');
-        }
-
         // 4. Enviar el token FCM y los datos del usuario al backend
         if (fcmToken) {
           try {
@@ -253,9 +242,11 @@ export default function LoginScreen() {
                 style={styles.eyeIcon}
                 onPress={() => setShowPassword(!showPassword)}
               >
-                <Text style={styles.eyeIconText}>
-                  {showPassword ? '🙈' : '👁️'}
-                </Text>
+                <Ionicons 
+                  name={showPassword ? 'eye-off-outline' : 'eye-outline'} 
+                  size={20} 
+                  color={Colors.neutrals80} 
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -448,9 +439,6 @@ const styles = StyleSheet.create({
     padding: 8,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  eyeIconText: {
-    fontSize: 18,
   },
   divWrapper: {
     paddingVertical: 12,
