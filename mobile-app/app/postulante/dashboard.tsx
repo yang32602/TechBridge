@@ -86,11 +86,15 @@ export default function PostulanteDashboard() {
           text: "Sí, cerrar sesión",
           onPress: async () => {
             try {
-              await AsyncStorage.removeItem('userToken'); // Elimina el token de sesión
-              // Elimina cualquier otro dato de sesión si es necesario
-              // await AsyncStorage.clear(); // Opcional: para limpiar todo lo de AsyncStorage
-
-              router.replace('/'); // Redirige a la pantalla de login (index.tsx)
+              // Limpiar completamente todos los datos de sesión
+              await AsyncStorage.removeItem('userToken');
+              await AsyncStorage.removeItem('userId');
+              await AsyncStorage.removeItem('userType');
+              
+              console.log('Sesión cerrada correctamente. Datos de AsyncStorage eliminados.');
+              
+              // Redirigir a la pantalla de login
+              router.replace('/');
             } catch (e) {
               console.error("Error al cerrar sesión:", e);
               Alert.alert("Error", "No se pudo cerrar la sesión.");

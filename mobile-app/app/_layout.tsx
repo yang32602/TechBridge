@@ -6,7 +6,7 @@ import { Platform } from 'react-native'; // Asegúrate de importar Platform si l
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { registerForPushNotificationsAsync, setupNotificationListeners } from '../src/utils/firebaseNotifications';
-import { registerPushTokenOnBackend } from '../src/services/api'; // Para el token inicial
+import { registerPushTokenOnBackend, validateToken, clearSession } from '../src/services/api'; // Para el token inicial
 
 async function getAuthUserInfoFromStorage(): Promise<{ id: number; userType: 'estudiante' | 'empresa'; token: string } | null> {
   try {
@@ -39,18 +39,33 @@ export default function RootLayout() {
       setCurrentUserInfo(userInfo); // Guarda la info del usuario en el estado
 
       if (userInfo) {
-        console.log('Usuario ya autenticado en el almacenamiento. Intentando registrar FCM token.');
-        const fcmToken = await registerForPushNotificationsAsync();
-        if (fcmToken) {
-          try {
-            console.log('🎉 FCM Token OBTENIDO DESDE LA APP (inicial):', fcmToken);
-            await registerPushTokenOnBackend(userInfo.id, userInfo.userType, fcmToken);
-            console.log('Token FCM inicial registrado con éxito en el backend.');
-          } catch (error) {
-            console.error('Error al registrar el token FCM inicial en el backend:', error);
+        console.log('Usuario encontrado en almacenamiento. Validando token...');
+        
+        // Validar si el token sigue siendo válido
+        const isTokenValid = await validateToken();
+        
+        if (isTokenValid) {
+          console.log('Token válido en _layout. Solo registrando FCM token...');
+          
+          // NO redirigir desde aquí, dejar que index.tsx maneje la redirección
+          // Solo registrar FCM token en segundo plano
+          const fcmToken = await registerForPushNotificationsAsync();
+          if (fcmToken) {
+            try {
+              console.log('🎉 FCM Token OBTENIDO DESDE LA APP (inicial):', fcmToken);
+              await registerPushTokenOnBackend(userInfo.id, userInfo.userType, fcmToken);
+              console.log('Token FCM inicial registrado con éxito en el backend.');
+            } catch (error) {
+              console.error('Error al registrar el token FCM inicial en el backend:', error);
+            }
+          } else {
+            console.warn('No se pudo obtener el FCM Token inicial para el usuario autenticado.');
           }
         } else {
-          console.warn('No se pudo obtener el FCM Token inicial para el usuario autenticado.');
+          console.log('Token expirado o inválido. Limpiando sesión...');
+          // Limpiar la sesión si el token no es válido
+          await clearSession();
+          setCurrentUserInfo(null);
         }
       } else {
         console.log('No hay usuario autenticado en el almacenamiento al iniciar la app.');

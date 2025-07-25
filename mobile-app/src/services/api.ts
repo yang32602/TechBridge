@@ -130,6 +130,83 @@ export const loginUser = async (
   }
 };
 
+// Función para validar si el token sigue siendo válido
+export const validateToken = async (): Promise<boolean> => {
+  try {
+    const userToken = await AsyncStorage.getItem('userToken');
+    const userType = await AsyncStorage.getItem('userType');
+    
+    if (!userToken || !userType) {
+      console.log('validateToken: No hay token o userType en storage');
+      return false;
+    }
+
+    // Verificar si el token está expirado localmente (decodificar JWT)
+    try {
+      const tokenParts = userToken.split('.');
+      if (tokenParts.length !== 3) {
+        console.log('validateToken: Token JWT malformado');
+        return false;
+      }
+      
+      const payload = JSON.parse(atob(tokenParts[1]));
+      const currentTime = Math.floor(Date.now() / 1000);
+      
+      if (payload.exp && payload.exp < currentTime) {
+        console.log('validateToken: Token expirado localmente');
+        return false;
+      } else {
+        console.log('validateToken: Token válido localmente, exp:', new Date(payload.exp * 1000));
+        // Si el token es válido localmente, no necesitamos validar con el backend
+        // ya que los endpoints de validación no existen en el backend
+        console.log('validateToken: Token válido, no se requiere validación adicional del backend');
+        return true;
+      }
+    } catch (jwtError) {
+      console.error('validateToken: Error al decodificar JWT:', jwtError);
+      return false;
+    }
+  } catch (error: any) {
+    console.error('validateToken: Error al validar token:', error.message);
+    // En caso de error, asumir que el token es válido para evitar logout forzado
+    console.log('validateToken: Error en validación, asumiendo token válido por seguridad');
+    return true;
+  }
+};
+
+// Función para limpiar completamente la sesión
+export const clearSession = async (): Promise<void> => {
+  try {
+    await AsyncStorage.removeItem('userToken');
+    await AsyncStorage.removeItem('userId');
+    await AsyncStorage.removeItem('userType');
+    console.log('Sesión limpiada completamente');
+  } catch (error) {
+    console.error('Error clearing session:', error);
+  }
+};
+
+// Función para obtener información de la sesión actual
+export const getCurrentSession = async (): Promise<{ id: number; userType: 'estudiante' | 'empresa'; token: string } | null> => {
+  try {
+    const userId = await AsyncStorage.getItem('userId');
+    const userType = await AsyncStorage.getItem('userType');
+    const userToken = await AsyncStorage.getItem('userToken');
+
+    if (userId && userType && userToken && (userType === 'estudiante' || userType === 'empresa')) {
+      return { 
+        id: parseInt(userId, 10), 
+        userType: userType as 'estudiante' | 'empresa', 
+        token: userToken 
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting current session:', error);
+    return null;
+  }
+};
+
 // Puedes añadir aquí otras funciones para interactuar con tu API...
 
 // NUEVAS FUNCIONES PARA LOS ENDPOINTS CREADOS
