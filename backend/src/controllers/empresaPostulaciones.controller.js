@@ -1,7 +1,7 @@
 import * as vacantesModel from '../models/vacantes.model.js';
 
 // Obtener lista de postulantes para una empresa
-export const getPostulantesPorEmpresa = async (req, res) => {
+export const obtenerPostulantesPorEmpresa = async (req, res) => {
   const { id } = req.params; // id empresa
   if (!id) {
     return res.status(400).json({ error: 'Falta el ID de la empresa' });

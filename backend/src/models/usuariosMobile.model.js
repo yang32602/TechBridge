@@ -3,7 +3,7 @@ import db from '../config/db.js'; // Importa tu conexión a la base de datos
 
 class UsuarioMobileModel {
     // Nueva función para encontrar un usuario por correo en la tabla 'usuarios'
-    static async findUsuarioByCorreo(correo) {
+    static async buscarUsuarioCorreo(correo) {
         try {
             const [rows] = await db.execute('SELECT id, tipo, contrasena FROM usuarios WHERE correo = ?', [correo]);
             return rows.length > 0 ? rows[0] : null; // Retorna el usuario o null
@@ -14,7 +14,7 @@ class UsuarioMobileModel {
     }
 
     // Nueva función para obtener el ID de estudiante dado el ID de usuario
-    static async getEstudianteIdByUsuarioId(idUsuario) {
+    static async obtenerEstudiantePorUsuarioId(idUsuario) {
         try {
             const [rows] = await db.execute('SELECT id FROM estudiantes WHERE id_usuario = ?', [idUsuario]);
             return rows.length > 0 ? rows[0].id : null; // Retorna el id de estudiante o null
@@ -25,7 +25,7 @@ class UsuarioMobileModel {
     }
 
     // Nueva función para obtener el ID de empresa dado el ID de usuario
-    static async getEmpresaIdByUsuarioId(idUsuario) {
+    static async obtenerEmpresaPorUsuarioId(idUsuario) {
         try {
             const [rows] = await db.execute('SELECT id FROM empresas WHERE id_usuario = ?', [idUsuario]);
             return rows.length > 0 ? rows[0].id : null; // Retorna el id de empresa o null
@@ -35,8 +35,8 @@ class UsuarioMobileModel {
         }
     }
 
-    // Mantener la función de actualización de Expo Push Token (ahora buscará en estudiantes/empresas)
-    static async updateExpoPushToken(specificUserId, userType, fcmToken) {
+    // Mantener la función de actualización de FcmToken (ahora buscará en estudiantes/empresas)
+    static async actualizarFCMToken(specificUserId, userType, fcmToken) {
         try {
             let tableName;
             if (userType === 'estudiante') {
@@ -51,29 +51,14 @@ class UsuarioMobileModel {
             // no por 'id_usuario'. specificUserId es el id de la tabla estudiante/empresa.
             const query = `UPDATE ${tableName} SET fcmToken = ? WHERE id = ?`;
             const [result] = await db.execute(query, [fcmToken, specificUserId]);
-            return result.affectedRows; // Retorna el número de filas afectadas
+            return result.affectedRows; 
         } catch (error) {
             console.error('Error en updateExpoPushToken:', error);
             throw error;
         }
     }
-    /*
-    // Nueva función para obtener el FCM Token de una empresa por su ID de empresa
-    static async getEmpresaFcmToken(idEmpresa) {
-        try {
-            const [rows] = await db.execute(
-                'SELECT fcmToken FROM empresas WHERE id = ?',
-                [idEmpresa]
-            );
-            return rows.length > 0 ? rows[0].fcmToken : null; // Retorna el token o null
-        } catch (error) {
-            console.error('Error en getEmpresaFcmToken:', error);
-            throw error;
-        }
-    }*/
-
     // Nueva función para eliminar (poner a NULL) el token FCM
-    static async deleteFCMToken(specificUserId, userType) { // <--- AQUÍ VA LA FUNCIÓN, COMO MÉTODO ESTÁTICO
+    static async eliminarFCMToken(specificUserId, userType) { 
         try {
             let tableName;
             if (userType === 'estudiante') {

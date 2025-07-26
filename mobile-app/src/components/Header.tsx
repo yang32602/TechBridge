@@ -3,15 +3,15 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Para iconos
 import { router } from 'expo-router'; // Para navegación
-import { Colors, FontFamilies, Spacing } from '../constants/theme'; // Asegúrate de la ruta correcta
+import { Colors, FontFamilies, Spacing } from '../constants/theme'; 
 
 interface HeaderProps {
-  title?: string; // Título opcional, si no hay logo
+  title?: string; 
   showLogo?: boolean;
   onNotificationsPress?: () => void;
   onMenuPress?: () => void; // Para un posible menú hamburguesa
   userType?: 'estudiante' | 'empresa'; // Para adaptar iconos/rutas
-  showBackButton?: boolean; // <-- AÑADIR ESTA LÍNEA
+  showBackButton?: boolean; 
    onLogoutPress?: () => void; // NUEVO: Prop para la función de cerrar sesión
 }
 
@@ -42,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({
       {/* Contenedor Izquierdo: Botón de retroceso O Botón de Menú */}
       <View style={[
         styles.leftContainer,
-        { width: showBackButton ? 40 : Spacing.xs } // Aplica el ancho aquí dinámicamente
+        { width: showBackButton ? 40 : Spacing.xs } 
       ]}>
         {showBackButton ? (
           <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
@@ -61,8 +61,8 @@ const Header: React.FC<HeaderProps> = ({
       <View style={styles.centerContainer}>
         {showLogo ? (
           <Image
-            style={styles.logo} // El estilo `logo` ahora controlará la posición directamente
-            source={{ uri: 'https://c.animaapp.com/mOfRBxl8/img/logo-3.png' }} // Tu logo
+            style={styles.logo} 
+            source={{ uri: 'https://c.animaapp.com/mOfRBxl8/img/logo-3.png' }} 
           />
         ) : (
           <Text style={styles.headerTitle}>{title}</Text>
@@ -74,13 +74,11 @@ const Header: React.FC<HeaderProps> = ({
           {onNotificationsPress !== null && ( // Permite que se oculte explícitamente
             <TouchableOpacity onPress={handleNotificationsPress} style={styles.iconButton}>
               <Ionicons name="notifications-outline" size={24} color={Colors.neutrals100} />
-              {/* Opcional: Contador de notificaciones */}
-              {/* <View style={styles.notificationBadge}><Text style={styles.badgeText}>1</Text></View> */}
             </TouchableOpacity>
           )}
           {onLogoutPress && ( // NUEVO: Muestra el botón de cerrar sesión si la prop está presente
             <TouchableOpacity onPress={onLogoutPress} style={styles.iconButton}>
-              <Ionicons name="log-out-outline" size={24} color={Colors.danger} /> {/* Usar un color distintivo */}
+              <Ionicons name="log-out-outline" size={24} color={Colors.danger} /> 
             </TouchableOpacity>
           )}
       </View>
@@ -94,7 +92,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingHorizontal: Spacing.md, // Ya tiene padding aquí
+    paddingHorizontal: Spacing.md, 
     paddingBottom: Spacing.md,
     backgroundColor: Colors.neutrals0,
     borderBottomWidth: 1,
@@ -113,14 +111,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    width: 'auto', // Mantenemos un ancho fijo para que los iconos siempre tengan su espacio
+    width: 'auto', 
     justifyContent: 'flex-end',
   },
   logo: {
     width: 120,
     height: 40,
     resizeMode: 'contain',
-    marginLeft: -Spacing.sm * 2, // Mueve el logo más a la izquierda, puedes ajustar el multiplicador
+    marginLeft: -Spacing.sm * 2, 
   },
   headerTitle: {
     fontFamily: FontFamilies.leagueSpartanSemiBold,
@@ -130,10 +128,10 @@ const styles = StyleSheet.create({
     textAlign: 'left'
   },
   iconButton: {
-    padding: Spacing.xs, // Este padding es el que da espacio alrededor de la campanita
+    padding: Spacing.xs, 
   },
   placeholder: {
-    width: Spacing.md, // Ajusta este ancho para controlar el espacio cuando no hay botón izquierdo
+    width: Spacing.md, 
   },
 });
 

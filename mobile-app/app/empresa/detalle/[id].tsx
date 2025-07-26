@@ -1,13 +1,12 @@
-// mobile-app/app/empresa/detalle/[id].tsx (NUEVO ARCHIVO)
-
+// mobile-app/app/empresa/detalle/[id].tsx 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Platform, TextProps } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Platform} from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import Header from '../../../src/components/Header';
 import { Colors, FontFamilies, Spacing } from '../../../src/constants/theme';
-import { getDetalleEstudiante } from '../../../src/services/api';
+import { obtenerDetalleEstudiante } from '../../../src/services/api';
 
 interface PostulanteProfileData {
   id: string;
@@ -43,7 +42,7 @@ interface PostulanteProfileData {
   cv?: string;
 }
 
-export default function PostulanteDetailScreen() {
+export default function PostulanteDetalleScreen() {
   const { id } = useLocalSearchParams();
   const [postulante, setPostulante] = useState<PostulanteProfileData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -56,13 +55,13 @@ export default function PostulanteDetailScreen() {
       return;
     }
 
-    const fetchPostulanteDetails = async () => {
+    const cargarPostulanteDetalle = async () => {
       try {
         setLoading(true);
         setError(null);
 
         const idString = Array.isArray(id) ? id[0] : id;
-        const data = await getDetalleEstudiante(idString);
+        const data = await obtenerDetalleEstudiante(idString);
         setPostulante(data);
       } catch (e: any) {
         console.error(`Error al cargar detalles del postulante ${id}:`, e);
@@ -72,7 +71,7 @@ export default function PostulanteDetailScreen() {
       }
     };
 
-    fetchPostulanteDetails();
+    cargarPostulanteDetalle();
   }, [id]);
 
   if (loading) {

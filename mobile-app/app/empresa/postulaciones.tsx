@@ -1,6 +1,6 @@
 // mobile-app/app/empresa/postulaciones.tsx 
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform, Image } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,18 +8,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Header from '../../src/components/Header';
 import { Colors, FontFamilies, Spacing } from '../../src/constants/theme';
-import { getPostulantesPorEmpresa } from '../../src/services/api';
+import { obtenerPostulantesPorEmpresa } from '../../src/services/api';
 import { useFocusEffect } from '@react-navigation/native';
 
 // Define una interfaz para los datos de cada postulante
 interface PostulanteData {
-  id_usuario: string; // ID del postulante
-  id_estudiante: string; // ID del estudiante para detalle
+  id_usuario: string; 
+  id_estudiante: string; 
   nombre_completo: string;
   pais: string;
   provincia?: string;
   foto_perfil?: string;
-  // Puedes añadir más campos aquí según lo que tu API devuelva
 }
 
 // Componente para una fila de postulante en la lista
@@ -62,7 +61,7 @@ const PostulanteListItem: React.FC<PostulanteData & { onPress: (id: string) => v
 };
 
 // --- Main Postulaciones Screen Component ---
-export default function PostulacionesScreen() {
+export default function PantallaPostulaciones() {
   const [postulantes, setPostulantes] = useState<PostulanteData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +80,7 @@ export default function PostulacionesScreen() {
         return;
       }
 
-      const data = await getPostulantesPorEmpresa(idEmpresa);
+      const data = await obtenerPostulantesPorEmpresa(idEmpresa);
 
       // Mapear para usar id_estudiante en lugar de id_usuario para detalle
       const mappedData = data.map((postulante: any) => ({
@@ -102,7 +101,7 @@ export default function PostulacionesScreen() {
     }, [])
   );
 
-  const handlePostulantePress = (postulanteId: string) => {
+  const eventoClickPostulante = (postulanteId: string) => {
     console.log(`Navegando al perfil del postulante: ${postulanteId}`);
     // Como el id en detalle es id_estudiante, no id_usuario, pasamos id_estudiante
     const postulanteSeleccionado = postulantes.find(p => p.id_usuario === postulanteId);
@@ -141,7 +140,7 @@ export default function PostulacionesScreen() {
               <PostulanteListItem
                 key={postulante.id_usuario}
                 {...postulante} // Pasa todas las propiedades del objeto postulante como props
-                onPress={handlePostulantePress} // Pasa la función de navegación
+                onPress={eventoClickPostulante} // Pasa la función de navegación
               />
             ))}
           </View>

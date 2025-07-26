@@ -17,7 +17,7 @@ router.patch('/actualizar', empresaController.actualizarCampoEmpresa);
 router.post('/reclutar', empresaController.reclutarEstudiante);
 
 // Nuevas rutas para postulantes y nuevas postulaciones
-router.get('/:id/postulantes', empresaPostulacionesController.getPostulantesPorEmpresa);
+router.get('/:id/postulantes', empresaPostulacionesController.obtenerPostulantesPorEmpresa);
 
 router.get('/:id/nuevas-postulaciones', empresaPostulacionesController.getNuevasPostulaciones);
 

@@ -1,5 +1,5 @@
 import * as vacanteModel from '../models/vacantes.model.js'
-import { sendNewApplicationNotification } from '../utils/pushNotifications.js';
+import { enviarNewAppNotificacion } from '../utils/pushNotifications.js';
 
 //obtener vacantes
 export const obtenerVacantesPorUsuario = async (req, res) => {
@@ -51,9 +51,9 @@ export const postulacionVacante = async (req, res) => {
         console.log(`[Postulacion] Postulación ${idPostulacion} registrada para usuario ${id_usuario} en vacante ${id_vacante}.`);
 
         // 2. Obtener los detalles necesarios para la notificación
-        const notificationDetails = await vacanteModel.obtenerNotifiacionDetails(id_vacante, id_usuario);
+        const notificationDetails = await vacanteModel.obtenerNotificacionDetalles(id_vacante, id_usuario);
 
-        // 3. Opcional: Obtener el nombre del estudiante para la notificación
+        // 3. Obtener el nombre del estudiante para la notificación
         const nombreEstudiante = await vacanteModel.obtenerEstudianteNombre(id_usuario);
         console.log(`[Postulacion] Nombre del estudiante para notificación: ${nombreEstudiante}`);
 
@@ -61,16 +61,16 @@ export const postulacionVacante = async (req, res) => {
         if (notificationDetails && 
             notificationDetails.empresa_fcmToken && 
             notificationDetails.estudiante_id && 
-            notificationDetails.empresa_id) { // <-- ¡IMPORTANTE: Asegúrate de que este campo exista!
+            notificationDetails.empresa_id) { 
             
             console.log(`[Postulacion] Detalles para notificación encontrados:`, notificationDetails);
             
             // 4. Enviar la notificación a la empresa
             // Ahora pasamos el empresa_id real
-            await sendNewApplicationNotification(
+            await enviarNewAppNotificacion(
                 notificationDetails.empresa_fcmToken,
-                notificationDetails.estudiante_id, // Este es el ID del estudiante (id_usuario)
-                notificationDetails.empresa_id,    // <-- ¡Aquí pasamos el ID real de la empresa!
+                notificationDetails.estudiante_id, 
+                notificationDetails.empresa_id,    
                 nombreEstudiante
             );
             console.log('[Postulacion] Notificación de nueva postulación enviada a la empresa.');

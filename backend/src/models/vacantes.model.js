@@ -277,14 +277,7 @@ export const obtenerVacantesPostuladasPorEstudiante = async (id_estudiante) => {
   return rows;
 };
 
-/**
- * Obtiene los IDs necesarios (ID de estudiante, ID de empresa, FCM token de empresa)
- * para enviar una notificación después de una postulación.
- * @param {number} idVacante - El ID de la vacante a la que se postuló.
- * @param {number} idUsuarioEstudiante - El ID del usuario (estudiante) que se postuló.
- * @returns {Promise<{estudiante_id: number, empresa_id: number, empresa_fcmToken: string} | null>}
- */
-export const obtenerNotifiacionDetails = async (id_vacante, id_usuario) => {
+export const obtenerNotificacionDetalles = async (id_vacante, id_usuario) => {
     try {
         const sql = `
             SELECT

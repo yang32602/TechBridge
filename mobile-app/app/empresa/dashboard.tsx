@@ -1,5 +1,5 @@
 // mobile-app/app/empresa/dashboard.tsx
-import React, { useState, useEffect, useCallback } from 'react'; // Importa useCallback
+import React, { useState, useCallback } from 'react'; // Importa useCallback
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Platform, BackHandler, Alert } from 'react-native'; // Importa BackHandler y Alert
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // Para ma
 
 import Header from '../../src/components/Header'; // Ajusta la ruta
 import { Colors, FontFamilies, Spacing } from '../../src/constants/theme'; // Ajusta la ruta
-import { getNuevasPostulaciones } from '../../src/services/api'; // Importar función API
+import { obtenerNuevasPostulaciones } from '../../src/services/api';
 
 // Define una interfaz para los datos de la vacante (para el resumen de vacantes)
 interface VacancySummaryData {
@@ -107,8 +107,7 @@ export default function EmpresaDashboard() {
     );
   }, []);
 
-  // --- CAMBIO AQUÍ: Usar useFocusEffect en lugar de useEffect ---
-  useFocusEffect( // <-- Cambiado de useEffect
+  useFocusEffect( 
     useCallback(() => {
       const backAction = () => {
         Alert.alert(
@@ -141,12 +140,12 @@ export default function EmpresaDashboard() {
       );
 
       return () => backHandler.remove();
-    }, [handleLogout]) // El useCallback interno asegura que el efecto solo se re-ejecute si handleLogout cambia
-  ); // <-- Cerrado de useFocusEffect
+    }, [handleLogout]) 
+  ); 
 
 
   // Función para cargar estadísticas reales
-  const fetchStats = async () => {
+  const cargarEstadisticas = async () => {
     try {
       setLoadingStats(true);
       setErrorStats(null);
@@ -159,7 +158,7 @@ export default function EmpresaDashboard() {
       }
 
       // Obtener conteo real de nuevas postulaciones (por semana)
-      const nuevasPostulacionesData = await getNuevasPostulaciones(idEmpresa, 'semana');
+      const nuevasPostulacionesData = await obtenerNuevasPostulaciones(idEmpresa, 'semana');
       setNewApplicationsCount(nuevasPostulacionesData.count);
       
       // Mantener datos simulados para las otras estadísticas por ahora
@@ -172,7 +171,7 @@ export default function EmpresaDashboard() {
     }
   };
 
-  const fetchVacanciesSummary = async () => {
+  const cargarResumenVacantes = async () => {
     try {
       setLoadingVacancies(true);
       setErrorVacancies(null);
@@ -226,41 +225,37 @@ export default function EmpresaDashboard() {
   // Actualizar cuando la pantalla se enfoca
   useFocusEffect(
     useCallback(() => {
-      fetchStats();
-      fetchVacanciesSummary();
+      cargarEstadisticas();
+      cargarResumenVacantes();
     }, [])
   );
 
-  const handlePublishVacancy = () => {
-    // Aquí podrías navegar a la pantalla de publicación de vacantes
-    // router.push('/empresa/publicar-vacante');
+  const manejoPublicarVacante = () => {
+    // Aquí implementar la lógica para publicar una nueva vacante;
     console.log('Publicar Vacante');
   };
 
-  const handleStatCardPress = (label: string) => {
-    console.log(`Presionaste la tarjeta: ${label}`);
+  const manejoCartasToque = (label: string) => {
     if (label === "Nuevas postulaciones") {
-      router.push('/empresa/postulaciones'); // Navega a la pantalla de listado de postulaciones
+      router.push('/empresa/postulaciones'); 
     } else if (label === "Vacantes activas") {
-      // router.push('/empresa/vacantes-activas'); // O a una página que liste solo las vacantes activas
+      // router.push('/empresa/vacantes-activas'); 
     }
-    // Añade más lógica de navegación para otras tarjetas si las necesitas
+
   };
 
   const handleVacancyCardPress = (vacancyId: string) => {
     console.log(`Navegando al detalle de la vacante: ${vacancyId}`);
-    // Asumiendo que tienes una ruta para el detalle de la vacante de la empresa:
     // router.push(`/empresa/vacantes/${vacancyId}`); // O una ruta similar
   };
 
   return (
     <View style={styles.container}>
-      {/* Pasa showLogo en true y onLogoutPress */}
       <Header
         userType="empresa"
         showLogo={true}
-        onNotificationsPress={() => router.push('/empresa/notificaciones')} // Ajusta esta ruta si es diferente
-        onLogoutPress={handleLogout} // PASAR LA FUNCIÓN AQUÍ para que aparezca el botón
+        onNotificationsPress={() => router.push('/empresa/notificaciones')} 
+        onLogoutPress={handleLogout} 
       />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -273,7 +268,7 @@ export default function EmpresaDashboard() {
 
         {/* Sección de Acciones Rápidas */}
         <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.primaryButton} onPress={handlePublishVacancy}>
+          <TouchableOpacity style={styles.primaryButton} onPress={manejoPublicarVacante}>
             <Ionicons name="add-circle-outline" size={20} color={Colors.neutrals0} />
             <Text style={styles.primaryButtonText}>Publicar Vacante</Text>
           </TouchableOpacity>
@@ -291,19 +286,19 @@ export default function EmpresaDashboard() {
                 count={activeVacanciesCount !== null ? activeVacanciesCount : '-'}
                 label="Vacantes activas"
                 color={Colors.primary}
-                onPress={() => handleStatCardPress("Vacantes activas")}
+                onPress={() => manejoCartasToque("Vacantes activas")}
               />
               <StatCard
                 count={newApplicationsCount !== null ? newApplicationsCount : '-'}
                 label="Nuevas postulaciones"
                 color={Colors.success}
-                onPress={() => handleStatCardPress("Nuevas postulaciones")}
+                onPress={() => manejoCartasToque("Nuevas postulaciones")}
               />
               <StatCard
                 count={sentRequestsCount !== null ? sentRequestsCount : '-'}
                 label="Solicitudes enviadas"
                 color={Colors.secondary}
-                onPress={() => handleStatCardPress("Solicitudes enviadas")}
+                onPress={() => manejoCartasToque("Solicitudes enviadas")}
               />
             </>
           )}
@@ -349,8 +344,8 @@ export default function EmpresaDashboard() {
                   modality={vacancy.modality}
                   appliedCount={vacancy.appliedCount}
                   totalSpots={vacancy.totalSpots}
-                  vacancyId={vacancy.id} // Pasar el ID real de la vacante
-                  onPress={handleVacancyCardPress} // Pasar la función de manejo de clic
+                  vacancyId={vacancy.id} 
+                  onPress={handleVacancyCardPress} 
                 />
               ))}
             </ScrollView>

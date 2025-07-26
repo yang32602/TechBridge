@@ -1,4 +1,3 @@
-//mobile-app/app/index.tsx
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -7,26 +6,17 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  Dimensions,
-  Platform,
   Alert,
   ActivityIndicator
 } from 'react-native';
 import { useFonts } from 'expo-font';
 import { router, type RelativePathString, type ExternalPathString } from 'expo-router';
-import * as Device from 'expo-device';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 
-// Importa tus funciones API y de notificaciones
-import { loginUser, registerPushTokenOnBackend, validateToken, clearSession } from '../src/services/api';
-import { registerForPushNotificationsAsync } from '../src/utils/firebaseNotifications';
+import { iniciarSesionUsuario, registrarTokenPushEnBackend, validarToken, limpiarSesion } from '../src/services/api';
+import { registrarPushNotificacionesAsync } from '../src/utils/firebaseNotifications';
 
-// Obtener el ancho de la pantalla para estilos responsivos si es necesario
-const { width } = Dimensions.get('window');
-
-// Estilos de color y fuente (adaptados de tu styleguide.css)
-// Puedes crear un archivo separado para esto, ej: src/constants/colors.ts, src/constants/fonts.ts
 const Colors = {
   neutrals100: '#25324B',
   neutrals40: '#A8ADBB',
@@ -35,20 +25,16 @@ const Colors = {
   black: '#202430',
   brandsSecondary: '#CCCCF5',
   neutrals20: '#D6DDEB',
-  techBridgeBlue: '#0A5CB8', // De tu css para el color del botón y links
-  techBridgeLightBlue: '#C2DFFF', // Color de fondo del tab "Postulante"
+  techBridgeBlue: '#0A5CB8',
+  techBridgeLightBlue: '#C2DFFF',
 };
 
-// Se necesitan las fuentes en el proyecto
-// Asegúrate de tener los archivos .ttf de estas fuentes en tu carpeta assets/fonts/
-// o similar, y cárgalas correctamente.
-// Aquí solo simulamos que ya están cargadas.
 const FontFamilies = {
-  epilogueSemiBold: 'Epilogue-SemiBold', // Mapping for font loading
+  epilogueSemiBold: 'Epilogue-SemiBold',
   epilogueRegular: 'Epilogue-Regular',
-  epilogueBold: 'Epilogue-Bold', // For button-normal-font-weight: 700
-  leagueSpartanSemiBold: 'LeagueSpartan-SemiBold', // For 32px title
-  interSemiBold: 'Inter-SemiBold', // For "Crea una cuenta"
+  epilogueBold: 'Epilogue-Bold',
+  leagueSpartanSemiBold: 'LeagueSpartan-SemiBold',
+  interSemiBold: 'Inter-SemiBold',
 };
 
 export default function LoginScreen() {
@@ -59,18 +45,16 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
 
-  // Carga de fuentes (asegúrate de que los archivos estén en assets/fonts)
   const [fontsLoaded] = useFonts({
-    'Epilogue-SemiBold': require('../assets/fonts/Epilogue-SemiBold.ttf'), // Ajusta la ruta
-    'Epilogue-Regular': require('../assets/fonts/Epilogue-Regular.ttf'),   // Ajusta la ruta
-    'Epilogue-Bold': require('../assets/fonts/Epilogue-Bold.ttf'),         // Ajusta la ruta
-    'LeagueSpartan-SemiBold': require('../assets/fonts/LeagueSpartan-SemiBold.ttf'), // Ajusta la ruta
-    'Inter-SemiBold': require('../assets/fonts/Inter_28pt-SemiBold.ttf'),        // Ajusta la ruta
+    'Epilogue-SemiBold': require('../assets/fonts/Epilogue-SemiBold.ttf'),
+    'Epilogue-Regular': require('../assets/fonts/Epilogue-Regular.ttf'),
+    'Epilogue-Bold': require('../assets/fonts/Epilogue-Bold.ttf'),
+    'LeagueSpartan-SemiBold': require('../assets/fonts/LeagueSpartan-SemiBold.ttf'),
+    'Inter-SemiBold': require('../assets/fonts/Inter_28pt-SemiBold.ttf'),
   });
 
-  // Verificar si ya hay una sesión activa al cargar la pantalla
   useEffect(() => {
-    const checkExistingSession = async () => {
+    const checkSesionExistente = async () => {
       try {
         const userId = await AsyncStorage.getItem('userId');
         const userType = await AsyncStorage.getItem('userType');
@@ -80,14 +64,13 @@ export default function LoginScreen() {
           console.log('Sesión existente encontrada en login screen. Validando token...');
           
           // Validar si el token sigue siendo válido
-          const isTokenValid = await validateToken();
+          const isTokenValid = await validarToken();
           
           if (isTokenValid) {
             console.log('Token válido en login screen. Redirigiendo...');
             
             // Pequeño delay para evitar conflictos con navegación de notificaciones
             setTimeout(() => {
-              // Redirigir al dashboard correspondiente
               if (userType === 'estudiante') {
                 router.replace('/postulante/dashboard' as RelativePathString | ExternalPathString);
               } else if (userType === 'empresa') {
@@ -97,7 +80,7 @@ export default function LoginScreen() {
           } else {
             console.log('Token expirado en login screen. Limpiando sesión...');
             // Limpiar la sesión si el token no es válido
-            await clearSession();
+            await limpiarSesion();
           }
         }
       } catch (error) {
@@ -106,43 +89,38 @@ export default function LoginScreen() {
     };
 
     if (fontsLoaded) {
-      // Verificar inmediatamente sin esperar
-      checkExistingSession();
+      checkSesionExistente();
     }
   }, [fontsLoaded]);
 
-  const handleLogin = async () => {
+  const manejoLogin = async () => {
     setIsLoading(true); // Mostrar indicador de carga
     try {
       // 1. Intentar iniciar sesión con el backend
       // Se pasa un objeto con 'correo' y 'contrasena' (nombres de campos que espera tu backend)
       // Se pasa 'activeTab' para que loginUser sepa qué endpoint usar
-      const loginResponse = await loginUser({ correo: email, contrasena: password }, activeTab);
+      const loginResponse = await iniciarSesionUsuario({ correo: email, contrasena: password }, activeTab);
       // loginResponse debería ser un objeto como: { userId: 1, userType: 'postulante', token: 'tu_jwt_aqui' }
 
       console.log('LoginScreen: loginResponse después de llamar a loginUser:', loginResponse); // <-- Añade esto
       // 2. Si el login es exitoso, obtener el token de notificación del dispositivo
       if (loginResponse && loginResponse.userId && loginResponse.userType && loginResponse.token) {
-        // --- INICIO: LÓGICA CLAVE PARA ALMACENAR Y REGISTRAR FCM TOKEN ---
-
-        // 2. Guardar la información del usuario en AsyncStorage
-        // Esto es CRUCIAL para que _layout.tsx y firebaseNotifications.ts puedan acceder a ellos
         await AsyncStorage.setItem('userToken', loginResponse.token);
-        await AsyncStorage.setItem('userId', String(loginResponse.userId)); // Guardar como string
+        await AsyncStorage.setItem('userId', String(loginResponse.userId));
         await AsyncStorage.setItem('userType', loginResponse.userType);
 
         // 3. Obtener el token de notificación del dispositivo (FCM Token)
-        const fcmToken = await registerForPushNotificationsAsync();
+        const fcmToken = await registrarPushNotificacionesAsync();
         console.log('🎉 FCM Token OBTENIDO DESPUÉS DEL LOGIN:', fcmToken); // Log importante
 
         // 4. Enviar el token FCM y los datos del usuario al backend
         if (fcmToken) {
           try {
-            await registerPushTokenOnBackend(
+            await registrarTokenPushEnBackend(
               loginResponse.userId,
               loginResponse.userType,
               fcmToken,
-              loginResponse.token // Pasa el token de sesión (JWT) para autenticar la petición
+              loginResponse.token
             );
             console.log('Token FCM registrado con éxito en el backend después del login.');
           } catch (fcmRegisterError) {
@@ -151,18 +129,13 @@ export default function LoginScreen() {
           }
         }
 
-        // --- FIN: LÓGICA CLAVE PARA ALMACENAR Y REGISTRAR FCM TOKEN ---
-
-
-        // 5. Navegar a la pantalla principal después de un login exitoso y registro de token
         if (loginResponse.userType === 'estudiante') {
           router.replace('/postulante/dashboard' as RelativePathString | ExternalPathString);
         } else if (loginResponse.userType === 'empresa') {
           router.replace('/empresa/dashboard' as RelativePathString | ExternalPathString);
         } else {
-          Alert.alert('Error de inicio de sesión', 'Tipo de usuario no reconocido. Por favor, contacta a soporte.');
+          Alert.alert('Error de inicio de sesión', 'Tipo de usuario no reconocido.');
         }
-
       } else {
         console.log('LoginScreen: loginResponse es incompleto o falsy:', loginResponse);
         Alert.alert('Error de inicio de sesión', loginResponse?.mensaje || 'Credenciales inválidas o datos de usuario incompletos recibidos.');
@@ -172,7 +145,7 @@ export default function LoginScreen() {
       console.error('Error durante el inicio de sesión o registro de token:', error);
       Alert.alert('Error', error.message || 'Ocurrió un error inesperado al iniciar sesión.');
     } finally {
-      setIsLoading(false); // Ocultar indicador de carga
+      setIsLoading(false);
     }
   };
 
@@ -192,13 +165,13 @@ export default function LoginScreen() {
         <View style={styles.frame}>
           <View style={styles.signUpOptions}>
             <TouchableOpacity
-              style={[styles.tabBase, activeTab === 'estudiante' ? styles.activeTab : styles.inactiveTab]} // Modificado
+              style={[styles.tabBase, activeTab === 'estudiante' ? styles.activeTab : styles.inactiveTab]}
               onPress={() => setActiveTab('estudiante')}
             >
               <Text style={[styles.caption, activeTab === 'estudiante' && styles.activeCaption]}>Postulante</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.tabBase, activeTab === 'empresa' ? styles.activeTab : styles.inactiveTab]} // Modificado
+              style={[styles.tabBase, activeTab === 'empresa' ? styles.activeTab : styles.inactiveTab]}
               onPress={() => setActiveTab('empresa')}
             >
               <Text style={[styles.caption, activeTab === 'empresa' && styles.activeCaption]}>Empresa</Text>
@@ -253,7 +226,7 @@ export default function LoginScreen() {
 
           <TouchableOpacity
             style={styles.divWrapper}
-            onPress={handleLogin}
+            onPress={manejoLogin}
             disabled={isLoading}
           >
             {isLoading ? (
@@ -344,10 +317,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.techBridgeLightBlue,
   },
   inactiveTab: {
-    backgroundColor: Colors.neutrals0, // El color de fondo cuando NO está activo
-    // Aquí puedes añadir un borde si quieres diferenciarlos más cuando están inactivos
-    // borderWidth: 1,
-    // borderColor: Colors.neutrals20,
+    backgroundColor: Colors.neutrals0, 
   },
   activeCaption: {
     color: Colors.techBridgeBlue,
@@ -358,9 +328,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 7,
     paddingHorizontal: 12,
-    // NO pongas backgroundColor aquí if you want 'inactiveTab' to define it
-    // or if the global background of the tab container is already neutral.
-    // You could put a borderRadius or a border here if it's common for both.
   },
   captionWrapper: {
     flexDirection: 'row',

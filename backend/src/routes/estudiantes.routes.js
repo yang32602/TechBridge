@@ -39,6 +39,6 @@ router.delete('/experiencia', estudiantesController.eliminarExperienciaControlle
 router.delete('/educacion', estudiantesController.eliminarEducacionController);
 
 // Nuevo endpoint para detalle completo del estudiante
-router.get('/detalle/:id', estudiantesController.getDetalleEstudiante);
+router.get('/detalle/:id', estudiantesController.obtenerDetalleEstudiante);
 
 export default router;
