@@ -68,7 +68,10 @@ export const actualizarCampoVacante = async (id_vacante, campo, valor) => {
     "fecha_publicacion",
     "salario",
     "modalidad",
-    "requisitos"
+    "requisitos",
+    "responsabilidades",
+    "requisitos",
+    "beneficios"
   ];
 
   if (!camposPermitidos.includes(campo)) {
