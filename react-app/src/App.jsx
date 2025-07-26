@@ -20,6 +20,7 @@ import {
   TechnicalTestResult,
   ComprarPuntos,
   Vacantes,
+  VacanteDetail,
   Terminos,
   Privacidad,
   Cookies,
@@ -34,7 +35,7 @@ import "./assets/dashboard-styles.css";
 // Componente wrapper para usar hooks dentro del router
 const AppContent = () => {
   const location = useLocation();
-  const hideHeaderFooter = /^\/(login|register|dashboard|comprar-puntos|technical-tests|postulaciones|vacantes-aplicadas|profile-company|profile-student)(\/.*)?$/.test(
+  const hideHeaderFooter = /^\/(login|register|dashboard|comprar-puntos|technical-tests|postulaciones|vacantes-aplicadas|profile-company|profile-student|vacante)(\/.*)?$/.test(
     location.pathname,
   );
 
@@ -68,6 +69,7 @@ const AppContent = () => {
         />
         <Route path="/comprar-puntos" element={<ComprarPuntos />} />
         <Route path="/vacantes" element={<Vacantes />} />
+        <Route path="/vacante/:vacanteId" element={<VacanteDetail />} />
         <Route path="/terminos" element={<Terminos />} />
         <Route path="/privacidad" element={<Privacidad />} />
         <Route path="/cookies" element={<Cookies />} />
