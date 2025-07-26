@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { FaFacebookF, FaInstagram, FaTwitter, FaTiktok } from "react-icons/fa";
 import logoImage from "../assets/Logo.png";
 
 const Footer = () => {
@@ -68,38 +69,42 @@ const Footer = () => {
         <p className="copyright">
           2024vbvv @ Techbridge. Todos los derechos reservados
         </p>
-        <div className="social-links">
+        <div className="social-links" style={{ display: "flex", gap: "10px" }}>
           <a
             href="https://www.facebook.com/"
             className="social-link"
             target="_blank"
             rel="noopener noreferrer"
+            style={{ fontSize: "1.5rem", color: "#3b5998" }}
           >
-            📘
+            <FaFacebookF />
           </a>
           <a
             href="https://www.instagram.com/"
             className="social-link"
             target="_blank"
             rel="noopener noreferrer"
+            style={{ fontSize: "1.5rem", color: "#E1306C" }}
           >
-            📷
+            <FaInstagram />
           </a>
           <a
             href="https://twitter.com/"
             className="social-link"
             target="_blank"
             rel="noopener noreferrer"
+            style={{ fontSize: "1.5rem", color: "#1DA1F2" }}
           >
-            🐦
+            <FaTwitter />
           </a>
           <a
             href="https://www.tiktok.com/"
             className="social-link"
             target="_blank"
             rel="noopener noreferrer"
+            style={{ fontSize: "1.5rem", color: "#000000" }}
           >
-            🌐
+            <FaTiktok />
           </a>
         </div>
       </div>
