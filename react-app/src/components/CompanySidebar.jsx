@@ -33,6 +33,31 @@ const CompanySidebar = ({ activeSection = "dashboard" }) => {
     navigate("/profile-company");
   };
 
+  const getInitials = (nombreCompleto) => {
+    if (!nombreCompleto) return "U";
+    const parts = nombreCompleto.trim().split(" ");
+    const firstInitial = parts[0]?.charAt(0).toUpperCase() || "";
+    const secondInitial = parts[1]?.charAt(0).toUpperCase() || "";
+    return firstInitial + secondInitial || "U";
+  };
+
+  // Generate random avatar color based on name
+  const getAvatarColor = (name) => {
+    const colors = [
+      "#0a5cb8", // Project blue
+      "#1e40af", // Blue 700
+      "#059669", // Emerald 600
+      "#dc2626", // Red 600
+      "#7c3aed", // Violet 600
+      "#ea580c", // Orange 600
+      "#0891b2", // Cyan 600
+      "#65a30d", // Lime 600
+    ];
+
+    const index = name?.length ? name.charCodeAt(0) % colors.length : 0;
+    return colors[index];
+  };
+
   const companyName = user?.realName || user?.name || "Empresa";
   const userEmail = user?.email || "empresa@email.com";
 
@@ -47,7 +72,7 @@ const CompanySidebar = ({ activeSection = "dashboard" }) => {
       id: "messages",
       icon: HiChat,
       label: "Mensajes",
-      onClick: () => {},
+      onClick: () => { },
       badge: 1,
     },
     {
@@ -75,13 +100,13 @@ const CompanySidebar = ({ activeSection = "dashboard" }) => {
       id: "contact",
       icon: HiCog,
       label: "Contáctanos",
-      onClick: () => {},
+      onClick: () => { },
     },
     {
       id: "help",
       icon: HiQuestionMarkCircle,
       label: "Centro de Ayuda",
-      onClick: () => {},
+      onClick: () => { },
     },
   ];
 
@@ -137,15 +162,15 @@ const CompanySidebar = ({ activeSection = "dashboard" }) => {
       {/* Perfil del Usuario */}
       <div className="sidebar-profile">
         <div className="profile-info">
-          <div className="profile-avatar">
-            <span>
-              {companyName
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .toUpperCase()
-                .slice(0, 2)}
-            </span>
+          <div
+            className="profile-avatar"
+            style={{
+              backgroundColor: getAvatarColor(
+                companyName,
+              ),
+            }}
+          >
+            {getInitials(companyName)}
           </div>
           <div className="profile-details">
             <h4>{companyName}</h4>
