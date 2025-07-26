@@ -48,7 +48,8 @@ sobremi VARCHAR(2000),
 github VARCHAR(200),
 lenguajes VARCHAR(2000),
 pais VARCHAR(100),
-contratado BOOLEAN DEFAULT FALSE, 
+contratado BOOLEAN DEFAULT FALSE,
+fcmToken VARCHAR(255), 
 CONSTRAINT fk_estudiante_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 
@@ -61,6 +62,7 @@ logo_url VARCHAR(150),
 descripcion VARCHAR(1000),
 telefono VARCHAR(30),
 id_usuario INT,
+fcmToken VARCHAR(255),
 CONSTRAINT fk_empresa_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 
@@ -98,6 +100,9 @@ id INT AUTO_INCREMENT PRIMARY KEY,
 id_empresa INT NOT NULL,
 titulo VARCHAR(100) NOT NULL,
 descripcion VARCHAR(10000) NOT NULL,
+responsabilidades TEXT NOT NULL,
+requisitos TEXT NOT NULL,
+beneficios TEXT NOT NULL,
 ubicacion VARCHAR(1000) NOT NULL,
 fecha_publicacion DATE,
 CONSTRAINT fk_vacante_empresa FOREIGN KEY (id_empresa) REFERENCES empresas(id)
@@ -108,7 +113,7 @@ id INT AUTO_INCREMENT PRIMARY KEY,
 id_usuario INT NOT NULL,
 id_vacante INT NOT NULL,
 fecha_postulacion DATE,
-estado BOOLEAN DEFAULT FALSE,
+estado ENUM('En espera', 'Rechazado', 'Aprobado') DEFAULT 'En espera',
 CONSTRAINT fk_postulacion_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
 CONSTRAINT fk_postulacion_vacante FOREIGN KEY (id_vacante) REFERENCES vacantes(id)
 );

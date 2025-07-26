@@ -232,14 +232,14 @@ const Register = () => {
             )}
 
             <div className="form-group">
-              <label htmlFor="email">Dirección de email</label>
+              <label htmlFor="email">Correo</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="Ingresa tu email"
+                placeholder="Ingresa tu correo"
               />
             </div>
 

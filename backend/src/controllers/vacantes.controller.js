@@ -1,4 +1,5 @@
 import * as vacanteModel from '../models/vacantes.model.js'
+import { enviarNewAppNotificacion } from '../utils/pushNotifications.js';
 
 //obtener vacantes
 export const obtenerVacantesPorUsuario = async (req, res) => {
@@ -45,16 +46,47 @@ export const postulacionVacante = async (req, res) => {
   }
 
   try {
-    const idPostulacion = await vacanteModel.postulacionVacante(id_usuario, id_vacante);
-    return res.status(200).json({
-      estado: 1,
-      mensaje: 'Postulación exitosa',
-      id: idPostulacion
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ estado: 0, mensaje: 'Error al postular' });
-  }
+    // 1. Registrar la postulación en la base de datos
+        const idPostulacion = await vacanteModel.postulacionVacante(id_usuario, id_vacante);
+        console.log(`[Postulacion] Postulación ${idPostulacion} registrada para usuario ${id_usuario} en vacante ${id_vacante}.`);
+
+        // 2. Obtener los detalles necesarios para la notificación
+        const notificationDetails = await vacanteModel.obtenerNotificacionDetalles(id_vacante, id_usuario);
+
+        // 3. Obtener el nombre del estudiante para la notificación
+        const nombreEstudiante = await vacanteModel.obtenerEstudianteNombre(id_usuario);
+        console.log(`[Postulacion] Nombre del estudiante para notificación: ${nombreEstudiante}`);
+
+        // Verificamos que tenemos todo lo necesario para la notificación
+        if (notificationDetails && 
+            notificationDetails.empresa_fcmToken && 
+            notificationDetails.estudiante_id && 
+            notificationDetails.empresa_id) { 
+            
+            console.log(`[Postulacion] Detalles para notificación encontrados:`, notificationDetails);
+            
+            // 4. Enviar la notificación a la empresa
+            // Ahora pasamos el empresa_id real
+            await enviarNewAppNotificacion(
+                notificationDetails.empresa_fcmToken,
+                notificationDetails.estudiante_id, 
+                notificationDetails.empresa_id,    
+                nombreEstudiante
+            );
+            console.log('[Postulacion] Notificación de nueva postulación enviada a la empresa.');
+        } else {
+            console.warn('[Postulacion] No se pudo enviar la notificación: FCM Token de empresa o ID de estudiante (de tabla estudiantes) no encontrado.');
+        }
+
+        return res.status(200).json({
+            estado: 1,
+            mensaje: 'Postulación exitosa',
+            id: idPostulacion
+        });
+    } catch (error) {
+        console.error('Error al postular o enviar notificación:', error);
+        return res.status(500).json({ estado: 0, mensaje: 'Error al postular' });
+    }
 };
 
 //Controlador para crear una nueva vacante
@@ -207,4 +239,6 @@ export const getVacantesPostuladas = async (req, res) => {
     res.status(500).json({ mensaje: "Error del servidor" });
   }
 };
+
+
 
