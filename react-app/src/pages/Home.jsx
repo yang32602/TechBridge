@@ -200,8 +200,7 @@ const Home = () => {
               <div className="testimonial-content">
                 <h4 className="testimonial-name">Hernesto Perez</h4>
                 <p className="testimonial-text">
-                  "me pareció una plataforma súper útil. Me ayudó a mostrar mis
-                  habilidades reales con pruebas técnicas"
+                  "La plataforma es muy intutitiva y me permitió encontrar oportunidades rápidamente. Me gustaría que hubiera más filtros en la busqueda de vacantes"
                 </p>
               </div>
             </div>
@@ -217,8 +216,7 @@ const Home = () => {
               <div className="testimonial-content">
                 <h4 className="testimonial-name">Francisco Clark</h4>
                 <p className="testimonial-text">
-                  "me pareció una plataforma súper útil. Me ayudó a mostrar mis
-                  habilidades reales con pruebas técnicas"
+                  "Me encanta el diseño limpio y lo fácil que fue registrarme. En general, la experiencia ha sido muy buena."
                 </p>
               </div>
             </div>
@@ -234,8 +232,7 @@ const Home = () => {
               <div className="testimonial-content">
                 <h4 className="testimonial-name">Mike Foreman</h4>
                 <p className="testimonial-text">
-                  "me pareció una plataforma súper útil. Me ayudó a mostrar mis
-                  habilidades reales con pruebas técnicas"
+                  "Encontré mi primera oportunidad laboral en pocos días. Sería genial contar con más opciones para personalizar mi perfil."
                 </p>
               </div>
             </div>
@@ -253,8 +250,7 @@ const Home = () => {
               <div className="testimonial-content">
                 <h4 className="testimonial-name">Astrid Johnson</h4>
                 <p className="testimonial-text">
-                  "me pareció una plataforma súper útil. Me ayudó a mostrar mis
-                  habilidades reales con pruebas técnicas"
+                  "El sistema funciona bien y el proceso es claro. A veces tarda un poco en cargar, pero nada grave."
                 </p>
               </div>
             </div>
@@ -270,8 +266,7 @@ const Home = () => {
               <div className="testimonial-content">
                 <h4 className="testimonial-name">James Medina</h4>
                 <p className="testimonial-text">
-                  "me pareció una plataforma súper útil. Me ayudó a mostrar mis
-                  habilidades reales con pruebas técnicas"
+                  "Me ayudó a conectar con varias empresas en poco tiempo. Agregar un chat directo con reclutadores sería un plus."
                 </p>
               </div>
             </div>
@@ -287,8 +282,7 @@ const Home = () => {
               <div className="testimonial-content">
                 <h4 className="testimonial-name">Hugo Rovira</h4>
                 <p className="testimonial-text">
-                  "me pareció una plataforma súper útil. Me ayudó a mostrar mis
-                  habilidades reales con pruebas técnicas"
+                  "El sistema de registro fue sencillo y rápido. Me gustaría que agregaran más espacios para mostrar mis proyectos."
                 </p>
               </div>
             </div>
