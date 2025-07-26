@@ -56,7 +56,7 @@ export const actualizarCampoEmpresa = async (req, res) => {
             return res.status(400).json({ error: 'Faltan datos necesarios: id_usuario, campo o valor' });
         }
 
-        const resultado = await actualizarCampoEmpresa(id_usuario, campo, valor);
+        const resultado = await empresaModel.actualizarCampoEmpresa(id_usuario, campo, valor);
 
         if (resultado.affectedRows === 0) {
             return res.status(404).json({ mensaje: 'No se encontró la empresa para actualizar o el campo no cambió' });
