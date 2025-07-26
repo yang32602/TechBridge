@@ -1,4 +1,64 @@
+// backend/src/models/vacantes.model.js
+// Agregar al inicio del archivo
 import db from '../config/db.js'
+
+// Obtener lista de postulantes para una empresa
+export const obtenerPostulantesPorEmpresa = async (id_empresa) => {
+  const sql = `
+    SELECT 
+      u.id AS id_usuario,
+      e.id AS id_estudiante,
+      e.nombre_completo,
+      e.pais,
+      e.provincia,
+      u.foto_perfil
+    FROM postulacion p
+    JOIN vacantes v ON p.id_vacante = v.id
+    JOIN usuarios u ON p.id_usuario = u.id
+    JOIN estudiantes e ON u.id = e.id_usuario
+    WHERE v.id_empresa = ?
+    GROUP BY u.id, e.id, e.nombre_completo, e.pais, e.provincia, u.foto_perfil
+  `;
+  try {
+    const [rows] = await db.query(sql, [id_empresa]);
+    return rows;
+  } catch (error) {
+    console.error("Error al obtener postulantes por empresa:", error);
+    throw error;
+  }
+};
+
+// Contar nuevas postulaciones por periodo (día o semana)
+export const contarNuevasPostulaciones = async (id_empresa, periodo) => {
+  let fechaInicio;
+  if (periodo === 'dia') {
+    fechaInicio = new Date();
+    fechaInicio.setHours(0, 0, 0, 0);
+  } else if (periodo === 'semana') {
+    fechaInicio = new Date();
+    const day = fechaInicio.getDay();
+    const diff = fechaInicio.getDate() - day + (day === 0 ? -6 : 1);
+    fechaInicio.setDate(diff);
+    fechaInicio.setHours(0, 0, 0, 0);
+  } else {
+    throw new Error("Periodo inválido. Use 'dia' o 'semana'.");
+  }
+
+  const sql = `
+    SELECT COUNT(*) AS count
+    FROM postulacion p
+    JOIN vacantes v ON p.id_vacante = v.id
+    WHERE v.id_empresa = ? AND p.fecha_postulacion >= ?
+  `;
+
+  try {
+    const [rows] = await db.query(sql, [id_empresa, fechaInicio]);
+    return rows[0].count;
+  } catch (error) {
+    console.error("Error al contar nuevas postulaciones:", error);
+    throw error;
+  }
+};
 
 //obetenr vacantes
 export const obtenerVacantesPorIDEmpesa = async (id_empresa) => {
@@ -217,4 +277,49 @@ export const obtenerVacantesPostuladasPorEstudiante = async (id_estudiante) => {
   `;
   const [rows] = await db.query(sql, [id_estudiante]);
   return rows;
+};
+
+export const obtenerNotificacionDetalles = async (id_vacante, id_usuario) => {
+    try {
+        const sql = `
+            SELECT
+                e.id AS estudiante_id,            -- ID del estudiante de la tabla 'estudiantes'
+                emp.id AS empresa_id,             -- ID de la empresa de la tabla 'empresas'
+                emp.fcmToken AS empresa_fcmToken  -- FCM Token de la empresa
+            FROM
+                postulacion p
+            JOIN
+                vacantes v ON p.id_vacante = v.id
+            JOIN
+                empresas emp ON v.id_empresa = emp.id
+            JOIN
+                usuarios u_estudiante ON p.id_usuario = u_estudiante.id
+            JOIN
+                estudiantes e ON u_estudiante.id = e.id_usuario
+            WHERE
+                p.id_vacante = ? AND p.id_usuario = ?;
+        `;
+        const [rows] = await db.query(sql, [id_vacante, id_usuario]);
+        return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+        console.error('Error al obtener detalles para notificación:', error);
+        throw error;
+    }
+};
+
+export const obtenerEstudianteNombre = async (id_usuario) => {
+    try {
+        const sql = `
+            SELECT nombre_completo
+            FROM estudiantes
+            WHERE id_usuario = ?;
+        `;
+        const [rows] = await db.query(sql, [id_usuario]);
+        // Retorna el nombre o 'Un estudiante' como valor predeterminado
+        return rows.length > 0 ? rows[0].nombre_completo : 'Un estudiante';
+    } catch (error) {
+        console.error('Error al obtener nombre de estudiante por id_usuario:', error);
+        // Si hay un error, también retorna un valor predeterminado para no romper el flujo
+        return 'Un estudiante';
+    }
 };

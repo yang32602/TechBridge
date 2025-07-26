@@ -12,6 +12,41 @@ export const getEstudiantes = async (req, res) => {
     }
 };
 
+// Obtener detalle completo de estudiante por ID
+export const obtenerDetalleEstudiante = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({ error: 'Falta el ID del estudiante' });
+  }
+  try {
+    // Obtener datos básicos del estudiante
+    const estudiante = await estudiantesModel.getEstudianteById(id);
+    if (!estudiante) {
+      return res.status(404).json({ error: 'Estudiante no encontrado' });
+    }
+
+    // Obtener experiencia y educación
+    const experiencia = await estudiantesModel.obtenerExperienciasPorEstudiante(id);
+    const educacion = await estudiantesModel.obtenerEducacionesPorEstudiante(id);
+
+    // Obtener insignias (badges)
+    const insignias = await estudiantesModel.obtenerInsigniasPorUsuario(estudiante.id_usuario);
+
+    // Construir respuesta
+    const detalle = {
+      ...estudiante,
+      experiencia,
+      educacion,
+      insignias,
+    };
+
+    return res.status(200).json(detalle);
+  } catch (error) {
+    console.error('Error en getDetalleEstudiante:', error);
+    return res.status(500).json({ error: 'Error al obtener detalle del estudiante' });
+  }
+};
+
 // Insertar un nuevo estudiante
 export const insertEstudiante = async (req, res) => {
     try {
