@@ -70,6 +70,23 @@ const Header = () => {
       .toUpperCase();
   };
 
+  // Generate random avatar color based on name
+  const getAvatarColor = (name) => {
+    const colors = [
+      "#0a5cb8", // Project blue
+      "#1e40af", // Blue 700
+      "#059669", // Emerald 600
+      "#dc2626", // Red 600
+      "#7c3aed", // Violet 600
+      "#ea580c", // Orange 600
+      "#0891b2", // Cyan 600
+      "#65a30d", // Lime 600
+    ];
+
+    const index = name?.length ? name.charCodeAt(0) % colors.length : 0;
+    return colors[index];
+  };
+
   const getDisplayName = () => {
     if (user?.realName) return user.realName;
     if (user?.name && !["Estudiante", "Empresa"].includes(user.name)) {
@@ -119,6 +136,11 @@ const Header = () => {
                 className="user-avatar clickable"
                 onClick={handleAvatarClick}
                 title="Ver perfil"
+                style={{
+                  backgroundColor: getAvatarColor(
+                    getDisplayName(),
+                  ),
+                }}
               >
                 {getInitials(getDisplayName())}
               </div>

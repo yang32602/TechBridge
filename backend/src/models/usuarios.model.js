@@ -102,10 +102,10 @@ export const getUsuariosInsignia = async (id_estudiante) => {
 };
 
 export const usuarioContrasena = async (correo, contrasena) => {
-    const sql = `SELECT id, tipo, contrasena FROM usuarios WHERE contrasena = ?`;
+    const sql = `SELECT id, tipo, contrasena FROM usuarios WHERE correo = ?`;
 
     try {
-        const [rows] = await db.query(sql, [contrasena]);
+        const [rows] = await db.query(sql, [correo]);
 
         if (rows.length < 1) return false;
 

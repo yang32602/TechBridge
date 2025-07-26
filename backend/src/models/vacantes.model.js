@@ -128,7 +128,9 @@ export const actualizarCampoVacante = async (id_vacante, campo, valor) => {
     "fecha_publicacion",
     "salario",
     "modalidad",
-    "requisitos"
+    "requisitos",
+    "responsabilidades",
+    "beneficios"
   ];
 
   if (!camposPermitidos.includes(campo)) {
@@ -194,11 +196,11 @@ export const eliminarVacante = async (id_vacante) => {
 //mostrar vacante por id
 export const vacantePorID = async (id_vacante) => {
   const sql = `
-    SELECT 
-      v.id, 
-      v.titulo, 
-      v.descripcion, 
-      v.ubicacion, 
+    SELECT
+      v.id AS id_vacante,
+      v.titulo,
+      v.descripcion,
+      v.ubicacion,
       v.fecha_publicacion,
       v.id_empresa,
       e.nombre AS nombre_empresa,
@@ -209,7 +211,7 @@ export const vacantePorID = async (id_vacante) => {
     JOIN empresas e ON v.id_empresa = e.id
     WHERE v.id = ?
   `;
-  
+
   try {
     const [response] = await db.query(sql, [id_vacante]);
     return response[0];

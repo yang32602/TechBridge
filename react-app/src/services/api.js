@@ -239,7 +239,7 @@ class ApiService {
     }
   }
 
-  // Método para actualizar campos individuales del estudiante
+  // M��todo para actualizar campos individuales del estudiante
   // TODO: Para agregar nuevos campos editables en el futuro:
   // 1. Agregar el campo a la lista de campos editables en el componente EditProfileModal
   // 2. Asegurar que el backend maneje el nuevo campo en la ruta PATCH /estudiantes/actualizar
@@ -573,6 +573,24 @@ class ApiService {
       return response;
     } catch (error) {
       console.error("Error deleting vacante:", error);
+      throw error;
+    }
+  }
+
+  async getVacanteById(idVacante) {
+    try {
+      console.log("getVacanteById called with:", idVacante);
+      const response = await this.request("/vacantes/porID", {
+        method: "POST",
+        body: JSON.stringify({
+          id_vacante: idVacante,
+        }),
+      });
+
+      console.log("getVacanteById response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error fetching vacante by ID:", error);
       throw error;
     }
   }
