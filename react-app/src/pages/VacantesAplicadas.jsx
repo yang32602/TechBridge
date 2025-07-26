@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FiCalendar, FiMapPin, FiBriefcase } from "react-icons/fi";
 import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import { StudentSidebar } from "../components";
 import apiService from "../services/api";
 import "../assets/vacantes-aplicadas.css";
@@ -12,6 +13,7 @@ const VacantesAplicadas = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const { user } = useAuth();
+  const navigate = useNavigate();
   const vacantesPerPage = 6;
 
   // Get current user data
@@ -33,6 +35,11 @@ const VacantesAplicadas = () => {
 
     getCurrentUserData();
   }, [user?.id, user?.userType]);
+
+   const handleVacanteClick = (vacanteId) => {
+    console.log("Navigating to vacante with ID:", vacanteId);
+    navigate(`/vacante/${vacanteId}`);
+  };
 
   // Fetch student's applied vacantes
   useEffect(() => {
@@ -101,7 +108,10 @@ const VacantesAplicadas = () => {
       <div className="vacantes-aplicadas-grid">
         {currentVacantes.length > 0 ? (
           currentVacantes.map((vacante) => (
-            <div key={vacante.id_vacante} className="vacante-aplicada-card">
+            <div key={vacante.id_vacante} 
+            className="vacante-aplicada-card"
+            onClick={() => handleVacanteClick(vacante.id_vacante || vacante.id)}
+            >
               <div className="vacante-aplicada-header">
                 <h3 className="vacante-aplicada-title">{vacante.titulo}</h3>
               </div>
