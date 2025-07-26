@@ -29,66 +29,91 @@ export const registrarTokenPushEnBackend = async (
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     };
-    // Tu backend debería esperar un token de autenticación para esta ruta
-    const authToken = await AsyncStorage.getItem('userToken'); // Obtén el token de sesión
-    console.log('--- FRONTEND LOG (api.ts) ---');
-    console.log('1. Valor de authToken recuperado de AsyncStorage:', authToken ? 'Token presente' : 'Token AUSENTE');
-    if (!authToken) {
-        console.warn('   ADVERTENCIA: No se encontró token de autenticación en AsyncStorage.');
-        // Considera si la ruta de registro de token en el backend DEBE requerir autenticación
-        // Si tu backend requiere el token, esta petición fallará con 403.
-    }
-    // =========================================================================
-
-    if (authToken) {
-      headers['Authorization'] = `Bearer ${authToken}`;
+    
+    // Obtener el token de autenticación de AsyncStorage
+    const storedAuthToken = await AsyncStorage.getItem('userToken');
+    console.log('🔐 REGISTRO FCM TOKEN - Verificando autenticación...');
+    console.log('   Token presente en AsyncStorage:', storedAuthToken ? 'SÍ' : 'NO');
+    
+    if (!storedAuthToken) {
+      console.warn('⚠️ ADVERTENCIA: No hay token de autenticación disponible');
+      throw new Error('Token de autenticación no disponible. Por favor, inicia sesión nuevamente.');
     }
 
-    // LOG AÑADIDO: Muestra la URL completa antes de la llamada fetch
-    // =========================================================================
+    // Verificar si el token no está expirado antes de usarlo
+    try {
+      const tokenParts = storedAuthToken.split('.');
+      if (tokenParts.length === 3) {
+        const payload = JSON.parse(atob(tokenParts[1]));
+        const currentTime = Math.floor(Date.now() / 1000);
+        
+        if (payload.exp && payload.exp < currentTime) {
+          console.warn('⚠️ Token de autenticación expirado localmente');
+          throw new Error('Token de autenticación expirado. Por favor, inicia sesión nuevamente.');
+        }
+      }
+    } catch (jwtError) {
+      console.warn('⚠️ No se pudo verificar la expiración del token:', jwtError);
+      // Continuar con la petición, el backend validará el token
+    }
+
+    headers['Authorization'] = `Bearer ${storedAuthToken}`;
+
     const fullApiUrl = `${API_BASE_URL}/api/usuariosMobile/registerPushToken`;
-    console.log('--- FRONTEND LOG (api.ts) ---');
-    console.log('2. Realizando llamada a la URL del backend:', fullApiUrl);
-    console.log('   Headers que se enviarán (sin Auth si no hay token):', headers); // No mostrar authToken directamente por seguridad
+    console.log('📡 Enviando FCM token al backend...');
+    console.log('   URL:', fullApiUrl);
+    console.log('   FCM Token (primeros 20 chars):', fcmToken.substring(0, 20) + '...');
 
-    // El cuerpo de la petición simplificado, ya que userId y userType se obtienen del JWT en el backend
-    const requestBody = JSON.stringify({
-      fcmToken: fcmToken, 
-    });
-    console.log('   Cuerpo de la petición que se enviará:', requestBody); // Muestra el cuerpo, que solo debe tener fcmToken
-
-    const response = await fetch(fullApiUrl, { // Usa fullApiUrl aquí
+    const response = await fetch(fullApiUrl, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({ fcmToken: fcmToken }),
     });
 
-    // =========================================================================
-    // LOG AÑADIDO: Muestra el estado de la respuesta del backend
-    // =========================================================================
-    console.log('--- FRONTEND LOG (api.ts) ---');
-    console.log('3. Respuesta del backend - Status:', response.status);
+    console.log('📡 Respuesta del backend - Status:', response.status);
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('--- FRONTEND LOG (api.ts) ---');
-      console.error('4. ERROR al registrar FCM token en backend!');
-      console.error('   Mensaje de error del backend:', errorData.message || 'Sin mensaje específico');
-      console.error('   Detalles completos del error:', errorData); // Para ver todos los detalles del error
-      throw new Error(errorData.message || `Error ${response.status}: Failed to register push token.`);
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (parseError) {
+        // Si no se puede parsear la respuesta como JSON
+        errorData = { message: `Error HTTP ${response.status}` };
+      }
+      
+      console.error('❌ ERROR al registrar FCM token en backend!');
+      console.error('   Status:', response.status);
+      console.error('   Mensaje:', errorData.message || 'Sin mensaje específico');
+      
+      // Crear un mensaje de error más específico basado en el status code
+      let errorMessage = errorData.message || `Error ${response.status}: Failed to register push token.`;
+      
+      if (response.status === 401) {
+        errorMessage = 'Token de autenticación inválido. Por favor, inicia sesión nuevamente.';
+      } else if (response.status === 403) {
+        errorMessage = 'No tienes permisos para registrar el token push.';
+      } else if (response.status === 500) {
+        errorMessage = 'Error interno del servidor. Intenta nuevamente más tarde.';
+      }
+      
+      throw new Error(errorMessage);
     }
 
-    console.log('--- FRONTEND LOG (api.ts) ---');
-    console.log('5. Token FCM registrado con éxito en backend.');
-    return response.json(); // Devuelve la respuesta del backend
+    console.log('✅ Token FCM registrado exitosamente en backend');
+    return response.json();
 
   } catch (error: any) {
-    console.error('--- FRONTEND LOG (api.ts) ---');
-    console.error('6. Error de red o en API durante el registro del FCM token:', error.message);
+    console.error('❌ Error durante el registro del FCM token:', error.message);
+    
+    // Mejorar los mensajes de error para diferentes tipos de problemas
     if (error.message.includes('Network request failed')) {
-      console.error('   Sugerencia: Revisa tu conexión a internet o la URL del backend (`API_BASE_URL`).');
+      throw new Error('Error de conexión. Verifica tu conexión a internet y que el servidor esté disponible.');
+    } else if (error.message.includes('fetch')) {
+      throw new Error('Error de red al conectar con el servidor. Intenta nuevamente.');
     }
-    throw error; // Propaga el error para que pueda ser manejado en el componente de login
+    
+    // Propagar el error original si ya tiene un mensaje específico
+    throw error;
   }
 };
 
@@ -175,12 +200,42 @@ export const validarToken = async (): Promise<boolean> => {
 // Función para limpiar completamente la sesión
 export const limpiarSesion = async (): Promise<void> => {
   try {
-    await AsyncStorage.removeItem('userToken');
-    await AsyncStorage.removeItem('userId');
-    await AsyncStorage.removeItem('userType');
-    console.log('Sesión limpiada completamente');
+    await AsyncStorage.multiRemove([
+      'userToken',
+      'userId',
+      'userType',
+      'fcmToken', // También limpiar FCM token si se guarda
+      'lastTokenRefresh' // Y cualquier timestamp de refresh
+    ]);
+    console.log('✅ Sesión limpiada completamente (incluyendo tokens FCM)');
   } catch (error) {
-    console.error('Error clearing session:', error);
+    console.error('❌ Error clearing session:', error);
+  }
+};
+
+// Nueva función para detectar y manejar tokens inválidos automáticamente
+export const manejarErrorToken = async (error: any): Promise<boolean> => {
+  try {
+    // Verificar si el error indica un problema de autenticación
+    const isAuthError = error.message && (
+      error.message.includes('401') ||
+      error.message.includes('403') ||
+      error.message.includes('Unauthorized') ||
+      error.message.includes('Token inválido') ||
+      error.message.includes('Token de autenticación inválido') ||
+      error.message.includes('Token de autenticación no disponible')
+    );
+
+    if (isAuthError) {
+      console.log('🧹 Error de autenticación detectado - Limpiando sesión automáticamente...');
+      await limpiarSesion();
+      return true; // Indica que se limpió la sesión
+    }
+
+    return false; // No se requirió limpieza
+  } catch (cleanupError) {
+    console.error('❌ Error durante la limpieza automática de sesión:', cleanupError);
+    return false;
   }
 };
 
