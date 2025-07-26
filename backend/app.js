@@ -2,13 +2,10 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import fs from 'fs'; 
+import path from 'path'; 
+import { fileURLToPath } from 'url'; 
 
-// Importa para leer archivos del sistema de archivos y construir rutas
-import fs from 'fs'; // <-- ¡Añade esto!
-import path from 'path'; // <-- ¡Añade esto!
-import { fileURLToPath } from 'url'; // <-- ¡Añade esto!
-
-// Define __filename y __dirname para usar con path en ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -21,7 +18,7 @@ import puntosRoutes from './src/routes/puntos.routes.js';
 import vacantesRoutes from './src/routes/vacantes.routes.js';
 import techpointsRoutes from './src/routes/techPoints.routes.js';
 import usuariosMobile from './src/routes/usuariosMobile.routes.js';
-import admin from 'firebase-admin'; // Importa el SDK de Admin
+import admin from 'firebase-admin'; 
 
 const serviceAccountPath = path.join(__dirname, 'src', 'config', 'firebase-service-account.json');
 
@@ -39,9 +36,6 @@ try {
 
 dotenv.config();
 
-// =========================================================================
-// !!! DIAGNÓSTICO EN APP.JS !!!
-// =========================================================================
 console.log('--- app.js: Antes de inicializar Firebase ---');
 console.log('admin.apps.length antes:', admin.apps.length); // Debería ser 0
  

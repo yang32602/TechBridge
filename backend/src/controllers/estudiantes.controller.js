@@ -13,7 +13,7 @@ export const getEstudiantes = async (req, res) => {
 };
 
 // Obtener detalle completo de estudiante por ID
-export const getDetalleEstudiante = async (req, res) => {
+export const obtenerDetalleEstudiante = async (req, res) => {
   const { id } = req.params;
   if (!id) {
     return res.status(400).json({ error: 'Falta el ID del estudiante' });

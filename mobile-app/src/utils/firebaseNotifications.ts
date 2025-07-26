@@ -1,10 +1,9 @@
 // mobile-app/src/utils/firebaseNotifications.ts
 // Implementación básica para integración con Firebase Cloud Messaging (FCM) V1 para notificaciones push
-
 import messaging from '@react-native-firebase/messaging';
-import { Alert, Platform } from 'react-native';
-import { Router } from 'expo-router'; // Importa Router desde expo-router
-import { registerPushTokenOnBackend } from '../services/api'; // <--- ¡Importa tu función de API!
+import { Alert} from 'react-native';
+import { Router } from 'expo-router'; 
+import { registrarTokenPushEnBackend } from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 // Define la interfaz para la información mínima del usuario que necesitamos
@@ -14,11 +13,9 @@ interface UserInfoForFCM {
 }
 
 
-/**
- * Solicita permisos para recibir notificaciones push y obtiene el token FCM del dispositivo.
- * @returns {Promise<string | undefined>} Token FCM o undefined si no se pudo obtener.
- */
-export async function registerForPushNotificationsAsync(): Promise<string | undefined> {
+//Solicita permisos para recibir notificaciones push y obtiene el token FCM del dispositivo.
+
+export async function registrarPushNotificacionesAsync(): Promise<string | undefined> {
   try {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -40,7 +37,7 @@ export async function registerForPushNotificationsAsync(): Promise<string | unde
   }
 }
 
-async function getLoggedInUserInfo(): Promise<UserInfoForFCM | null> {
+async function obtenerUsuarioLogueado(): Promise<UserInfoForFCM | null> {
   try {
     const userId = await AsyncStorage.getItem('userId');
     const userType = await AsyncStorage.getItem('userType'); // 'estudiante' o 'empresa'
@@ -56,12 +53,8 @@ async function getLoggedInUserInfo(): Promise<UserInfoForFCM | null> {
 }
 
 
-/**
- * Función auxiliar para manejar la navegación basada en la carga útil de la notificación.
- * @param data - Los datos de la notificación.
- * @param router - El objeto router de Expo Router para navegación.
- */
-function handleNotificationNavigation(data: Record<string, any> | undefined, router: Router) {
+// Función auxiliar para manejar la navegación basada en la carga de la notificación.
+function manejarNavegaciónNotificaciones(data: Record<string, any> | undefined, router: Router) {
   if (data && typeof data.screen === 'string') {
     const { screen, ...params } = data;
     console.log(`Intentando navegar a ${screen} con params:`, params);
@@ -90,7 +83,7 @@ function handleNotificationNavigation(data: Record<string, any> | undefined, rou
             console.log(`Navegando a ruta dinámica: ${pathnameTemplate} con ID: ${idToPass}`);
             router.push({
               pathname: pathnameTemplate as any, // 'as any' porque el tipo generico '[id]' no es string literal
-              params: { id: idToPass, ...params } // Pasa el ID al parámetro '[id]' y el resto de los parámetros
+              params: { id: idToPass, ...params } 
             });
             handledAsDynamic = true;
             break;
@@ -107,8 +100,8 @@ function handleNotificationNavigation(data: Record<string, any> | undefined, rou
           '/postulante/dashboard',
           '/postulante/vacantes-aplicadas',
           '/empresa/dashboard',
-          '/empresa/postulaciones', // La lista de postulaciones para la empresa
-          '/empresa/vacantes', // Si tuvieras una página para listar vacantes de la empresa
+          '/empresa/postulaciones', 
+          '/empresa/vacantes', 
           '/empresa/notificaciones/nueva-postulacion',
         ];
 
@@ -116,40 +109,36 @@ function handleNotificationNavigation(data: Record<string, any> | undefined, rou
           console.log(`Navegando a ruta estática: ${screen}`);
           // Usamos 'push' para añadir a la pila de navegación
           router.push({
-            pathname: screen as any, // 'as any' workaround
+            pathname: screen as any, 
             params: params as Record<string, string | number | (string | number)[] | null | undefined>
           });
         } else {
           console.warn(`Ruta desconocida para navegación desde notificación: ${screen}. Navegación cancelada.`);
         }
       }
-    }, 500); // Delay de 500ms para evitar conflictos con redirección automática
+    }, 500); 
   } else {
     console.warn("Datos de notificación no tienen 'screen' válido para navegación o están vacíos.");
   }
 }
 
-/**
- * Configura los listeners para recibir notificaciones en primer plano y manejar interacciones.
- * @param router - El objeto router de Expo Router para manejar la navegación.
- * @returns {() => void} Función para remover los listeners.
- */
-export function setupNotificationListeners(router: Router) {
-  const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
+// Configura los listeners para recibir notificaciones en primer plano y manejar interacciones.
+export function setupListenersNotificaciones(router: Router) {
+  const unsubAlMensajeRecibido = messaging().onMessage(async remoteMessage => {
     console.log('Notificación recibida en primer plano:', remoteMessage);
     Alert.alert(
       remoteMessage.notification?.title || 'Nueva Notificación',
       remoteMessage.notification?.body || 'Has recibido un mensaje.',
       [
-        { text: 'Ver', onPress: () => handleNotificationNavigation(remoteMessage.data, router) },
+        { text: 'Ver', onPress: () => manejarNavegaciónNotificaciones(remoteMessage.data, router) },
         { text: 'Cerrar', style: 'cancel' }
       ]
     );
   });
 
-  const unsubscribeOnNotificationOpened = messaging().onNotificationOpenedApp(remoteMessage => {
+  const unsubAlAbrirNotificación = messaging().onNotificationOpenedApp(remoteMessage => {
     console.log('Notificación abierta por el usuario:', remoteMessage);
-    handleNotificationNavigation(remoteMessage.data, router);
+    manejarNavegaciónNotificaciones(remoteMessage.data, router);
   });
 
   // Para manejar notificación que abrió la app desde estado cerrado
@@ -158,18 +147,18 @@ export function setupNotificationListeners(router: Router) {
     .then(remoteMessage => {
       if (remoteMessage) {
         console.log('App abierta desde notificación (quit state):', remoteMessage);
-        handleNotificationNavigation(remoteMessage.data, router);
+        manejarNavegaciónNotificaciones(remoteMessage.data, router);
       }
     });
 
   // Listener para tokens refrescados
-  const unsubscribeOnTokenRefresh = messaging().onTokenRefresh(async token => {
+  const unsubAlRefrescarToken = messaging().onTokenRefresh(async token => {
     console.log('FCM Token refrescado:', token);
     // Intentar obtener la información del usuario ANTES de enviar el token
-    const userInfo = await getLoggedInUserInfo();
+    const userInfo = await obtenerUsuarioLogueado();
     if (userInfo) {
       try {
-        await registerPushTokenOnBackend(userInfo.id, userInfo.userType, token);
+        await registrarTokenPushEnBackend(userInfo.id, userInfo.userType, token);
         console.log('Token FCM refrescado enviado al backend con éxito para usuario:', userInfo.id);
       } catch (error) {
         console.error('Error al enviar FCM Token refrescado al backend:', error);
@@ -180,17 +169,8 @@ export function setupNotificationListeners(router: Router) {
   });
 
   return () => {
-    unsubscribeOnMessage();
-    unsubscribeOnNotificationOpened();
-    unsubscribeOnTokenRefresh(); // Asegúrate de limpiar también este listener
+    unsubAlMensajeRecibido();
+    unsubAlAbrirNotificación();
+    unsubAlRefrescarToken(); 
   };
-}
-
-/**
- * Función para enviar una notificación push de prueba localmente (solo para desarrollo).
- * Esta función debe ser implementada en backend o usando Firebase Admin SDK.
- * Aquí solo se deja como placeholder.
- */
-export async function sendTestNotification() {
-  console.warn('Función sendTestNotification no implementada. Debe implementarse en backend.');
 }

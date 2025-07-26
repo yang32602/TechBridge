@@ -2,13 +2,12 @@
 import React, { useEffect , useState } from 'react';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Platform } from 'react-native'; // Asegúrate de importar Platform si lo usas en StatusBar
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { registerForPushNotificationsAsync, setupNotificationListeners } from '../src/utils/firebaseNotifications';
-import { registerPushTokenOnBackend, validateToken, clearSession } from '../src/services/api'; // Para el token inicial
+import { registrarPushNotificacionesAsync, setupListenersNotificaciones } from '../src/utils/firebaseNotifications';
+import { registrarTokenPushEnBackend, validarToken, limpiarSesion } from '../src/services/api';
 
-async function getAuthUserInfoFromStorage(): Promise<{ id: number; userType: 'estudiante' | 'empresa'; token: string } | null> {
+async function obtenerUsuarioAuth(): Promise<{ id: number; userType: 'estudiante' | 'empresa'; token: string } | null> {
   try {
     const userId = await AsyncStorage.getItem('userId');
     const userType = await AsyncStorage.getItem('userType');
@@ -31,29 +30,29 @@ export default function RootLayout() {
   useEffect(() => {
     // 1. Configurar los listeners de Firebase FCM (para mensajes en primer plano, abrir app, y refresco de token)
     // Estos listeners no necesitan info del usuario al inicio, la obtienen cuando se activan (ej. token refresh)
-    const cleanupListeners = setupNotificationListeners(router);
+    const limpiarListeners = setupListenersNotificaciones(router);
 
     // 2. Intentar registrar el token FCM inicial si el usuario ya está autenticado
-    const setupInitialFcmToken = async () => {
-      const userInfo = await getAuthUserInfoFromStorage();
+    const setupInicialFcmToken = async () => {
+      const userInfo = await obtenerUsuarioAuth();
       setCurrentUserInfo(userInfo); // Guarda la info del usuario en el estado
 
       if (userInfo) {
         console.log('Usuario encontrado en almacenamiento. Validando token...');
         
         // Validar si el token sigue siendo válido
-        const isTokenValid = await validateToken();
+        const isTokenValid = await validarToken();
         
         if (isTokenValid) {
           console.log('Token válido en _layout. Solo registrando FCM token...');
           
           // NO redirigir desde aquí, dejar que index.tsx maneje la redirección
           // Solo registrar FCM token en segundo plano
-          const fcmToken = await registerForPushNotificationsAsync();
+          const fcmToken = await registrarPushNotificacionesAsync();
           if (fcmToken) {
             try {
               console.log('🎉 FCM Token OBTENIDO DESDE LA APP (inicial):', fcmToken);
-              await registerPushTokenOnBackend(userInfo.id, userInfo.userType, fcmToken);
+              await registrarTokenPushEnBackend(userInfo.id, userInfo.userType, fcmToken);
               console.log('Token FCM inicial registrado con éxito en el backend.');
             } catch (error) {
               console.error('Error al registrar el token FCM inicial en el backend:', error);
@@ -64,7 +63,7 @@ export default function RootLayout() {
         } else {
           console.log('Token expirado o inválido. Limpiando sesión...');
           // Limpiar la sesión si el token no es válido
-          await clearSession();
+          await limpiarSesion();
           setCurrentUserInfo(null);
         }
       } else {
@@ -73,20 +72,20 @@ export default function RootLayout() {
       setAuthChecked(true); // Marca que la comprobación inicial de autenticación ha terminado
     };
 
-    setupInitialFcmToken();
+    setupInicialFcmToken();
 
     // Función de limpieza para los listeners
     return () => {
-      if (cleanupListeners) {
-        cleanupListeners();
+      if (limpiarListeners) {
+        limpiarListeners();
       }
     };
   }, []); // Se ejecuta solo una vez al montar el componente
 
-  // Puedes usar 'authChecked' para renderizar un splash screen o loading inicial
+  
   if (!authChecked) {
     // Retorna un splash screen o un indicador de carga mientras se verifica la auth y se configura FCM
-    return null; // O un componente <SplashScreen />
+    return null; 
   }
 
   return (
@@ -101,25 +100,10 @@ export default function RootLayout() {
         {/* Pantalla de Registro */}
         <Stack.Screen name="signup" options={{ headerShown: false }} />
 
-        {/* ======================= Delegación a Layouts Anidados ======================= */}
-        
-        {/* Rutas para Postulante:
-            Esta línea le dice a Expo Router que para CUALQUIER ruta dentro de la carpeta 'postulante',
-            utilice el layout definido en 'mobile-app/app/postulante/_layout.tsx'.
-            El 'headerShown: false' aquí en el layout raíz es un respaldo para asegurarnos de
-            que el header por defecto de Stack no aparezca, aunque el _layout.tsx anidado también lo maneja.
-        */}
         <Stack.Screen name="postulante" options={{ headerShown: false }} />
 
-        {/* Rutas para Empresa:
-            Similar a 'postulante', delega a 'mobile-app/app/empresa/_layout.tsx'.
-            De nuevo, 'headerShown: false' es un respaldo.
-        */}
         <Stack.Screen name="empresa" options={{ headerShown: false }} />
-        
-        {/* ======================= Rutas Genéricas / No Encontradas ======================= */}
-        
-        {/* Ruta para el manejo de "no encontrado" */}
+
         <Stack.Screen name="+not-found" />
       </Stack>
     </>

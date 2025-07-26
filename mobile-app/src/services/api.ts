@@ -3,30 +3,28 @@
 // Asegúrate de que esta URL base esté bien configurada para tu IP/Emulador
 // Si tu IP es 192.168.0.9 y tu backend corre en el puerto 3000
 // mobile-app/src/config/api.ts DEBE tener: export const API_BASE_URL = 'http://192.168.0.9:3000';
-import { API_BASE_URL } from '../config/api'; // Importa la URL base sin el '/api' final
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Para obtener el token de autenticación si es necesario
+import { API_BASE_URL } from '../config/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Interfaz para la respuesta de registro de token push
-interface RegisterPushTokenResponse {
+interface RespuestaRegistroTokenPush {
   message: string;
 }
 
-// Interfaz para la respuesta de login que el frontend ESPERA y NECESITA
-interface FrontendLoginResponse {
+interface RespuestaLoginFrontend {
   userId: number;
-  userType: 'estudiante' | 'empresa'; // 'estudiante' es lo que tu backend devuelve para postulantes
-  token: string; // ¡Esto es crucial y tu backend NO lo está devolviendo aún!
+  userType: 'estudiante' | 'empresa';
+  token: string;
   mensaje?: string;
   estado: number;
 }
 
 // Función para enviar el token de Expo Push al backend
-export const registerPushTokenOnBackend = async (
+export const registrarTokenPushEnBackend = async (
   userId: number,
-  userType: 'estudiante' | 'empresa', // Asegúrate de que esto coincida con lo que tu backend espera ('estudiante' o 'empresa')
+  userType: 'estudiante' | 'empresa',
   fcmToken: string,
-  authToken?: string // Opcional: si tu ruta de registro de token en el backend requiere autenticación
-): Promise<RegisterPushTokenResponse> => {
+  authToken?: string
+): Promise<RespuestaRegistroTokenPush> => {
   try {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
@@ -62,7 +60,7 @@ export const registerPushTokenOnBackend = async (
     const response = await fetch(fullApiUrl, { // Usa fullApiUrl aquí
       method: 'POST',
       headers: headers,
-      body: requestBody, // Usa requestBody aquí
+      body: JSON.stringify({ fcmToken: fcmToken }),
     });
 
     // =========================================================================
@@ -95,16 +93,16 @@ export const registerPushTokenOnBackend = async (
 };
 
 // Función para el login, ahora recibe el tipo de usuario
-export const loginUser = async (
-  credentials: { correo: string; contrasena: string }, // Cambiado a 'correo' y 'contrasena' para coincidir con tu backend
-  userType: 'estudiante' | 'empresa' // Recibe el tipo de usuario para seleccionar el endpoint
-): Promise<FrontendLoginResponse> => { // Ahora retorna la interfaz que el frontend necesita
+export const iniciarSesionUsuario = async (
+  credentials: { correo: string; contrasena: string },
+  userType: 'estudiante' | 'empresa'
+): Promise<RespuestaLoginFrontend> => {
   try {
     let loginEndpoint = '';
     if (userType === 'estudiante') {
-      loginEndpoint = '/api/usuariosMobile/estudianteLogin'; // Ruta correcta para postulantes
+      loginEndpoint = '/api/usuariosMobile/estudianteLogin';
     } else if (userType === 'empresa') {
-      loginEndpoint = '/api/usuariosMobile/empresaLogin'; // Ruta correcta para empresas
+      loginEndpoint = '/api/usuariosMobile/empresaLogin';
     } else {
       throw new Error('Tipo de usuario no válido para el login.');
     }
@@ -116,12 +114,12 @@ export const loginUser = async (
       },
       body: JSON.stringify(credentials),
     });
-    // Si la respuesta no es OK (ej. 401 Unauthorized, 500 Internal Server Error)
+
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.mensaje || 'Login failed'); // Usa errorData.mensaje
+      throw new Error(errorData.mensaje || 'Login failed');
     }
-    const data: FrontendLoginResponse = await response.json();
+    const data: RespuestaLoginFrontend = await response.json();
     console.log('API: Datos recibidos del backend:', data); // <-- Añade esto
     return data;
   } catch (error: any) {
@@ -131,7 +129,7 @@ export const loginUser = async (
 };
 
 // Función para validar si el token sigue siendo válido
-export const validateToken = async (): Promise<boolean> => {
+export const validarToken = async (): Promise<boolean> => {
   try {
     const userToken = await AsyncStorage.getItem('userToken');
     const userType = await AsyncStorage.getItem('userType');
@@ -175,7 +173,7 @@ export const validateToken = async (): Promise<boolean> => {
 };
 
 // Función para limpiar completamente la sesión
-export const clearSession = async (): Promise<void> => {
+export const limpiarSesion = async (): Promise<void> => {
   try {
     await AsyncStorage.removeItem('userToken');
     await AsyncStorage.removeItem('userId');
@@ -187,7 +185,7 @@ export const clearSession = async (): Promise<void> => {
 };
 
 // Función para obtener información de la sesión actual
-export const getCurrentSession = async (): Promise<{ id: number; userType: 'estudiante' | 'empresa'; token: string } | null> => {
+export const obtenerSesionActual = async (): Promise<{ id: number; userType: 'estudiante' | 'empresa'; token: string } | null> => {
   try {
     const userId = await AsyncStorage.getItem('userId');
     const userType = await AsyncStorage.getItem('userType');
@@ -211,7 +209,7 @@ export const getCurrentSession = async (): Promise<{ id: number; userType: 'estu
 
 // NUEVAS FUNCIONES PARA LOS ENDPOINTS CREADOS
 
-export const getDetalleEstudiante = async (idEstudiante: string) => {
+export const obtenerDetalleEstudiante = async (idEstudiante: string) => {
   try {
     const response = await fetch(`${API_BASE_URL}/api/estudiantes/detalle/${idEstudiante}`);
     if (!response.ok) {
@@ -228,7 +226,7 @@ export const getDetalleEstudiante = async (idEstudiante: string) => {
   }
 };
 
-export const getPostulantesPorEmpresa = async (idEmpresa: string) => {
+export const obtenerPostulantesPorEmpresa = async (idEmpresa: string) => {
   try {
     const response = await fetch(`${API_BASE_URL}/api/empresas/${idEmpresa}/postulantes`);
     if (!response.ok) {
@@ -245,7 +243,7 @@ export const getPostulantesPorEmpresa = async (idEmpresa: string) => {
   }
 };
 
-export const getNuevasPostulaciones = async (idEmpresa: string, periodo: 'dia' | 'semana') => {
+export const obtenerNuevasPostulaciones = async (idEmpresa: string, periodo: 'dia' | 'semana') => {
   try {
     const response = await fetch(`${API_BASE_URL}/api/empresas/${idEmpresa}/nuevas-postulaciones?periodo=${periodo}`);
     if (!response.ok) {
