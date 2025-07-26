@@ -219,6 +219,14 @@
   line-height: 1.6;
   margin-bottom: 1rem;
   font-size: 0.95rem;
+  display: -webkit-box;
+  display: box; 
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  box-orient: vertical; 
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .vacante-date {
