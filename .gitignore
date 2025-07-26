@@ -2,4 +2,3 @@ node_modules
 
 
 .config/
-backend/src/config/firebase-service-account.json
