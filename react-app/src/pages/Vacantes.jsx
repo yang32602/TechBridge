@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { FiSearch, FiMapPin, FiEdit, FiTrash2, FiPlus, FiCalendar, FiBriefcase } from "react-icons/fi";
+import { FiSearch, FiMapPin, FiTrash2, FiPlus, FiCalendar, FiBriefcase, FiArrowRight } from "react-icons/fi";
 import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import apiService from "../services/api";
 import "../assets/vacantes.css";
 
@@ -10,10 +11,10 @@ const Vacantes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [editingVacante, setEditingVacante] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const navigate = useNavigate();
   const vacantesPerPage = 6;
 
   // Form state for creating new vacante
@@ -177,19 +178,9 @@ const Vacantes = () => {
     }
   };
 
-  const handleEditVacante = async (idVacante, campo, valor) => {
-    try {
-      await apiService.updateVacante(idVacante, campo, valor);
-
-      // Update local state
-      setVacantes(prev => prev.map(v =>
-        v.id_vacante === idVacante ? { ...v, [campo]: valor } : v
-      ));
-      setEditingVacante(null);
-    } catch (error) {
-      console.error("Error updating vacante:", error);
-      alert("Error al actualizar la vacante. Inténtalo de nuevo.");
-    }
+  const handleVacanteClick = (vacanteId) => {
+    console.log("Navigating to vacante with ID:", vacanteId);
+    navigate(`/vacante/${vacanteId}`);
   };
 
   const handleDeleteVacante = async (idVacante) => {
@@ -329,25 +320,29 @@ const Vacantes = () => {
       <div className="vacantes-grid">
         {currentVacantes.length > 0 ? (
           currentVacantes.map((vacante) => (
-            <div key={vacante.id_vacante} className="vacante-card">
+            <div
+              key={vacante.id_vacante || vacante.id}
+              className="vacante-card"
+              onClick={() => handleVacanteClick(vacante.id_vacante || vacante.id)}
+            >
               <div className="vacante-header">
                 <h3 className="vacante-title">{vacante.titulo}</h3>
                 {currentUser?.userType === "company" && (
                   <div className="vacante-actions">
                     <button
-                      onClick={() => setEditingVacante(vacante.id_vacante)}
-                      className="action-btn edit-btn"
-                    >
-                      <FiEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteVacante(vacante.id_vacante)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteVacante(vacante.id_vacante);
+                      }}
                       className="action-btn delete-btn"
                     >
                       <FiTrash2 />
                     </button>
                   </div>
                 )}
+                <div className="view-details">
+                  <FiArrowRight className="view-details-icon" />
+                </div>
               </div>
 
               {currentUser?.userType === "student" && (
@@ -372,12 +367,19 @@ const Vacantes = () => {
               {currentUser?.userType === "student" && (
                 <div className="vacante-footer">
                   {vacante.postulado === 1 ? (
-                    <button className="postulado-btn" disabled>
+                    <button
+                      className="postulado-btn"
+                      disabled
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       Ya postulado
                     </button>
                   ) : (
                     <button
-                      onClick={() => handlePostular(vacante)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePostular(vacante);
+                      }}
                       className="postular-btn"
                     >
                       Postularse
@@ -436,65 +438,7 @@ const Vacantes = () => {
         </div>
       )}
 
-      {/* Edit modal */}
-      {editingVacante && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>Editar Vacante</h3>
-            {(() => {
-              const vacante = vacantes.find(v => v.id_vacante === editingVacante);
-              return (
-                <div className="edit-form">
-                  <div className="form-group">
-                    <label>Título</label>
-                    <input
-                      type="text"
-                      defaultValue={vacante?.titulo}
-                      onBlur={(e) => {
-                        if (e.target.value !== vacante?.titulo) {
-                          handleEditVacante(editingVacante, "titulo", e.target.value);
-                        }
-                      }}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Descripción</label>
-                    <textarea
-                      defaultValue={vacante?.descripcion}
-                      onBlur={(e) => {
-                        if (e.target.value !== vacante?.descripcion) {
-                          handleEditVacante(editingVacante, "descripcion", e.target.value);
-                        }
-                      }}
-                      rows="4"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Ubicación</label>
-                    <input
-                      type="text"
-                      defaultValue={vacante?.ubicacion}
-                      onBlur={(e) => {
-                        if (e.target.value !== vacante?.ubicacion) {
-                          handleEditVacante(editingVacante, "ubicacion", e.target.value);
-                        }
-                      }}
-                    />
-                  </div>
-                  <div className="form-actions">
-                    <button
-                      onClick={() => setEditingVacante(null)}
-                      className="btn-cancel"
-                    >
-                      Cerrar
-                    </button>
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };
