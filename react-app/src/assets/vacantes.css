@@ -108,6 +108,7 @@
   padding: 1.5rem;
   transition: all 0.2s ease;
   position: relative;
+  cursor: pointer;
 }
 
 .vacante-card:hover {
@@ -134,6 +135,23 @@
 .vacante-actions {
   display: flex;
   gap: 0.5rem;
+}
+
+.view-details {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.vacante-card:hover .view-details {
+  opacity: 1;
+}
+
+.view-details-icon {
+  color: #0a5cb8;
+  font-size: 1.2rem;
 }
 
 .action-btn {
@@ -201,6 +219,14 @@
   line-height: 1.6;
   margin-bottom: 1rem;
   font-size: 0.95rem;
+  display: -webkit-box;
+  display: box; 
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  box-orient: vertical; 
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .vacante-date {
