@@ -3,7 +3,7 @@
 import messaging from '@react-native-firebase/messaging';
 import { Alert} from 'react-native';
 import { Router } from 'expo-router'; 
-import { registrarTokenPushEnBackend } from '../services/api';
+import { registrarTokenPushEnBackend, manejarErrorToken } from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 // Define la interfaz para la información mínima del usuario que necesitamos
@@ -153,18 +153,25 @@ export function setupListenersNotificaciones(router: Router) {
 
   // Listener para tokens refrescados
   const unsubAlRefrescarToken = messaging().onTokenRefresh(async token => {
-    console.log('FCM Token refrescado:', token);
+    console.log('🔄 FCM Token refrescado:', token);
     // Intentar obtener la información del usuario ANTES de enviar el token
     const userInfo = await obtenerUsuarioLogueado();
     if (userInfo) {
       try {
         await registrarTokenPushEnBackend(userInfo.id, userInfo.userType, token);
-        console.log('Token FCM refrescado enviado al backend con éxito para usuario:', userInfo.id);
-      } catch (error) {
-        console.error('Error al enviar FCM Token refrescado al backend:', error);
+        console.log('✅ Token FCM refrescado enviado al backend con éxito para usuario:', userInfo.id);
+      } catch (error: any) {
+        console.error('❌ Error al enviar FCM Token refrescado al backend:', error);
+        
+        // Usar la nueva función para manejar errores de token automáticamente
+        const sessionCleared = await manejarErrorToken(error);
+        if (sessionCleared) {
+          console.log('🔄 Sesión limpiada debido a token inválido durante refresh de FCM');
+          // Opcional: Podrías emitir un evento o notificar a la UI que necesita reautenticación
+        }
       }
     } else {
-      console.warn('Usuario no logeado o sin info en AsyncStorage para enviar token FCM refrescado.');
+      console.warn('⚠️ Usuario no logeado o sin info en AsyncStorage para enviar token FCM refrescado.');
     }
   });
 
