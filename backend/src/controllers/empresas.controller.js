@@ -3,9 +3,9 @@ import * as empresaModel from '../models/empresas.model.js';
 
 // Obtener todas las empresas 
 export const getEmpresas = async (req, res) => {
-    const {id_usuario} = req.body
+    const {id_empresa} = req.body
     try {
-        const empresas = await empresaModel.getEmpresaPorID(id_usuario);
+        const empresas = await empresaModel.getEmpresaPorID(id_empresa);
         if (empresas) {
             return res.status(200).json({data:empresas});
         } else {
