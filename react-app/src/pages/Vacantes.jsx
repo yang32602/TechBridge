@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { FiSearch, FiMapPin, FiTrash2, FiPlus, FiCalendar, FiBriefcase, FiArrowRight } from "react-icons/fi";
+import { FiSearch, FiMapPin, FiTrash2, FiPlus, FiCalendar, FiBriefcase, FiArrowRight, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import apiService from "../services/api";
@@ -180,7 +180,9 @@ const Vacantes = () => {
 
   const handleVacanteClick = (vacanteId) => {
     console.log("Navigating to vacante with ID:", vacanteId);
-    navigate(`/vacante/${vacanteId}`);
+    navigate(`/vacante/${vacanteId}`, {
+      state: { from: "vacantes" }
+    });
   };
 
   const handleDeleteVacante = async (idVacante) => {
@@ -348,7 +350,17 @@ const Vacantes = () => {
               {currentUser?.userType === "student" && (
                 <div className="company-info">
                   <FiBriefcase className="icon" />
-                  <span className="company-name">{vacante.nombre_empresa}</span>
+                  <span
+                    className="company-name clickable-company"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/empresa-perfil/${vacante.id_empresa}`, {
+                        state: { readOnly: true, from: "vacantes" }
+                      });
+                    }}
+                  >
+                    {vacante.nombre_empresa}
+                  </span>
                 </div>
               )}
 
@@ -408,8 +420,9 @@ const Vacantes = () => {
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
             className="pagination-btn"
+            title="Página anterior"
           >
-            Anterior
+            <FiChevronLeft />
           </button>
 
           <div className="pagination-numbers">
@@ -432,8 +445,9 @@ const Vacantes = () => {
             }
             disabled={currentPage === totalPages}
             className="pagination-btn"
+            title="Página siguiente"
           >
-            Siguiente
+            <FiChevronRight />
           </button>
         </div>
       )}

@@ -1,5 +1,6 @@
-node_modules
+node_modules/
 
+backend/node_modules/
 
 .config/
 backend/src/config/firebase-service-account.json

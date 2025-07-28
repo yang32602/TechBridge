@@ -13,6 +13,7 @@ import "../assets/profile-student.css";
 import "../assets/experience-item.css";
 import "../assets/education-item.css";
 import "../assets/paginated-items.css";
+import { getInitials, getAvatarStyles } from "../utils/avatarUtils";
 
 // React Icons
 import {
@@ -218,7 +219,19 @@ const ProfileStudent = () => {
           <h1>{isReadOnly ? "Perfil del Estudiante" : "Mi Perfil"}</h1>
           <button
             className="student-btn-return"
-            onClick={() => (isReadOnly ? navigate(-1) : handleLogoClick())}
+            onClick={() => {
+              if (isReadOnly) {
+                const fromPage = location.state?.from;
+                if (fromPage === "postulaciones") {
+                  // Return to Stage 2 (student list) of postulaciones
+                  navigate("/postulaciones", { state: { returnToStage2: true } });
+                } else {
+                  navigate(-1);
+                }
+              } else {
+                handleLogoClick();
+              }
+            }}
           >
             {isReadOnly ? "Volver" : "Regresar a Inicio"}
           </button>
@@ -232,14 +245,12 @@ const ProfileStudent = () => {
                 <div className="student-banner-overlay"></div>
               </div>
               <div className="student-profile-info">
-                <div className="student-profile-avatar">
+                <div
+                  className="student-profile-avatar"
+                  style={getAvatarStyles(userName, 80)}
+                >
                   <span className="student-avatar-initials">
-                    {userName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase()
-                      .slice(0, 2)}
+                    {getInitials(userName)}
                   </span>
                 </div>
                 <div className="student-profile-details">

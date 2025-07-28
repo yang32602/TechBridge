@@ -26,6 +26,7 @@ import {
   Cookies,
   Postulaciones,
   VacantesAplicadas,
+  EmpresaPerfil,
 } from "./pages";
 import { AuthProvider } from "./context/AuthContextProvider";
 import "./assets/styles.css";
@@ -35,7 +36,7 @@ import "./assets/dashboard-styles.css";
 // Componente wrapper para usar hooks dentro del router
 const AppContent = () => {
   const location = useLocation();
-  const hideHeaderFooter = /^\/(login|register|dashboard|comprar-puntos|technical-tests|postulaciones|vacantes-aplicadas|profile-company|profile-student|vacante)(\/.*)?$/.test(
+  const hideHeaderFooter = /^\/(login|register|dashboard|comprar-puntos|technical-tests|postulaciones|vacantes-aplicadas|profile-company|profile-student|empresa-perfil|vacante)(\/.*)?$/.test(
     location.pathname,
   );
 
@@ -52,6 +53,8 @@ const AppContent = () => {
         <Route path="/postulantes" element={<Postulantes />} />
         <Route path="/contacto" element={<Contacto />} />
         <Route path="/profile-company" element={<ProfileCompany />} />
+        <Route path="/empresa-perfil" element={<EmpresaPerfil />} />
+        <Route path="/empresa-perfil/:companyId" element={<EmpresaPerfil />} />
         <Route path="/profile-student" element={<ProfileStudent />} />
         <Route
           path="/profile-student/:studentId"

@@ -17,3 +17,4 @@ export { default as Privacidad } from "./Privacidad";
 export { default as Cookies } from "./Cookies";
 export { default as Postulaciones } from "./Postulaciones";
 export { default as VacantesAplicadas } from "./VacantesAplicadas";
+export { default as EmpresaPerfil } from "./EmpresaPerfil";

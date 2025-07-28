@@ -15,6 +15,7 @@ import {
 import logoImage from "../assets/Logo.png";
 import "../assets/sidebar-common.css";
 import "../assets/styles.css";
+import { getInitials, getAvatarStyles } from "../utils/avatarUtils";
 
 const CompanySidebar = ({ activeSection = "dashboard" }) => {
   const { user, logout } = useAuth();
@@ -30,33 +31,10 @@ const CompanySidebar = ({ activeSection = "dashboard" }) => {
   };
 
   const handleProfileClick = () => {
-    navigate("/profile-company");
+    navigate("/empresa-perfil");
   };
 
-  const getInitials = (nombreCompleto) => {
-    if (!nombreCompleto) return "U";
-    const parts = nombreCompleto.trim().split(" ");
-    const firstInitial = parts[0]?.charAt(0).toUpperCase() || "";
-    const secondInitial = parts[1]?.charAt(0).toUpperCase() || "";
-    return firstInitial + secondInitial || "U";
-  };
 
-  // Generate random avatar color based on name
-  const getAvatarColor = (name) => {
-    const colors = [
-      "#0a5cb8", // Project blue
-      "#1e40af", // Blue 700
-      "#059669", // Emerald 600
-      "#dc2626", // Red 600
-      "#7c3aed", // Violet 600
-      "#ea580c", // Orange 600
-      "#0891b2", // Cyan 600
-      "#65a30d", // Lime 600
-    ];
-
-    const index = name?.length ? name.charCodeAt(0) % colors.length : 0;
-    return colors[index];
-  };
 
   const companyName = user?.realName || user?.name || "Empresa";
   const userEmail = user?.email || "empresa@email.com";
@@ -164,11 +142,7 @@ const CompanySidebar = ({ activeSection = "dashboard" }) => {
         <div className="profile-info">
           <div
             className="profile-avatar"
-            style={{
-              backgroundColor: getAvatarColor(
-                companyName,
-              ),
-            }}
+            style={getAvatarStyles(companyName, 48)}
           >
             {getInitials(companyName)}
           </div>

@@ -307,7 +307,7 @@
 }
 
 .pagination-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem;
   background: #f3f4f6;
   color: #6b7280;
   border: none;
@@ -315,6 +315,11 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  font-size: 1.1rem;
 }
 
 .pagination-btn:hover:not(:disabled) {

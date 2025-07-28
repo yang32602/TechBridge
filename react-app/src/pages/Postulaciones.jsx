@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FiChevronLeft, FiChevronRight, FiUser, FiMail, FiPhone, FiArrowLeft, FiCalendar, FiMapPin, FiBriefcase } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { CompanySidebar } from "../components";
 import apiService from "../services/api";
@@ -14,9 +14,11 @@ const Postulaciones = () => {
   const [loadingAplicantes, setLoadingAplicantes] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [shouldReturnToStage2, setShouldReturnToStage2] = useState(false);
 
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const vacantesPerPage = 6;
 
   // Get current user data
@@ -38,6 +40,17 @@ const Postulaciones = () => {
 
     getCurrentUserData();
   }, [user?.id, user?.userType]);
+
+  // Check if should return to Stage 2 (from ProfileStudent)
+  useEffect(() => {
+    if (location.state?.returnToStage2 && currentUser?.id) {
+      setShouldReturnToStage2(true);
+      // Get the first vacante to show students automatically
+      if (vacantes.length > 0) {
+        handleVacanteClick(vacantes[0]);
+      }
+    }
+  }, [location.state, currentUser?.id, vacantes]);
 
   // Fetch company's vacantes
   useEffect(() => {
@@ -77,7 +90,7 @@ const Postulaciones = () => {
 
   const handleViewProfile = (estudiante) => {
     navigate(`/profile-student/${estudiante.id_usuario}`, {
-      state: { readOnly: true },
+      state: { readOnly: true, from: "postulaciones" },
     });
   };
 
@@ -178,8 +191,9 @@ const Postulaciones = () => {
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className="pagination-btn"
+                title="Página anterior"
               >
-                Anterior
+                <FiChevronLeft />
               </button>
 
               <div className="pagination-numbers">
@@ -202,8 +216,9 @@ const Postulaciones = () => {
                 }
                 disabled={currentPage === totalPages}
                 className="pagination-btn"
+                title="Página siguiente"
               >
-                Siguiente
+                <FiChevronRight />
               </button>
             </div>
           )}

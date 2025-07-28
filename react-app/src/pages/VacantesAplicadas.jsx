@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiCalendar, FiMapPin, FiBriefcase } from "react-icons/fi";
+import { FiCalendar, FiMapPin, FiBriefcase, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { StudentSidebar } from "../components";
@@ -38,7 +38,9 @@ const VacantesAplicadas = () => {
 
    const handleVacanteClick = (vacanteId) => {
     console.log("Navigating to vacante with ID:", vacanteId);
-    navigate(`/vacante/${vacanteId}`);
+    navigate(`/vacante/${vacanteId}`, {
+      state: { from: "vacantes-aplicadas" }
+    });
   };
 
   // Fetch student's applied vacantes
@@ -118,7 +120,17 @@ const VacantesAplicadas = () => {
 
               <div className="company-info">
                 <FiBriefcase className="icon" />
-                <span className="company-name">{vacante.nombre_empresa}</span>
+                <span
+                  className="company-name clickable-company"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/empresa-perfil/${vacante.id_empresa}`, {
+                      state: { readOnly: true, from: "vacantes-aplicadas" }
+                    });
+                  }}
+                >
+                  {vacante.nombre_empresa}
+                </span>
               </div>
 
               <div className="vacante-aplicada-location">
@@ -155,8 +167,9 @@ const VacantesAplicadas = () => {
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
             className="pagination-btn"
+            title="Página anterior"
           >
-            Anterior
+            <FiChevronLeft />
           </button>
 
           <div className="pagination-numbers">
@@ -179,8 +192,9 @@ const VacantesAplicadas = () => {
             }
             disabled={currentPage === totalPages}
             className="pagination-btn"
+            title="Página siguiente"
           >
-            Siguiente
+            <FiChevronRight />
           </button>
         </div>
       )}

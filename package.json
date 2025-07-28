@@ -3,6 +3,7 @@
     "nodemon": "^3.1.10"
   },
   "dependencies": {
-    "@tailwindcss/line-clamp": "^0.4.4"
+    "@tailwindcss/line-clamp": "^0.4.4",
+    "minimatch": "^10.0.3"
   }
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { FiSearch, FiMapPin, FiChevronDown } from "react-icons/fi";
+import { FiSearch, FiMapPin, FiChevronDown, FiChevronLeft, FiChevronRight} from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import apiService from "../services/api";
@@ -304,7 +304,7 @@ const Postulantes = () => {
             disabled={currentPage === 1}
             className="pagination-btn"
           >
-            Anterior
+            <FiChevronLeft />
           </button>
 
           <div className="pagination-numbers">
@@ -328,7 +328,7 @@ const Postulantes = () => {
             disabled={currentPage === totalPages}
             className="pagination-btn"
           >
-            Siguiente
+            <FiChevronRight />
           </button>
         </div>
       )}

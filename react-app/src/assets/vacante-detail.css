@@ -360,6 +360,19 @@
   cursor: not-allowed;
 }
 
+.checking-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #e5e7eb;
+  color: #9ca3af;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: not-allowed;
+}
+
 /* Loading and Error States */
 .loading-state {
   text-align: center;

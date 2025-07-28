@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import logoImage from "../assets/Logo.png";
 import { useAuth } from "../hooks/useAuth";
 import ApiService from "../services/api";
+import { getInitials, getAvatarStyles } from "../utils/avatarUtils";
 
 const Header = () => {
   const { isAuthenticated, user, logout, updateUser } = useAuth();
@@ -59,33 +60,7 @@ const Header = () => {
     }
   };
 
-  const getInitials = (name) => {
-    if (!name) return "U";
-    const cleanName = name.replace(/^(Estudiante|Empresa)$/i, "Usuario");
-    return cleanName
-      .split(" ")
-      .map((n) => n.charAt(0))
-      .join("")
-      .slice(0, 2)
-      .toUpperCase();
-  };
 
-  // Generate random avatar color based on name
-  const getAvatarColor = (name) => {
-    const colors = [
-      "#0a5cb8", // Project blue
-      "#1e40af", // Blue 700
-      "#059669", // Emerald 600
-      "#dc2626", // Red 600
-      "#7c3aed", // Violet 600
-      "#ea580c", // Orange 600
-      "#0891b2", // Cyan 600
-      "#65a30d", // Lime 600
-    ];
-
-    const index = name?.length ? name.charCodeAt(0) % colors.length : 0;
-    return colors[index];
-  };
 
   const getDisplayName = () => {
     if (user?.realName) return user.realName;
@@ -137,9 +112,8 @@ const Header = () => {
                 onClick={handleAvatarClick}
                 title="Ver perfil"
                 style={{
-                  backgroundColor: getAvatarColor(
-                    getDisplayName(),
-                  ),
+                  ...getAvatarStyles(getDisplayName(), 40),
+                  cursor: "pointer"
                 }}
               >
                 {getInitials(getDisplayName())}

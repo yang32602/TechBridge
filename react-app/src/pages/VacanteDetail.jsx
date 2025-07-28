@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { 
   FiMapPin, 
   FiCalendar, 
@@ -20,6 +20,7 @@ import "../assets/vacante-detail.css";
 const VacanteDetail = () => {
   const { vacanteId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   
   const [vacante, setVacante] = useState(null);
@@ -28,6 +29,8 @@ const VacanteDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [saving, setSaving] = useState(false);
+  const [isPostulado, setIsPostulado] = useState(false);
+  const [checkingPostulado, setCheckingPostulado] = useState(false);
 
   // Obtener datos del usuario actual
   useEffect(() => {
@@ -92,6 +95,52 @@ const VacanteDetail = () => {
 
     fetchVacanteDetail();
   }, [vacanteId]);
+
+  // Function to handle back navigation
+  const handleBackNavigation = () => {
+    const fromPage = location.state?.from;
+
+    if (fromPage === "vacantes-aplicadas") {
+      navigate("/vacantes-aplicadas");
+    } else if (fromPage === "vacantes") {
+      navigate("/vacantes");
+    } else {
+      // Default fallback based on user type
+      if (currentUser?.userType === "student") {
+        navigate("/vacantes");
+      } else if (currentUser?.userType === "company") {
+        navigate("/postulaciones");
+      } else {
+        navigate("/");
+      }
+    }
+  };
+
+  // Check if user has already applied to this vacancy
+  useEffect(() => {
+    const checkPostulacionStatus = async () => {
+      if (!currentUser?.id || currentUser?.userType !== "student" || !vacanteId) {
+        return;
+      }
+
+      setCheckingPostulado(true);
+      try {
+        // Get all vacantes applied by this student and check if this one is included
+        const vacantesAplicadas = await apiService.getStudentAppliedVacantes(currentUser.id);
+        const hasApplied = vacantesAplicadas.some(v =>
+          (v.id_vacante && v.id_vacante.toString() === vacanteId) ||
+          (v.id && v.id.toString() === vacanteId)
+        );
+        setIsPostulado(hasApplied);
+      } catch (error) {
+        console.error("Error checking postulacion status:", error);
+      } finally {
+        setCheckingPostulado(false);
+      }
+    };
+
+    checkPostulacionStatus();
+  }, [currentUser?.id, currentUser?.userType, vacanteId]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -167,12 +216,17 @@ const VacanteDetail = () => {
       return;
     }
 
+    if (isPostulado) {
+      alert("Ya te has postulado a esta vacante");
+      return;
+    }
+
     try {
       await apiService.postularVacante(user.id, vacante.id_vacante);
       alert("¡Postulación enviada exitosamente!");
-      
-      // Actualizar el estado local si es necesario
-      setVacante(prev => ({ ...prev, postulado: 1 }));
+
+      // Actualizar el estado local
+      setIsPostulado(true);
     } catch (error) {
       console.error("Error applying to vacante:", error);
       alert("Error al postularse. Inténtalo de nuevo.");
@@ -193,8 +247,8 @@ const VacanteDetail = () => {
         <div className="error-state">
           <h2>Vacante no encontrada</h2>
           <p>Lo sentimos, no pudimos encontrar esta vacante.</p>
-          <button onClick={() => navigate("/vacantes")} className="back-btn">
-            <FiArrowLeft /> Volver a Vacantes
+          <button onClick={handleBackNavigation} className="back-btn">
+            <FiArrowLeft /> Volver
           </button>
         </div>
       </div>
@@ -207,9 +261,9 @@ const VacanteDetail = () => {
     <div className="vacante-detail-container">
       {/* Header con navegación */}
       <div className="detail-header">
-        <button onClick={() => navigate("/vacantes")} className="back-button">
+        <button onClick={handleBackNavigation} className="back-button">
           <FiArrowLeft />
-          <span>Volver a Vacantes</span>
+          <span>Volver</span>
         </button>
         
         {canEdit && (
@@ -383,9 +437,13 @@ const VacanteDetail = () => {
         {/* Botón de postulación para estudiantes */}
         {currentUser?.userType === "student" && !isEditing && (
           <div className="apply-section">
-            {vacante.postulado === 1 ? (
+            {checkingPostulado ? (
+              <button className="checking-button" disabled>
+                Verificando estado...
+              </button>
+            ) : isPostulado ? (
               <button className="applied-button" disabled>
-                Ya te has postulado a esta vacante
+                Ya postulado
               </button>
             ) : (
               <button onClick={handlePostular} className="apply-button">

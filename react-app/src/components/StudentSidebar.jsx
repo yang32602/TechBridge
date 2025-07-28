@@ -14,6 +14,7 @@ import {
 } from "react-icons/hi";
 import logoImage from "../assets/Logo.png";
 import "../assets/sidebar-common.css";
+import { getInitials, getAvatarStyles } from "../utils/avatarUtils";
 
 const StudentSidebar = ({ activeSection = "" }) => {
   const { user, logout } = useAuth();
@@ -155,14 +156,12 @@ const StudentSidebar = ({ activeSection = "" }) => {
       {/* Footer con Usuario */}
       <div className="student-sidebar-footer">
         <div className="student-user-profile">
-          <div className="student-user-avatar">
+          <div
+            className="student-user-avatar"
+            style={getAvatarStyles(userName, 48)}
+          >
             <span className="user-initials">
-              {userName
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .toUpperCase()
-                .slice(0, 2)}
+              {getInitials(userName)}
             </span>
           </div>
           <div className="student-user-info">

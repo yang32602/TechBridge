@@ -13,6 +13,8 @@
   top: 0;
   height: 100vh;
   z-index: 100;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .student-sidebar-header {
@@ -117,16 +119,8 @@
 }
 
 .student-user-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--Primary-Blue), #4a90e2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 600;
-  font-size: 16px;
+  /* Styles now handled by getAvatarStyles utility */
+  flex-shrink: 0;
 }
 
 .user-initials {
@@ -197,6 +191,8 @@
   top: 0;
   height: 100vh;
   z-index: 100;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* 响应式设计 */

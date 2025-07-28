@@ -138,6 +138,28 @@ class ApiService {
     }
   }
 
+  // Get company by ID (for read-only view)
+  async getCompanyById(companyId) {
+    try {
+      console.log("getCompanyById called with companyId:", companyId);
+      const response = await this.request("/empresas", {
+        method: "POST",
+        body: JSON.stringify({ id: companyId }),
+      });
+
+      console.log("getCompanyById response:", response);
+      if (response && response.data && Array.isArray(response.data)) {
+        const company = response.data.length > 0 ? response.data[0] : null;
+        console.log("getCompanyById returning:", company);
+        return company;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error fetching company by ID:", error);
+      return null;
+    }
+  }
+
   async getCompanyByEmail() {
     try {
       // For backward compatibility - try to get first company
@@ -693,6 +715,27 @@ class ApiService {
       return response;
     } catch (error) {
       console.error("Error creating payment order:", error);
+      throw error;
+    }
+  }
+
+  // Company profile API methods
+  async updateCompanyField(userId, field, value) {
+    try {
+      console.log("updateCompanyField called with:", { userId, field, value });
+      const response = await this.request("/empresas/actualizar", {
+        method: "PATCH",
+        body: JSON.stringify({
+          id_usuario: userId,
+          campo: field,
+          valor: value,
+        }),
+      });
+
+      console.log("updateCompanyField response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error updating company field:", error);
       throw error;
     }
   }
