@@ -107,7 +107,7 @@ export const autenticacionEstudiante = async (req, res) => {
         return res.json({ estado: 0, mensaje: 'Error en la autenticación del estudiante' });
     }
 };
-
+ 
 // Autenticación de empresa
 export const autenticacionEmpresa = async (req, res) => {
     const { correo, contrasena } = req.body;
@@ -119,16 +119,26 @@ export const autenticacionEmpresa = async (req, res) => {
         }
 
         const autenticacion = await usuarioModel.usuarioContrasena(correo, contrasena);
-
-        if (autenticacion) {
-            return res.json({ estado: 1, mensaje: 'Sesión iniciada correctamente', id: correoExiste });
-        } else {
+        
+        if (!autenticacion) {
             return res.json({ estado: 0, mensaje: 'La contraseña es incorrecta' });
         }
+
+        const id_emp = await usuarioModel.buscarIDEmpresa(autenticacion.id);
+
+        return res.json({ 
+            estado: 1, 
+            mensaje: 'Sesión iniciada correctamente', 
+            id: correoExiste, 
+            id_empresa: id_emp.id 
+        });
+
     } catch (error) {
+        console.error("Error en autenticaciónEmpresa:", error);
         return res.json({ estado: 0, mensaje: 'Error en la autenticación de empresa' });
     }
 };
+
 
 // Cambio de contraseña de usuario
 export const cambioContrasenaUsuario = async (req, res) => {

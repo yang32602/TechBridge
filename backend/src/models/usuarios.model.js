@@ -148,6 +148,19 @@ export const verificarCorreoEmpresa = async (correo) => {
     }
 };
 
+export const buscarIDEmpresa = async (id_usuario) => {
+    const sql = `SELECT id FROM empresas WHERE id_usuario = ? `;
+
+    try {
+        const [rows] = await db.query(sql, [id_usuario]);
+        return rows.length > 0 ? rows[0].id : null;
+    } catch (error) {
+        console.error('Error verificando la empresa:', error);
+        throw error;
+    }
+};
+
+
 
 export const usuarioCambioContrasena = async (nuevaContrasena, correo) => {
     const sql = `UPDATE usuarios SET contrasena = ? WHERE correo = ?`;
