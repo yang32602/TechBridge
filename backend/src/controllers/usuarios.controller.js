@@ -125,12 +125,13 @@ export const autenticacionEmpresa = async (req, res) => {
         }
 
         const id_emp = await usuarioModel.buscarIDEmpresa(autenticacion.id);
+        console.log("ID empresa encontrado:", id_emp);
 
         return res.json({ 
             estado: 1, 
             mensaje: 'Sesión iniciada correctamente', 
             id: correoExiste, 
-            id_empresa: id_emp.id 
+            id_empresa: id_emp 
         });
 
     } catch (error) {
