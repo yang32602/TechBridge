@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 function configurarApiBaseUrl(): string {
-  const LOCAL_IP_LIST = ['192.168.0.5', '192.168.1.100']; // Lista de IPs locales permitidos
+  const LOCAL_IP_LIST = ['192.168.0.5', '172.29.39.94', '172.29.6.70']; // Lista de IPs locales permitidos
   const DEFAULT_PORT = '3000'; // Puerto por defecto
 
   const debuggerHost = (Constants as any).expoConfig?.hostUri;
