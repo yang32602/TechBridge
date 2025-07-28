@@ -237,20 +237,53 @@
   width: 16px;
 }
 
-.empresa-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #0a5cb8;
-  font-size: 0.9rem;
-  font-weight: 500;
-  background: #f0f8ff;
-  padding: 0.5rem;
-  border-radius: 6px;
+.student-badges-section {
+  margin-top: 12px;
 }
 
-.empresa-info .icon {
-  font-size: 0.9rem;
+.badges-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.student-badges-grid-small {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 60px;
+  overflow: hidden;
+}
+
+.student-badge-small {
+  background: #0a5cb8;
+  color: #ffffff;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.student-badge-small.js-advanced {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.student-badge-small.html-medium {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.student-badge-small.react-hooked {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+
+.no-badges-small {
+  color: #9ca3af;
+  font-size: 12px;
+  font-style: italic;
 }
 
 .view-profile-btn {

@@ -15,10 +15,13 @@ export const getEmpresa = async () => {
 export const getEmpresaPorID = async (id_empresa) => {
     const sql = `SELECT * FROM empresas WHERE id = ?`;
     try {
+        console.log('getEmpresaPorID: Executing query:', sql, 'with id_empresa:', id_empresa);
         const [empresas] = await db.query(sql, [id_empresa]);
+        console.log('getEmpresaPorID: Query result:', empresas);
+        console.log('getEmpresaPorID: Number of results:', empresas.length);
         return empresas;
     } catch (error) {
-        console.error('Error al obtener las empresas');
+        console.error('getEmpresaPorID: Error al obtener las empresas:', error);
         throw error;
     }
 };

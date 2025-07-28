@@ -30,7 +30,7 @@ const Header = () => {
               });
             }
           } else if (user.userType === "empresas") {
-            userDetails = await ApiService.getCompanyByUserId(user.id);
+            userDetails = await ApiService.getCompanyByUserId(user.id_empresa || user.id);
             if (userDetails) {
               updateUser({
                 realName: userDetails.nombre,
@@ -54,7 +54,7 @@ const Header = () => {
   const handleAvatarClick = () => {
     // Navigate to profile page based on user type
     if (user?.userType === "empresas") {
-      navigate("/profile-company");
+      navigate("/empresa-perfil");
     } else {
       navigate("/profile-student");
     }

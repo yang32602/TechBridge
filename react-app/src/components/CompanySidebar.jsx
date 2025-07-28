@@ -7,7 +7,6 @@ import {
   HiOfficeBuilding,
   HiUsers,
   HiBriefcase,
-  HiCog,
   HiQuestionMarkCircle,
   HiLogout,
   HiCurrencyDollar,
@@ -34,12 +33,10 @@ const CompanySidebar = ({ activeSection = "dashboard" }) => {
     navigate("/empresa-perfil");
   };
 
-
-
   const companyName = user?.realName || user?.name || "Empresa";
   const userEmail = user?.email || "empresa@email.com";
 
-  const mainMenuItems = [
+  const menuItems = [
     {
       id: "dashboard",
       icon: HiHome,
@@ -50,7 +47,7 @@ const CompanySidebar = ({ activeSection = "dashboard" }) => {
       id: "messages",
       icon: HiChat,
       label: "Mensajes",
-      onClick: () => { },
+      onClick: () => {},
       badge: 1,
     },
     {
@@ -76,58 +73,73 @@ const CompanySidebar = ({ activeSection = "dashboard" }) => {
   const supportItems = [
     {
       id: "contact",
-      icon: HiCog,
+      icon: HiChat,
       label: "Contáctanos",
-      onClick: () => { },
+      onClick: () => {},
     },
     {
       id: "help",
       icon: HiQuestionMarkCircle,
       label: "Centro de Ayuda",
-      onClick: () => { },
+      onClick: () => {},
     },
   ];
 
   return (
     <aside className="company-sidebar">
-      <div className="sidebar-menu">
-        {/* Logo */}
-        <div className="sidebar-logo" onClick={handleLogoClick}>
-          <img src={logoImage} alt="TechBridge" className="logo-image" />
+      {/* Header con Logo */}
+      <div className="company-sidebar-header">
+        <div className="company-sidebar-logo" onClick={handleLogoClick}>
+          <img
+            src={logoImage}
+            alt="TechBridge"
+            className="company-logo-image"
+          />
         </div>
+      </div>
 
-        {/* Menú Principal */}
-        <div className="main-menu">
-          {mainMenuItems.map((item) => {
+      {/* Navegación Principal */}
+      <nav className="company-sidebar-nav">
+        <div className="company-nav-section">
+          {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
 
             return (
               <div
                 key={item.id}
-                className={`menu-item ${isActive ? "active" : ""}`}
+                className={`company-nav-item ${isActive ? "active" : ""}`}
                 onClick={item.onClick}
               >
-                <div className="menu-icon">
-                  <Icon />
+                {isActive && <div className="company-nav-indicator"></div>}
+                <div className="company-nav-content">
+                  <div className="company-nav-icon">
+                    <Icon />
+                  </div>
+                  <span>{item.label}</span>
                 </div>
-                <span>{item.label}</span>
                 {item.badge && (
-                  <div className="notification-badge">{item.badge}</div>
+                  <div className="company-notification-badge">{item.badge}</div>
                 )}
               </div>
             );
           })}
+        </div>
 
-          <div className="menu-divider"></div>
+        <div className="company-nav-divider"></div>
 
-          {/* Sección de Soporte */}
+        {/* Sección de Soporte */}
+        <div className="company-nav-section">
           {supportItems.map((item) => {
             const Icon = item.icon;
 
             return (
-              <div key={item.id} className="menu-item" onClick={item.onClick}>
-                <div className="menu-icon">
+              <div
+                key={item.id}
+                className="company-nav-item"
+                onClick={item.onClick}
+              >
+                <div className="company-nav-icon">
                   <Icon />
                 </div>
                 <span>{item.label}</span>
@@ -135,29 +147,29 @@ const CompanySidebar = ({ activeSection = "dashboard" }) => {
             );
           })}
         </div>
-      </div>
+      </nav>
 
-      {/* Perfil del Usuario */}
-      <div className="sidebar-profile">
-        <div className="profile-info">
+      {/* Footer con Usuario */}
+      <div className="company-sidebar-footer">
+        <div className="company-user-profile">
           <div
-            className="profile-avatar"
+            className="company-user-avatar"
             style={getAvatarStyles(companyName, 48)}
           >
-            {getInitials(companyName)}
+            <span className="company-user-initials">
+              {getInitials(companyName)}
+            </span>
           </div>
-          <div className="profile-details">
-            <h4>{companyName}</h4>
-            <p>{userEmail}</p>
+          <div className="company-user-info">
+            <div className="company-user-name">{companyName}</div>
+            <div className="company-user-email">{userEmail}</div>
           </div>
         </div>
-        <div className="profile-dropdown">
-          <div className="dropdown-content">
-            <button className="logout-btn" onClick={handleLogout}>
-              <HiLogout />
-              Cerrar Sesión
-            </button>
-          </div>
+        <div className="company-user-actions">
+          <button className="company-logout-btn" onClick={handleLogout}>
+            <HiLogout />
+            Cerrar sesión
+          </button>
         </div>
       </div>
     </aside>

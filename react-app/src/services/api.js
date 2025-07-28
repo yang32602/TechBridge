@@ -114,18 +114,17 @@ class ApiService {
     }
   }
 
+  // Updated to use id_empresa for consistency
   async getCompanyByUserId(userId) {
     try {
-      console.log("getCompanyByUserId called with userId:", userId);
+      console.log("getCompanyByUserId called with userId (now using id_empresa):", userId);
       const response = await this.request("/empresas", {
         method: "POST",
-        body: JSON.stringify({ id_usuario: userId }),
+        body: JSON.stringify({ id_empresa: userId }),
       });
 
       console.log("getCompanyByUserId response:", response);
 
-      // TODO: 将来在后端添加更多字段时，在此处同步添加新字段处理
-      // 例如: linkedin, telefono, sitio_web, direccion, tamaño_empresa 等
       if (response && response.data && Array.isArray(response.data)) {
         const company = response.data.length > 0 ? response.data[0] : null;
         console.log("getCompanyByUserId returning:", company);
@@ -138,24 +137,52 @@ class ApiService {
     }
   }
 
-  // Get company by ID (for read-only view)
+  // Get company by ID (for read-only view) - using id_empresa consistently
   async getCompanyById(companyId) {
     try {
       console.log("getCompanyById called with companyId:", companyId);
-      const response = await this.request("/empresas", {
-        method: "POST",
-        body: JSON.stringify({ id: companyId }),
-      });
+      console.log("getCompanyById request URL:", `${API_BASE_URL}/empresas`);
+      console.log("getCompanyById request body:", { id_empresa: companyId });
 
-      console.log("getCompanyById response:", response);
+      const url = `${API_BASE_URL}/empresas`;
+      const config = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id_empresa: companyId }),
+      };
+
+      console.log("getCompanyById making fetch request with config:", config);
+      const fetchResponse = await fetch(url, config);
+      console.log("getCompanyById fetch response status:", fetchResponse.status);
+      console.log("getCompanyById fetch response headers:", Object.fromEntries(fetchResponse.headers.entries()));
+
+      if (!fetchResponse.ok) {
+        console.error(`getCompanyById HTTP error! status: ${fetchResponse.status}`);
+        const errorText = await fetchResponse.text();
+        console.error("getCompanyById error response text:", errorText);
+        return null;
+      }
+
+      const response = await fetchResponse.json();
+      console.log("getCompanyById parsed JSON response:", response);
+
       if (response && response.data && Array.isArray(response.data)) {
         const company = response.data.length > 0 ? response.data[0] : null;
-        console.log("getCompanyById returning:", company);
+        console.log("getCompanyById returning company:", company);
         return company;
+      } else if (response && response.mensaje) {
+        console.error("getCompanyById server message:", response.mensaje);
       }
       return null;
     } catch (error) {
-      console.error("Error fetching company by ID:", error);
+      console.error("getCompanyById Error details:", {
+        message: error.message,
+        stack: error.stack,
+        companyId: companyId,
+        name: error.name
+      });
       return null;
     }
   }
@@ -202,19 +229,7 @@ class ApiService {
     }
   }
 
-  async getCompanyById(usuarioId) {
-    try {
-      const companies = await this.getCompanies();
-      if (companies && Array.isArray(companies)) {
-        // Match by id_usuario field in empresas endpoint
-        return companies.find((company) => company.id_usuario === usuarioId);
-      }
-      return null;
-    } catch (error) {
-      console.error("Error fetching company by ID:", error);
-      return null;
-    }
-  }
+  // Removed duplicate method - using the more specific implementation above
 
   async getCompanyApplicants(companyId) {
     try {
@@ -719,14 +734,14 @@ class ApiService {
     }
   }
 
-  // Company profile API methods
-  async updateCompanyField(userId, field, value) {
+  // Company profile API methods - updated to use id_usuario (as per backend controller)
+  async updateCompanyField(empresaId, field, value) {
     try {
-      console.log("updateCompanyField called with:", { userId, field, value });
+      console.log("updateCompanyField called with:", { empresaId, field, value });
       const response = await this.request("/empresas/actualizar", {
         method: "PATCH",
         body: JSON.stringify({
-          id_usuario: userId,
+          id_usuario: empresaId, // Backend expects id_usuario, not id_empresa
           campo: field,
           valor: value,
         }),
@@ -737,6 +752,22 @@ class ApiService {
     } catch (error) {
       console.error("Error updating company field:", error);
       throw error;
+    }
+  }
+
+  // Badges API methods
+  async getStudentBadges(userId) {
+    try {
+      console.log("getStudentBadges called with userId:", userId);
+      const response = await this.request(`/usuarios/${userId}/estudianteInsignia`, {
+        method: "GET",
+      });
+
+      console.log("getStudentBadges response:", response);
+      return response.data || response || [];
+    } catch (error) {
+      console.error("Error fetching student badges:", error);
+      return [];
     }
   }
 }

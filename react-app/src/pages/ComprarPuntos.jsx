@@ -33,14 +33,14 @@ const ComprarPuntos = () => {
 
       try {
         // 获取公司数据
-        const company = await api.getCompanyByUserId(user.id);
+        const company = await api.getCompanyByUserId(user.id_empresa || user.id);
         if (company) {
           setCompanyData(company);
           // 获取可购买的 techpoints
           const techPointsData = await api.getTechPoints();
           setPackages(techPointsData);
 
-          // 获取当前公司的 techpoints 数量
+          // 获取当前公司的 techpoints ���量
           const balance = await api.getCompanyTechPoints(company.id);
           setUserBalance(balance);
         }

@@ -45,7 +45,7 @@ const VacanteDetail = () => {
           const studentData = await apiService.getStudentByUserId(user.id);
           setCurrentUser({ ...studentData, userType: "student" });
         } else if (user?.userType === "empresas") {
-          const companyData = await apiService.getCompanyByUserId(user.id);
+          const companyData = await apiService.getCompanyByUserId(user.id_empresa || user.id);
           setCurrentUser({ ...companyData, userType: "company" });
         }
       } catch (error) {
@@ -301,9 +301,6 @@ const VacanteDetail = () => {
       <div className="detail-content">
         {/* Información de la empresa */}
         <div className="company-section">
-          <div className="company-avatar">
-            {getInitials(vacante.nombre_empresa)}
-          </div>
           <div className="company-info">
             <h2 className="company-name">{vacante.nombre_empresa}</h2>
             <div className="company-meta">

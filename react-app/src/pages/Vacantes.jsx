@@ -44,7 +44,7 @@ const Vacantes = () => {
           setCurrentUser({ ...studentData, userType: "student" });
         } else if (user?.userType === "empresas") {
           console.log("Vacantes: Fetching company data");
-          const companyData = await apiService.getCompanyByUserId(user.id);
+          const companyData = await apiService.getCompanyByUserId(user.id_empresa || user.id);
           console.log("Vacantes: Company data:", companyData);
           setCurrentUser({ ...companyData, userType: "company" });
         } else {
@@ -354,6 +354,8 @@ const Vacantes = () => {
                     className="company-name clickable-company"
                     onClick={(e) => {
                       e.stopPropagation();
+                      console.log("Vacantes: Navigating to empresa-perfil with id_empresa:", vacante.id_empresa);
+                      console.log("Vacantes: Full vacante object:", vacante);
                       navigate(`/empresa-perfil/${vacante.id_empresa}`, {
                         state: { readOnly: true, from: "vacantes" }
                       });

@@ -19,9 +19,12 @@ import {
   HiSave,
   HiX,
   HiArrowLeft,
+  HiCalendar,
+  HiIdentification,
 } from "react-icons/hi";
 import { FaTwitter, FaFacebook, FaLinkedin } from "react-icons/fa";
-import "../assets/styles.css";
+import "../assets/profile-student.css";
+import "../assets/empresa-perfil.css";
 import { getInitials, getCompanyAvatarStyles } from "../utils/avatarUtils";
 
 const EmpresaPerfil = () => {
@@ -38,31 +41,38 @@ const EmpresaPerfil = () => {
 
   // Check if this is read-only mode (viewing another company's profile)
   const isReadOnly = companyId || location.state?.readOnly;
-  const targetUserId = companyId || user?.id;
+  const targetCompanyId = companyId || user?.id_empresa;
 
   useEffect(() => {
     const fetchCompanyDetails = async () => {
-      if (targetUserId) {
+      if (targetCompanyId) {
         try {
           let details;
-          if (isReadOnly && companyId) {
-            // For read-only mode, fetch by company ID
+          if (companyId) {
+            // When companyId is provided (read-only mode), it's always an id_empresa
+            console.log("EmpresaPerfil: Fetching company by ID:", companyId);
             details = await ApiService.getCompanyById(companyId);
+            console.log("EmpresaPerfil: Received company details:", details);
           } else {
-            // For own profile, fetch by user ID
-            details = await ApiService.getCompanyByUserId(targetUserId);
+            // For own profile, fetch by user ID to get company data
+            const userId = user?.id_empresa || user?.id;
+            console.log("EmpresaPerfil: Fetching company by user ID:", userId);
+            details = await ApiService.getCompanyByUserId(userId);
+            console.log("EmpresaPerfil: Received company details:", details);
           }
           setCompanyDetails(details);
           setEditForm(details || {});
         } catch (error) {
-          console.error("Error fetching company details:", error);
+          console.error("EmpresaPerfil: Error fetching company details:", error);
+          // 确保在错误情况下设置空数据
+          setCompanyDetails(null);
         }
       }
       setLoading(false);
     };
 
     fetchCompanyDetails();
-  }, [targetUserId, companyId, isReadOnly]);
+  }, [targetCompanyId, companyId, isReadOnly]);
 
   const handleEdit = (field) => {
     setEditingField(field);
@@ -76,18 +86,24 @@ const EmpresaPerfil = () => {
   const handleSave = async (field) => {
     setSaving(true);
     try {
-      await ApiService.updateCompanyField(user.id, field, editForm[field]);
-      
+      // Use id_empresa from user context
+      const empresaId = user?.id_empresa;
+      if (!empresaId) {
+        throw new Error("No se encontró el ID de empresa en el contexto del usuario");
+      }
+
+      await ApiService.updateCompanyField(empresaId, field, editForm[field]);
+
       // Update local state
       setCompanyDetails(prev => ({ ...prev, [field]: editForm[field] }));
       setEditingField(null);
-      
+
       // Show success message briefly
       const successMessage = document.createElement('div');
       successMessage.className = 'success-notification';
       successMessage.innerHTML = `<span>✓ ${field} actualizado exitosamente</span>`;
       document.body.appendChild(successMessage);
-      
+
       setTimeout(() => {
         document.body.removeChild(successMessage);
       }, 3000);
@@ -103,8 +119,6 @@ const EmpresaPerfil = () => {
     setEditForm(prev => ({ ...prev, [field]: value }));
   };
 
-
-
   const formatDate = (dateString) => {
     if (!dateString) return "No especificado";
     const date = new Date(dateString);
@@ -117,125 +131,105 @@ const EmpresaPerfil = () => {
 
   if (loading) {
     return (
-      <div className="profile-company-page">
-        <div className="loading">Cargando...</div>
+      <div className="profile-student-container">
+        <div className="student-loading">Cargando...</div>
       </div>
     );
   }
 
-  const companyName = companyDetails?.nombre || user?.name || "Empresa";
+  // Show error message if in read-only mode and no company found
+  if (isReadOnly && !companyDetails && companyId) {
+    return (
+      <div className="profile-student-container">
+        <div className="student-loading">
+          <h2>Empresa no encontrada</h2>
+          <p>No se pudo encontrar la empresa con ID: {companyId}</p>
+          <p>Es posible que:</p>
+          <ul>
+            <li>La empresa no exista en la base de datos</li>
+            <li>Haya un problema de conexión con el servidor</li>
+            <li>La empresa haya sido eliminada</li>
+          </ul>
+          <button
+            onClick={() => navigate(-1)}
+            className="student-btn-return"
+          >
+            Volver
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const companyName = companyDetails?.nombre || (isReadOnly ? "Empresa no encontrada" : user?.name) || "Empresa";
 
   return (
-    <div className="profile-company-page">
+    <div className={`profile-student-container ${isReadOnly ? "profile-student-readonly" : ""}`}>
       {/* Sidebar - only show if not in read-only mode */}
       {!isReadOnly && <CompanySidebar activeSection="company-profile" />}
 
       {/* Main Content */}
-      <main className="company-main-content">
+      <main className="student-dashboard-main">
         {/* Top Navigation */}
-        <nav className="top-nav">
-          <div className="company-info">
-            <div className="company-logo">
-              <div style={getCompanyAvatarStyles(companyName, 48, 8)}>
-                {getInitials(companyName)}
-              </div>
-            </div>
-            <div className="company-details">
-              <p className="company-type">Empresa</p>
-              <div className="company-name-section">
-                <h2>{companyName}</h2>
-                <div style={{ color: "#56CDAD", fontSize: 12 }}>✓</div>
-              </div>
-            </div>
-          </div>
-          <div className="top-nav-actions">
-            {isReadOnly ? (
-              <button 
-                onClick={() => navigate(-1)}
-                className="back-button"
-              >
-                <HiArrowLeft />
-                Volver
-              </button>
-            ) : (
-              <div className="notification-btn">
-                <HiBell />
-                <div className="notification-dot"></div>
-              </div>
-            )}
-          </div>
-        </nav>
+        <header className="student-dashboard-header">
+          <h1>{isReadOnly ? "Perfil de la Empresa" : "Mi Perfil de Empresa"}</h1>
+          <button
+            className="student-btn-return"
+            onClick={() => {
+              if (isReadOnly) {
+                navigate(-1);
+              } else {
+                navigate("/");
+              }
+            }}
+          >
+            {isReadOnly ? "Volver" : "Regresar a Inicio"}
+          </button>
+        </header>
 
-        {/* Company Header */}
-        <section className="company-header">
-          <div className="company-logo-large">
-            <div style={getCompanyAvatarStyles(companyName, 189, 8)}>
-              {getInitials(companyName)}
-            </div>
-            {!isReadOnly && (
-              <button className="edit-logo-btn">
-                <HiPencil />
-              </button>
-            )}
-          </div>
-          <div className="company-header-content">
-            <div className="header-title">
-              <h1>{companyName}</h1>
-              {!isReadOnly && (
-                <div className="header-actions">
-                  <button className="btn-secondary">
-                    <HiEye />
-                    Vista publica
-                  </button>
-                  <button className="btn-primary">
-                    <HiCog />
-                    Configuracion de Perfil
-                  </button>
-                </div>
-              )}
-            </div>
-            {companyDetails?.link_empresa && (
-              <a href={companyDetails.link_empresa} className="website-link" target="_blank" rel="noopener noreferrer">
-                {companyDetails.link_empresa}
-              </a>
-            )}
-            <div className="company-stats">
-              <div className="stat-item">
-                <div className="stat-icon">
-                  <HiOfficeBuilding />
-                </div>
-                <div className="stat-info">
-                  <p className="stat-label">Fundación</p>
-                  <p className="stat-value">
-                    {formatDate(companyDetails?.fecha_fundada)}
-                  </p>
-                </div>
+        <div className="student-dashboard-content">
+          <div className="student-main-content">
+            {/* Profile Header */}
+            <section className="student-profile-header-card">
+              <div className="student-profile-banner">
+                <div className="student-banner-overlay"></div>
               </div>
-              <div className="stat-item">
-                <div className="stat-icon">
-                  <HiUsers />
+              <div className="student-profile-info">
+                <div
+                  className="student-profile-avatar student-avatar-initials"
+                  style={getCompanyAvatarStyles(companyName, 140)}
+                >
+                  {getInitials(companyName)}
                 </div>
-                <div className="stat-info">
-                  <p className="stat-label">Empleados</p>
-                  <p className="stat-value">
-                    {companyDetails?.empleados || "No especificado"}
-                  </p>
+                <div className="student-profile-details">
+                  <h2 className="student-profile-name">{companyName}</h2>
+                  <div className="student-profile-location">
+                    <HiOfficeBuilding />
+                    <span>Sector: {companyDetails?.sector || "No especificado"}</span>
+                  </div>
+                  <div className="student-profile-status">
+                    <HiUsers />
+                    <span>Empleados: {companyDetails?.empleados || "No especificado"}</span>
+                  </div>
                 </div>
+                {!isReadOnly && (
+                  <div className="student-profile-actions">
+                    <button className="student-btn-edit-profile" onClick={() => navigate("/empresa-perfil", { state: { readOnly: true } })}>
+                      <HiEye />
+                      Vista Pública
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
-          </div>
-        </section>
+            </section>
 
-        {/* Content Sections */}
-        <div className="content-sections">
-          <div className="left-content">
             {/* Company Description */}
-            <section className="content-section">
-              <div className="section-header">
+            <section className="student-content-card">
+              <div className="student-card-header">
                 <h3>Descripción de la empresa</h3>
                 {!isReadOnly && (
                   <button 
-                    className="edit-btn"
+                    className="student-add-btn"
                     onClick={() => handleEdit('descripcion')}
                     disabled={editingField === 'descripcion'}
                   >
@@ -243,7 +237,7 @@ const EmpresaPerfil = () => {
                   </button>
                 )}
               </div>
-              <div className="company-description">
+              <div className="student-card-content">
                 {editingField === 'descripcion' ? (
                   <div className="edit-container">
                     <textarea
@@ -277,146 +271,421 @@ const EmpresaPerfil = () => {
               </div>
             </section>
 
-            <div className="section-divider"></div>
 
             {/* Contact Information */}
-            <section className="content-section">
-              <div className="section-header">
+            <section className="student-content-card">
+              <div className="student-card-header">
                 <h3>Información de Contacto</h3>
-                {!isReadOnly && (
-                  <div className="section-actions">
-                    <button className="add-btn">
-                      <HiPlus />
-                    </button>
-                    <button className="edit-btn">
-                      <HiPencil />
-                    </button>
-                  </div>
-                )}
               </div>
-              <div className="contact-links">
-                <div className="contact-row">
-                  {companyDetails?.twitter && (
-                    <a href={companyDetails.twitter} className="contact-link" target="_blank" rel="noopener noreferrer">
-                      <FaTwitter />
-                      {companyDetails.twitter}
-                    </a>
-                  )}
-                  {companyDetails?.facebook && (
-                    <a href={companyDetails.facebook} className="contact-link" target="_blank" rel="noopener noreferrer">
-                      <FaFacebook />
-                      {companyDetails.facebook}
-                    </a>
-                  )}
-                </div>
-                <div className="contact-row">
-                  {companyDetails?.linkedin && (
-                    <a href={companyDetails.linkedin} className="contact-link" target="_blank" rel="noopener noreferrer">
-                      <FaLinkedin />
-                      {companyDetails.linkedin}
-                    </a>
-                  )}
-                  {companyDetails?.telefono && (
-                    <div className="contact-link">
-                      <HiPhone />
-                      {companyDetails.telefono}
-                    </div>
-                  )}
+              <div className="student-card-content">
+                <div className="contact-grid">
+                  <div className="contact-item">
+                    <FaTwitter />
+                    {editingField === 'twitter' ? (
+                      <div className="contact-edit-container">
+                        <input
+                          type="url"
+                          value={editForm.twitter || ''}
+                          onChange={(e) => handleInputChange('twitter', e.target.value)}
+                          className="contact-edit-input"
+                          placeholder="URL de Twitter"
+                        />
+                        <div className="contact-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('twitter')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="contact-value-container">
+                        {companyDetails?.twitter ? (
+                          <a href={companyDetails.twitter} target="_blank" rel="noopener noreferrer">
+                            {companyDetails.twitter}
+                          </a>
+                        ) : (
+                          <span>No especificado</span>
+                        )}
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('twitter')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="contact-item">
+                    <FaFacebook />
+                    {editingField === 'facebook' ? (
+                      <div className="contact-edit-container">
+                        <input
+                          type="url"
+                          value={editForm.facebook || ''}
+                          onChange={(e) => handleInputChange('facebook', e.target.value)}
+                          className="contact-edit-input"
+                          placeholder="URL de Facebook"
+                        />
+                        <div className="contact-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('facebook')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="contact-value-container">
+                        {companyDetails?.facebook ? (
+                          <a href={companyDetails.facebook} target="_blank" rel="noopener noreferrer">
+                            {companyDetails.facebook}
+                          </a>
+                        ) : (
+                          <span>No especificado</span>
+                        )}
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('facebook')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="contact-item">
+                    <FaLinkedin />
+                    {editingField === 'linkedin' ? (
+                      <div className="contact-edit-container">
+                        <input
+                          type="url"
+                          value={editForm.linkedin || ''}
+                          onChange={(e) => handleInputChange('linkedin', e.target.value)}
+                          className="contact-edit-input"
+                          placeholder="URL de LinkedIn"
+                        />
+                        <div className="contact-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('linkedin')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="contact-value-container">
+                        {companyDetails?.linkedin ? (
+                          <a href={companyDetails.linkedin} target="_blank" rel="noopener noreferrer">
+                            {companyDetails.linkedin}
+                          </a>
+                        ) : (
+                          <span>No especificado</span>
+                        )}
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('linkedin')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="contact-item">
+                    <HiGlobe />
+                    {editingField === 'link_empresa' ? (
+                      <div className="contact-edit-container">
+                        <input
+                          type="url"
+                          value={editForm.link_empresa || ''}
+                          onChange={(e) => handleInputChange('link_empresa', e.target.value)}
+                          className="contact-edit-input"
+                          placeholder="Sitio web de la empresa"
+                        />
+                        <div className="contact-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('link_empresa')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="contact-value-container">
+                        {companyDetails?.link_empresa ? (
+                          <a href={companyDetails.link_empresa} target="_blank" rel="noopener noreferrer">
+                            {companyDetails.link_empresa}
+                          </a>
+                        ) : (
+                          <span>No especificado</span>
+                        )}
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('link_empresa')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </section>
           </div>
 
-          <div className="right-content">
-            {/* Company Stats */}
-            <section className="content-section">
-              <div className="section-header">
+          {/* Right Sidebar */}
+          <aside className="student-sidebar-right">
+            {/* Company Info */}
+            <section className="student-sidebar-card">
+              <div className="student-card-header">
                 <h3>Información de la empresa</h3>
+              </div>
+              <div className="student-contact-list">
+                <div className="student-contact-item">
+                  <div className="student-contact-icon">
+                    <HiIdentification />
+                  </div>
+                  <div className="student-contact-content">
+                    <div className="student-contact-label">RUC</div>
+                    {editingField === 'ruc' ? (
+                      <div className="inline-edit-container">
+                        <input
+                          type="text"
+                          value={editForm.ruc || ''}
+                          onChange={(e) => handleInputChange('ruc', e.target.value)}
+                          className="inline-edit-input"
+                          placeholder="Número de RUC"
+                        />
+                        <div className="inline-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('ruc')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="editable-value">
+                        <div className="student-contact-value">{companyDetails?.ruc || "No especificado"}</div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('ruc')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="student-contact-item">
+                  <div className="student-contact-icon">
+                    <HiCalendar />
+                  </div>
+                  <div className="student-contact-content">
+                    <div className="student-contact-label">Fundación</div>
+                    {editingField === 'fecha_fundada' ? (
+                      <div className="inline-edit-container">
+                        <input
+                          type="date"
+                          value={editForm.fecha_fundada ? editForm.fecha_fundada.split('T')[0] : ''}
+                          onChange={(e) => handleInputChange('fecha_fundada', e.target.value)}
+                          className="inline-edit-input"
+                        />
+                        <div className="inline-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('fecha_fundada')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="editable-value">
+                        <div className="student-contact-value">{formatDate(companyDetails?.fecha_fundada)}</div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('fecha_fundada')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="student-contact-item">
+                  <div className="student-contact-icon">
+                    <HiUsers />
+                  </div>
+                  <div className="student-contact-content">
+                    <div className="student-contact-label">Empleados</div>
+                    {editingField === 'empleados' ? (
+                      <div className="inline-edit-container">
+                        <input
+                          type="number"
+                          value={editForm.empleados || ''}
+                          onChange={(e) => handleInputChange('empleados', e.target.value)}
+                          className="inline-edit-input"
+                          placeholder="Número de empleados"
+                        />
+                        <div className="inline-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('empleados')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="editable-value">
+                        <div className="student-contact-value">{companyDetails?.empleados || "No especificado"}</div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('empleados')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="student-contact-item">
+                  <div className="student-contact-icon">
+                    <HiOfficeBuilding />
+                  </div>
+                  <div className="student-contact-content">
+                    <div className="student-contact-label">Sector</div>
+                    {editingField === 'sector' ? (
+                      <div className="inline-edit-container">
+                        <input
+                          type="text"
+                          value={editForm.sector || ''}
+                          onChange={(e) => handleInputChange('sector', e.target.value)}
+                          className="inline-edit-input"
+                          placeholder="Sector de la empresa"
+                        />
+                        <div className="inline-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('sector')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="editable-value">
+                        <div className="student-contact-value">{companyDetails?.sector || "No especificado"}</div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('sector')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="student-contact-item">
+                  <div className="student-contact-icon">
+                    <HiPhone />
+                  </div>
+                  <div className="student-contact-content">
+                    <div className="student-contact-label">Teléfono</div>
+                    {editingField === 'telefono' ? (
+                      <div className="inline-edit-container">
+                        <input
+                          type="tel"
+                          value={editForm.telefono || ''}
+                          onChange={(e) => handleInputChange('telefono', e.target.value)}
+                          className="inline-edit-input"
+                          placeholder="Número de teléfono"
+                        />
+                        <div className="inline-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('telefono')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="editable-value">
+                        <div className="student-contact-value">{companyDetails?.telefono || "No especificado"}</div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('telefono')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Company Stats */}
+            <section className="student-sidebar-card">
+              <div className="student-card-header">
+                <h3>Estadísticas</h3>
+              </div>
+              <div className="student-badges-grid">
+                <div className="student-badge verified">Verificada</div>
+                <div className="student-badge active">Activa</div>
+                <div className="student-badge hiring">Contratando</div>
+              </div>
+            </section>
+
+            {/* Tech Stack */}
+            <section className="student-content-card">
+              <div className="student-card-header">
+                <h3>Tech Stack</h3>
                 {!isReadOnly && (
-                  <button className="edit-btn">
-                    <HiPencil />
+                  <button className="student-add-btn">
+                    <HiPlus />
                   </button>
                 )}
               </div>
-              <div className="company-description">
-                <p>
-                  <strong>Sector:</strong> {companyDetails?.sector || "No especificado"}
-                </p>
-                <p>
-                  <strong>RUC:</strong> {companyDetails?.ruc || "No especificado"}
-                </p>
-                <p>
-                  <strong>Empleados:</strong> {companyDetails?.empleados || "No especificado"}
-                </p>
-                <p>
-                  <strong>Fundada:</strong> {formatDate(companyDetails?.fecha_fundada)}
-                </p>
-                {companyDetails?.telefono && (
-                  <p>
-                    <strong>Teléfono:</strong> {companyDetails.telefono}
-                  </p>
-                )}
-              </div>
-            </section>
-
-            {/* Tech Stack - Keep as specified */}
-            <section className="content-section">
-              <div className="section-header">
-                <h3>Tech Stack</h3>
-                {!isReadOnly && (
-                  <div className="section-actions">
-                    <button className="add-btn">
-                      <HiPlus />
-                    </button>
-                    <button className="edit-btn">
-                      <HiPencil />
-                    </button>
-                  </div>
-                )}
-              </div>
-              <div className="tech-stack">
-                <div className="tech-row">
-                  <div className="tech-item">
-                    <img
-                      src="https://cdn.builder.io/api/v1/image/assets/TEMP/html5"
-                      alt="HTML5"
-                    />
-                    <span>HTML 5</span>
-                  </div>
-                  <div className="tech-item">
-                    <img
-                      src="https://cdn.builder.io/api/v1/image/assets/TEMP/css3"
-                      alt="CSS3"
-                    />
-                    <span>CSS 3</span>
-                  </div>
-                  <div className="tech-item">
-                    <img
-                      src="https://cdn.builder.io/api/v1/image/assets/TEMP/javascript"
-                      alt="JavaScript"
-                    />
-                    <span>JavaScript</span>
-                  </div>
+              <div className="tech-stack-grid">
+                <div className="tech-item">
+                  <img
+                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/html5"
+                    alt="HTML5"
+                  />
+                  <span>HTML 5</span>
                 </div>
-                <div className="tech-row">
-                  <div className="tech-item">
-                    <img
-                      src="https://cdn.builder.io/api/v1/image/assets/TEMP/ruby"
-                      alt="Ruby"
-                    />
-                    <span>Ruby</span>
-                  </div>
-                  <div className="tech-item">
-                    <img
-                      src="https://cdn.builder.io/api/v1/image/assets/TEMP/mixpanel"
-                      alt="Mixpanel"
-                    />
-                    <span>Mixpanel</span>
-                  </div>
+                <div className="tech-item">
+                  <img
+                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/css3"
+                    alt="CSS3"
+                  />
+                  <span>CSS 3</span>
+                </div>
+                <div className="tech-item">
+                  <img
+                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/javascript"
+                    alt="JavaScript"
+                  />
+                  <span>JavaScript</span>
+                </div>
+                <div className="tech-item">
+                  <img
+                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/ruby"
+                    alt="Ruby"
+                  />
+                  <span>Ruby</span>
+                </div>
+                <div className="tech-item">
+                  <img
+                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/mixpanel"
+                    alt="Mixpanel"
+                  />
+                  <span>Mixpanel</span>
                 </div>
               </div>
             </section>
-          </div>
+          </aside>
         </div>
       </main>
 
@@ -499,23 +768,66 @@ const EmpresaPerfil = () => {
           cursor: not-allowed;
         }
         
-        .back-button {
+        .company-avatar-large {
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 8px 16px;
-          background: #f3f4f6;
-          border: none;
-          border-radius: 6px;
-          font-size: 14px;
-          font-weight: 500;
-          color: #374151;
-          cursor: pointer;
-          transition: all 0.2s;
+          justify-content: center;
         }
         
-        .back-button:hover {
-          background: #e5e7eb;
+        .tech-stack-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+          gap: 16px;
+          padding: 16px 0;
+        }
+        
+        .tech-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          padding: 16px;
+          background: #f8f9fa;
+          border-radius: 8px;
+          border: 1px solid #e9ecef;
+        }
+        
+        .tech-item img {
+          width: 32px;
+          height: 32px;
+        }
+        
+        .tech-item span {
+          font-size: 14px;
+          font-weight: 500;
+          color: #495057;
+        }
+        
+        .contact-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        
+        .contact-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 8px 0;
+        }
+        
+        .contact-item svg {
+          font-size: 20px;
+          color: #6c757d;
+        }
+        
+        .contact-item a {
+          color: #007bff;
+          text-decoration: none;
+        }
+        
+        .contact-item a:hover {
+          text-decoration: underline;
         }
       `}</style>
     </div>

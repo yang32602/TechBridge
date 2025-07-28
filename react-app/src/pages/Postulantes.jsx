@@ -49,7 +49,7 @@ const Postulantes = () => {
       setLoading(true);
       try {
         // First get the company data to get the company id (id_empresa)
-        const companyData = await apiService.getCompanyByUserId(user.id);
+        const companyData = await apiService.getCompanyByUserId(user.id_empresa || user.id);
         console.log("Postulantes: Company data:", companyData);
 
         if (!companyData?.id) {

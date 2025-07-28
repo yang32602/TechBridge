@@ -39,9 +39,9 @@ export const getAvatarStyles = (name, size = 48) => {
     alignItems: "center",
     justifyContent: "center",
     color: "white",
-    fontWeight: "600",
-    fontSize: size > 48 ? "16px" : "14px",
-    border: "2px solid rgba(255, 255, 255, 0.2)",
+    fontWeight: "bold",
+    fontSize: `${size / 4}px`,
+    border: "4px solid rgba(255, 255, 255, 1)",
     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
   };
 };
@@ -52,19 +52,19 @@ function adjustColor(color, amount) {
 }
 
 // Standard company avatar styles (slight variation)
-export const getCompanyAvatarStyles = (name, size = 48, rounded = 8) => {
+export const getCompanyAvatarStyles = (name, size = 48) => {
   return {
     width: size,
     height: size,
-    borderRadius: rounded,
+    borderRadius: "50%",
     background: `linear-gradient(135deg, ${getAvatarColor(name)}, ${adjustColor(getAvatarColor(name), -20)})`,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     color: "white",
     fontWeight: "bold",
-    fontSize: size > 100 ? "48px" : size > 48 ? "18px" : "16px",
-    border: "2px solid rgba(255, 255, 255, 0.2)",
+    fontSize: `${size / 4}px`,
+    border: "4px solid rgba(255, 255, 255, 1)",
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
   };
 };

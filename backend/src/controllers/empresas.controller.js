@@ -1,18 +1,25 @@
 // Importación del modelo de empresa usando ES6
 import * as empresaModel from '../models/empresas.model.js';
 
-// Obtener todas las empresas 
+// Obtener todas las empresas
 export const getEmpresas = async (req, res) => {
     const {id_empresa} = req.body
+    console.log('getEmpresas controller: Received request with id_empresa:', id_empresa);
     try {
         const empresas = await empresaModel.getEmpresaPorID(id_empresa);
-        if (empresas) {
+        console.log('getEmpresas controller: Model returned:', empresas);
+        console.log('getEmpresas controller: Result length:', empresas ? empresas.length : 'null');
+
+        if (empresas && empresas.length > 0) {
+            console.log('getEmpresas controller: Returning success with data');
             return res.status(200).json({data:empresas});
         } else {
+            console.log('getEmpresas controller: No empresas found, returning 404');
             return res.status(404).json({ mensaje: 'No se encontraron empresas' });
         }
     } catch (error) {
-        return res.status(500).json({ mensaje: 'Error al traer las empresas' });
+        console.error('getEmpresas controller: Error occurred:', error);
+        return res.status(500).json({ mensaje: 'Error al traer las empresas', error: error.message });
     }
 };
 

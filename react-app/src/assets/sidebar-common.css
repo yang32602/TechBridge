@@ -178,14 +178,16 @@
   background: #e55a47;
 }
 
-/* CompanySidebar 基础样式 */
+/* CompanySidebar - Unified with StudentSidebar */
 .company-sidebar {
   width: 272px;
   min-width: 272px;
   background: #ebf4ff;
-  border-right: 1px solid #d3d6db;
+  box-shadow: 1px 0px 0px 0px #d3d6db;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  padding: 32px 0;
   position: fixed;
   left: 0;
   top: 0;
@@ -193,6 +195,180 @@
   z-index: 100;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.company-sidebar-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.company-sidebar-logo {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.company-sidebar-logo:hover {
+  transform: scale(1.05);
+}
+
+.company-logo-image {
+  width: 115px;
+  height: 87px;
+}
+
+.company-sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.company-nav-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.company-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 32px;
+  color: #7c8493;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 160%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.company-nav-item:hover {
+  background: rgba(196, 223, 255, 0.5);
+}
+
+.company-nav-item.active {
+  background: #c2dfff;
+  color: var(--Primary-Blue);
+}
+
+.company-nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--Primary-Blue);
+}
+
+.company-nav-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.company-nav-icon {
+  font-size: 20px;
+  width: 24px;
+  min-width: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.company-nav-divider {
+  height: 1px;
+  background: #7c8493;
+  margin: 24px 0;
+}
+
+.company-notification-badge {
+  background: #ff6550;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.company-sidebar-footer {
+  padding: 0 32px;
+}
+
+.company-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.company-user-avatar {
+  flex-shrink: 0;
+}
+
+.company-user-initials {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.company-user-info {
+  flex: 1;
+}
+
+.company-user-name {
+  color: #202430;
+  font-family: Epilogue;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 160%;
+  margin: 0;
+}
+
+.company-user-email {
+  color: #202430;
+  font-family: Epilogue;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 160%;
+  opacity: 0.5;
+  margin: 0;
+}
+
+.company-user-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.company-logout-btn {
+  width: 100%;
+  padding: 12px 24px;
+  background: #ff6550;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.company-logout-btn:hover {
+  background: #e55a47;
 }
 
 /* 响应式设计 */

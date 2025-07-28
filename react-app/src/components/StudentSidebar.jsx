@@ -168,11 +168,12 @@ const StudentSidebar = ({ activeSection = "" }) => {
             <div className="student-user-name">{userName}</div>
             <div className="student-user-email">{userEmail}</div>
           </div>
-          <div className="student-user-actions">
-            <button className="student-logout-btn" onClick={handleLogout}>
-              <HiLogout />
-            </button>
-          </div>
+        </div>
+        <div className="student-user-actions">
+          <button className="student-logout-btn" onClick={handleLogout}>
+            <HiLogout />
+            Cerrar sesión
+          </button>
         </div>
       </div>
     </aside>

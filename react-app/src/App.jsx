@@ -12,7 +12,6 @@ import {
   Register,
   Postulantes,
   Contacto,
-  ProfileCompany,
   ProfileStudent,
   Dashboard,
   TechnicalTests,
@@ -36,9 +35,9 @@ import "./assets/dashboard-styles.css";
 // Componente wrapper para usar hooks dentro del router
 const AppContent = () => {
   const location = useLocation();
-  const hideHeaderFooter = /^\/(login|register|dashboard|comprar-puntos|technical-tests|postulaciones|vacantes-aplicadas|profile-company|profile-student|empresa-perfil|vacante)(\/.*)?$/.test(
+  const hideHeaderFooter = /^\/(login|register|dashboard|comprar-puntos|technical-tests|postulaciones|vacantes-aplicadas|profile-student|empresa-perfil|vacante)(\/.*)?$/.test(
     location.pathname,
-  );
+  ) || location.pathname.startsWith('/empresa-perfil');
 
   return (
     <div className="app">
@@ -52,7 +51,7 @@ const AppContent = () => {
         <Route path="/register/:userType" element={<Register />} />
         <Route path="/postulantes" element={<Postulantes />} />
         <Route path="/contacto" element={<Contacto />} />
-        <Route path="/profile-company" element={<ProfileCompany />} />
+        <Route path="/profile-company" element={<EmpresaPerfil />} />
         <Route path="/empresa-perfil" element={<EmpresaPerfil />} />
         <Route path="/empresa-perfil/:companyId" element={<EmpresaPerfil />} />
         <Route path="/profile-student" element={<ProfileStudent />} />

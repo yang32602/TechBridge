@@ -15,6 +15,7 @@ const Postulaciones = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [shouldReturnToStage2, setShouldReturnToStage2] = useState(false);
+  const [studentBadges, setStudentBadges] = useState({});
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const Postulaciones = () => {
       }
 
       try {
-        const companyData = await apiService.getCompanyByUserId(user.id);
+        const companyData = await apiService.getCompanyByUserId(user.id_empresa || user.id);
         setCurrentUser({ ...companyData, userType: "company" });
       } catch (error) {
         console.error("Error fetching current user data:", error);
@@ -80,6 +81,24 @@ const Postulaciones = () => {
     try {
       const estudiantesData = await apiService.getStudentsAppliedToVacante(vacante.id_vacante);
       setAplicantesVacante(estudiantesData);
+
+      // Load badges for each student
+      const badgesPromises = estudiantesData.map(async (estudiante) => {
+        try {
+          const badges = await apiService.getStudentBadges(estudiante.id_usuario);
+          return { id_usuario: estudiante.id_usuario, badges };
+        } catch (error) {
+          console.error(`Error fetching badges for student ${estudiante.id_usuario}:`, error);
+          return { id_usuario: estudiante.id_usuario, badges: [] };
+        }
+      });
+
+      const badgesResults = await Promise.all(badgesPromises);
+      const badgesMap = {};
+      badgesResults.forEach(result => {
+        badgesMap[result.id_usuario] = result.badges;
+      });
+      setStudentBadges(badgesMap);
     } catch (error) {
       console.error("Error fetching applied students:", error);
       setAplicantesVacante([]);
@@ -269,12 +288,21 @@ const Postulaciones = () => {
                         )}
                       </div>
 
-                      {estudiante.nombre_empresa && (
-                        <div className="empresa-info">
-                          <FiBriefcase className="icon" />
-                          <span>Empresa: {estudiante.nombre_empresa}</span>
+                      {/* Student Badges */}
+                      <div className="student-badges-section">
+                        <h4 className="badges-title">Badges</h4>
+                        <div className="student-badges-grid-small">
+                          {studentBadges[estudiante.id_usuario] && studentBadges[estudiante.id_usuario].length > 0 ? (
+                            studentBadges[estudiante.id_usuario].map((badge, index) => (
+                              <div key={index} className={`student-badge-small ${badge.tipo || 'default'}`}>
+                                {badge.nombre || badge.title || 'Badge'}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="no-badges-small">Sin badges</div>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
 
                     <button

@@ -13,6 +13,7 @@ import "../assets/profile-student.css";
 import "../assets/experience-item.css";
 import "../assets/education-item.css";
 import "../assets/paginated-items.css";
+import "../assets/empresa-perfil.css";
 import { getInitials, getAvatarStyles } from "../utils/avatarUtils";
 
 // React Icons
@@ -27,6 +28,9 @@ import {
   HiDownload,
   HiIdentification,
   HiCalendar,
+  HiSave,
+  HiX,
+  HiEye,
 } from "react-icons/hi";
 import { FaGithub, FaTwitter, FaReddit } from "react-icons/fa";
 
@@ -45,6 +49,15 @@ const ProfileStudent = () => {
   const [education, setEducation] = useState([]);
   const [educationLoading, setEducationLoading] = useState(false);
   const [addingEducation, setAddingEducation] = useState(false);
+
+  // Inline editing states
+  const [editingField, setEditingField] = useState(null);
+  const [editForm, setEditForm] = useState({});
+  const [saving, setSaving] = useState(false);
+
+  // Badges state
+  const [badges, setBadges] = useState([]);
+  const [badgesLoading, setBadgesLoading] = useState(false);
 
   // Check if this is read-only mode (viewing another student's profile)
   const isReadOnly = studentId || location.state?.readOnly;
@@ -124,6 +137,27 @@ const ProfileStudent = () => {
     fetchEducation();
   }, [studentDetails]);
 
+  // Fetch badges when studentDetails is available
+  useEffect(() => {
+    const fetchBadges = async () => {
+      if (targetUserId) {
+        console.log("Fetching badges for user ID:", targetUserId);
+        setBadgesLoading(true);
+        try {
+          const badgesData = await ApiService.getStudentBadges(targetUserId);
+          console.log("Received badges data:", badgesData);
+          setBadges(badgesData);
+        } catch (error) {
+          console.error("Error fetching badges:", error);
+        } finally {
+          setBadgesLoading(false);
+        }
+      }
+    };
+
+    fetchBadges();
+  }, [targetUserId]);
+
   const handleLogoClick = () => {
     navigate("/");
   };
@@ -176,6 +210,43 @@ const ProfileStudent = () => {
 
   const handleDeleteEducation = (deletedId) => {
     setEducation((prev) => prev.filter((edu) => edu.id !== deletedId));
+  };
+
+  // Inline editing handlers
+  const handleEdit = (field) => {
+    setEditingField(field);
+    setEditForm({ ...editForm, [field]: studentDetails?.[field] || '' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingField(null);
+    setEditForm({});
+  };
+
+  const handleSave = async (field) => {
+    setSaving(true);
+    try {
+      // Update student field via API
+      await ApiService.updateStudentField(studentDetails.id, field, editForm[field]);
+
+      // Update local state
+      setStudentDetails(prev => ({ ...prev, [field]: editForm[field] }));
+      setEditingField(null);
+      setEditForm({});
+
+      // Show success message
+      setSuccessMessage(`${field} actualizado exitosamente`);
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (error) {
+      console.error("Error updating student field:", error);
+      alert("Error al actualizar el campo. Inténtalo de nuevo.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditForm(prev => ({ ...prev, [field]: value }));
   };
 
   if (loading) {
@@ -246,12 +317,10 @@ const ProfileStudent = () => {
               </div>
               <div className="student-profile-info">
                 <div
-                  className="student-profile-avatar"
-                  style={getAvatarStyles(userName, 80)}
+                  className="student-profile-avatar student-avatar-initials"
+                  style={getAvatarStyles(userName, 140)}
                 >
-                  <span className="student-avatar-initials">
-                    {getInitials(userName)}
-                  </span>
+                  {getInitials(userName)}
                 </div>
                 <div className="student-profile-details">
                   <h2 className="student-profile-name">{userName}</h2>
@@ -265,12 +334,12 @@ const ProfileStudent = () => {
                   </div>
                 </div>
                 {!isReadOnly && (
-                  <button
-                    className="student-btn-edit-profile"
-                    onClick={() => setIsEditModalOpen(true)}
-                  >
-                    Editar Perfil
-                  </button>
+                  <div className="student-profile-actions">
+                    <button className="student-btn-edit-profile" onClick={() => navigate("/profile-student", { state: { readOnly: true } })}>
+                      <HiEye />
+                      Vista Pública
+                    </button>
+                  </div>
                 )}
               </div>
             </section>
@@ -279,9 +348,47 @@ const ProfileStudent = () => {
             <section className="student-content-card">
               <div className="student-card-header">
                 <h3>Sobre mi</h3>
+                {!isReadOnly && (
+                  <button
+                    className="student-add-btn"
+                    onClick={() => handleEdit('sobremi')}
+                    disabled={editingField === 'sobremi'}
+                  >
+                    <HiPencil />
+                  </button>
+                )}
               </div>
               <div className="student-card-content">
-                <p>{userSobreMi}</p>
+                {editingField === 'sobremi' ? (
+                  <div className="edit-container">
+                    <textarea
+                      value={editForm.sobremi || ''}
+                      onChange={(e) => handleInputChange('sobremi', e.target.value)}
+                      className="edit-textarea"
+                      rows="4"
+                      placeholder="Descripción sobre ti"
+                    />
+                    <div className="edit-actions">
+                      <button
+                        onClick={handleCancelEdit}
+                        className="cancel-btn"
+                        disabled={saving}
+                      >
+                        <HiX />
+                      </button>
+                      <button
+                        onClick={() => handleSave('sobremi')}
+                        className="save-btn"
+                        disabled={saving}
+                      >
+                        <HiSave />
+                        {saving ? 'Guardando...' : 'Guardar'}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p>{userSobreMi}</p>
+                )}
               </div>
             </section>
 
@@ -406,7 +513,34 @@ const ProfileStudent = () => {
                   </div>
                   <div className="student-contact-content">
                     <div className="student-contact-label">Cédula</div>
-                    <div className="student-contact-value">{userCedula}</div>
+                    {editingField === 'cedula' ? (
+                      <div className="inline-edit-container">
+                        <input
+                          type="text"
+                          value={editForm.cedula || ''}
+                          onChange={(e) => handleInputChange('cedula', e.target.value)}
+                          className="inline-edit-input"
+                          placeholder="Número de cédula"
+                        />
+                        <div className="inline-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('cedula')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="editable-value">
+                        <div className="student-contact-value">{userCedula}</div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('cedula')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="student-contact-item">
@@ -417,7 +551,34 @@ const ProfileStudent = () => {
                     <div className="student-contact-label">
                       Lenguajes de Programación
                     </div>
-                    <div className="student-contact-value">{userLenguajes}</div>
+                    {editingField === 'lenguajes' ? (
+                      <div className="inline-edit-container">
+                        <input
+                          type="text"
+                          value={editForm.lenguajes || ''}
+                          onChange={(e) => handleInputChange('lenguajes', e.target.value)}
+                          className="inline-edit-input"
+                          placeholder="Lenguajes de programación"
+                        />
+                        <div className="inline-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('lenguajes')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="editable-value">
+                        <div className="student-contact-value">{userLenguajes}</div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('lenguajes')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="student-contact-item">
@@ -426,7 +587,34 @@ const ProfileStudent = () => {
                   </div>
                   <div className="student-contact-content">
                     <div className="student-contact-label">País</div>
-                    <div className="student-contact-value">{userPais}</div>
+                    {editingField === 'pais' ? (
+                      <div className="inline-edit-container">
+                        <input
+                          type="text"
+                          value={editForm.pais || ''}
+                          onChange={(e) => handleInputChange('pais', e.target.value)}
+                          className="inline-edit-input"
+                          placeholder="País"
+                        />
+                        <div className="inline-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('pais')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="editable-value">
+                        <div className="student-contact-value">{userPais}</div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('pais')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="student-contact-item">
@@ -435,7 +623,34 @@ const ProfileStudent = () => {
                   </div>
                   <div className="student-contact-content">
                     <div className="student-contact-label">Provincia</div>
-                    <div className="student-contact-value">{userProvincia}</div>
+                    {editingField === 'provincia' ? (
+                      <div className="inline-edit-container">
+                        <input
+                          type="text"
+                          value={editForm.provincia || ''}
+                          onChange={(e) => handleInputChange('provincia', e.target.value)}
+                          className="inline-edit-input"
+                          placeholder="Provincia"
+                        />
+                        <div className="inline-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('provincia')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="editable-value">
+                        <div className="student-contact-value">{userProvincia}</div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('provincia')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="student-contact-item">
@@ -444,7 +659,34 @@ const ProfileStudent = () => {
                   </div>
                   <div className="student-contact-content">
                     <div className="student-contact-label">Teléfono</div>
-                    <div className="student-contact-value">{userTelefono}</div>
+                    {editingField === 'telefono' ? (
+                      <div className="inline-edit-container">
+                        <input
+                          type="tel"
+                          value={editForm.telefono || ''}
+                          onChange={(e) => handleInputChange('telefono', e.target.value)}
+                          className="inline-edit-input"
+                          placeholder="Número de teléfono"
+                        />
+                        <div className="inline-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('telefono')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="editable-value">
+                        <div className="student-contact-value">{userTelefono}</div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('telefono')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="student-contact-item">
@@ -455,11 +697,37 @@ const ProfileStudent = () => {
                     <div className="student-contact-label">
                       Fecha de Nacimiento
                     </div>
-                    <div className="student-contact-value">
-                      {userFechaNacimiento
-                        ? new Date(userFechaNacimiento).toLocaleDateString()
-                        : "No especificado"}
-                    </div>
+                    {editingField === 'fecha_nacimiento' ? (
+                      <div className="inline-edit-container">
+                        <input
+                          type="date"
+                          value={editForm.fecha_nacimiento ? editForm.fecha_nacimiento.split('T')[0] : ''}
+                          onChange={(e) => handleInputChange('fecha_nacimiento', e.target.value)}
+                          className="inline-edit-input"
+                        />
+                        <div className="inline-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('fecha_nacimiento')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="editable-value">
+                        <div className="student-contact-value">
+                          {userFechaNacimiento
+                            ? new Date(userFechaNacimiento).toLocaleDateString()
+                            : "No especificado"}
+                        </div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('fecha_nacimiento')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -477,9 +745,36 @@ const ProfileStudent = () => {
                   </div>
                   <div className="student-social-content">
                     <div className="student-social-label">Github</div>
-                    <div className="student-social-value">
-                      {userGithub || "No especificado"}
-                    </div>
+                    {editingField === 'github' ? (
+                      <div className="contact-edit-container">
+                        <input
+                          type="url"
+                          value={editForm.github || ''}
+                          onChange={(e) => handleInputChange('github', e.target.value)}
+                          className="contact-edit-input"
+                          placeholder="URL de GitHub"
+                        />
+                        <div className="contact-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('github')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="contact-value-container">
+                        <div className="student-social-value">
+                          {userGithub || "No especificado"}
+                        </div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('github')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="student-social-item">
@@ -488,7 +783,34 @@ const ProfileStudent = () => {
                   </div>
                   <div className="student-social-content">
                     <div className="student-social-label">X</div>
-                    <div className="student-social-value">{userX}</div>
+                    {editingField === 'X' ? (
+                      <div className="contact-edit-container">
+                        <input
+                          type="url"
+                          value={editForm.X || ''}
+                          onChange={(e) => handleInputChange('X', e.target.value)}
+                          className="contact-edit-input"
+                          placeholder="URL de X/Twitter"
+                        />
+                        <div className="contact-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('X')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="contact-value-container">
+                        <div className="student-social-value">{userX}</div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('X')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="student-social-item">
@@ -497,7 +819,34 @@ const ProfileStudent = () => {
                   </div>
                   <div className="student-social-content">
                     <div className="student-social-label">Reddit</div>
-                    <div className="student-social-value">{userReddit}</div>
+                    {editingField === 'Reddit' ? (
+                      <div className="contact-edit-container">
+                        <input
+                          type="url"
+                          value={editForm.Reddit || ''}
+                          onChange={(e) => handleInputChange('Reddit', e.target.value)}
+                          className="contact-edit-input"
+                          placeholder="URL de Reddit"
+                        />
+                        <div className="contact-edit-actions">
+                          <button onClick={handleCancelEdit} className="inline-cancel-btn" disabled={saving}>
+                            <HiX />
+                          </button>
+                          <button onClick={() => handleSave('Reddit')} className="inline-save-btn" disabled={saving}>
+                            <HiSave />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="contact-value-container">
+                        <div className="student-social-value">{userReddit}</div>
+                        {!isReadOnly && (
+                          <button onClick={() => handleEdit('Reddit')} className="inline-edit-btn">
+                            <HiPencil />
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -508,11 +857,21 @@ const ProfileStudent = () => {
               <div className="student-card-header">
                 <h3>Badges</h3>
               </div>
-              <div className="student-badges-grid">
-                <div className="student-badge js-advanced">Js Advanced</div>
-                <div className="student-badge html-medium">Html Medium</div>
-                <div className="student-badge react-hooked">React Hooked</div>
-              </div>
+              {badgesLoading ? (
+                <div className="loading-badges">Cargando badges...</div>
+              ) : (
+                <div className="student-badges-grid">
+                  {badges.length > 0 ? (
+                    badges.map((badge, index) => (
+                      <div key={index} className={`student-badge ${badge.tipo || 'default'}`}>
+                        {badge.nombre || badge.title || 'Badge'}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="no-badges">No hay badges disponibles</div>
+                  )}
+                </div>
+              )}
             </section>
 
             {/* CV Download */}
@@ -539,7 +898,7 @@ const ProfileStudent = () => {
         userDetails={studentDetails}
         userId={targetUserId}
         onSuccess={(updatedFields) => {
-          // Mostrar mensaje de éxito
+          // Mostrar mensaje de ��xito
           setSuccessMessage(`Campos actualizados: ${updatedFields.join(", ")}`);
 
           // Refrescar los datos del estudiante
