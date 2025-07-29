@@ -74,10 +74,10 @@ export const registrarGasto = async (id_usuario, puntos_utilizados, descripcion)
 
     // 3. Registrar gasto en historial
     const insertGastoSQL = `
-      INSERT INTO usuario_techpoint_gasto (id_usuario, puntos_utilizados, fecha_uso)
-      VALUES (?, ?, CURDATE())
+      INSERT INTO usuario_techpoint_gasto (id_usuario, puntos_utilizados, descripcion, fecha_uso)
+      VALUES (?, ?, ?, CURDATE())
     `;
-    await connection.query(insertGastoSQL, [id_usuario, puntos_utilizados]);
+    await connection.query(insertGastoSQL, [id_usuario, puntos_utilizados, descripcion]);
 
     await connection.commit();
     return { mensaje: `Se han gastado ${puntos_utilizados} puntos` };
@@ -91,23 +91,20 @@ export const registrarGasto = async (id_usuario, puntos_utilizados, descripcion)
   }
 };
 
-export const puntosRestantes = async (id_empresa) => {
-  const queryUsuario = `
-    SELECT id_usuario FROM empresas WHERE id = ?
-  `;
 
+export const obtenerIdUsuarioDesdeEmpresa = async (id_empresa) => {
+  const [rows] = await db.query("SELECT id_usuario FROM empresas WHERE id = ?", [id_empresa]);
+  if (rows.length === 0) throw new Error("Empresa no encontrada");
+  return rows[0].id_usuario;
+};
+
+export const puntosRestantes = async (id_empresa) => {
   const queryPuntos = `
     SELECT puntos_actuales FROM wallet WHERE id_usuario = ?
   `;
 
   try {
-    const [empresaRows] = await db.query(queryUsuario, [id_empresa]);
-
-    if (empresaRows.length === 0) {
-      throw new Error("Empresa no encontrada");
-    }
-
-    const id_usuario = empresaRows[0].id_usuario;
+    const id_usuario = await obtenerIdUsuarioDesdeEmpresa(id_empresa);
 
     const [walletRows] = await db.query(queryPuntos, [id_usuario]);
 

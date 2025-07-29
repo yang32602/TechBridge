@@ -23,13 +23,23 @@ export const gastarPuntos = async (req, res) => {
   }
 
   try {
+    // 1. Verificar puntos disponibles
     const puntosDisponibles = await puntosModel.puntosRestantes(id_empresa);
 
     if (puntos > puntosDisponibles) {
       return res.status(400).json({ estado: 0, mensaje: 'No tienes suficientes puntos' });
     }
 
-    await puntosModel.registrarGasto(id_empresa, puntos, descripcion);
+    // 2. Obtener id_usuario desde la empresa
+    const [empresaRows] = await db.query(`SELECT id_usuario FROM empresas WHERE id = ?`, [id_empresa]);
+    if (empresaRows.length === 0) {
+      return res.status(400).json({ estado: 0, mensaje: 'Empresa no encontrada' });
+    }
+
+    const id_usuario = empresaRows[0].id_usuario;
+
+    // 3. Registrar el gasto correctamente
+    await puntosModel.registrarGasto(id_usuario, puntos, descripcion);
 
     return res.status(200).json({ estado: 1, mensaje: 'Puntos gastados correctamente' });
   } catch (error) {
@@ -37,3 +47,4 @@ export const gastarPuntos = async (req, res) => {
     return res.status(500).json({ error: 'Error al gastar puntos' });
   }
 };
+
