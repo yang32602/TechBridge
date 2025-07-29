@@ -57,13 +57,13 @@ export const reclutarEstudiante = async (req, res) => {
 //controller
 export const actualizarCampoEmpresa = async (req, res) => {
     try {
-        const { id_usuario, campo, valor } = req.body;
+        const { id_empresa, campo, valor } = req.body;
 
-        if (!id_usuario || !campo || valor === undefined) {
-            return res.status(400).json({ error: 'Faltan datos necesarios: id_usuario, campo o valor' });
+        if (!id_empresa || !campo || valor === undefined) {
+            return res.status(400).json({ error: 'Faltan datos necesarios: id_empresa, campo o valor' });
         }
 
-        const resultado = await empresaModel.actualizarCampoEmpresa(id_usuario, campo, valor);
+        const resultado = await empresaModel.actualizarCampoEmpresa(id_empresa, campo, valor);
 
         if (resultado.affectedRows === 0) {
             return res.status(404).json({ mensaje: 'No se encontró la empresa para actualizar o el campo no cambió' });
