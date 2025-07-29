@@ -268,7 +268,8 @@ export const obtenerVacantesPostuladasPorEstudiante = async (id_estudiante) => {
       v.descripcion,
       v.fecha_publicacion,
       v.ubicacion,
-      emp.nombre AS nombre_empresa
+      emp.nombre AS nombre_empresa,
+      emp.id as id_empresa
     FROM postulacion p
     JOIN vacantes v ON p.id_vacante = v.id
     JOIN empresas emp ON v.id_empresa = emp.id
