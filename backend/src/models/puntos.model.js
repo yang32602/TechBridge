@@ -53,7 +53,7 @@ export const asingarPuntos = async (id_empresa, id_techpoints) => {
   }
 };
 
-export const registrarGasto = async (id_usuario, puntos_utilizados, descripcion) => {
+export const registrarGasto = async (id_usuario, puntos_utilizados) => {
   const connection = await db.getConnection();
   try {
     await connection.beginTransaction();
@@ -74,10 +74,10 @@ export const registrarGasto = async (id_usuario, puntos_utilizados, descripcion)
 
     // 3. Registrar gasto en historial
     const insertGastoSQL = `
-      INSERT INTO usuario_techpoint_gasto (id_usuario, puntos_utilizados, descripcion, fecha_uso)
-      VALUES (?, ?, ?, CURDATE())
+      INSERT INTO usuario_techpoint_gasto (id_usuario, puntos_utilizados, fecha_uso)
+      VALUES (?, ?, CURDATE())
     `;
-    await connection.query(insertGastoSQL, [id_usuario, puntos_utilizados, descripcion]);
+    await connection.query(insertGastoSQL, [id_usuario, puntos_utilizados]);
 
     await connection.commit();
     return { mensaje: `Se han gastado ${puntos_utilizados} puntos` };
