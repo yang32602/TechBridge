@@ -10,15 +10,11 @@ export const asignarInsignia = async (req, res) => {
     try {
         const resultado = await insigniaModel.insigniasEstudiante(id_usuario, id_insignia);
 
-        if (resultado === true || (resultado?.asignado === true)) {
-            return res.json({ estado: 1, mensaje: 'Insignia asignada correctamente' });
-        } else if (resultado?.motivo) {
-            return res.json({ estado: 0, mensaje: resultado.motivo });
-        } else {
-            return res.json({ estado: 0, mensaje: 'No se pudo asignar la insignia' });
-        }
+
+        return res.json({ estado: 1, mensaje: 'Insignia asignada correctamente', nombre: resultado});
+
     } catch (error) {
         console.error('Error en asignarInsignia:', error);
-        return res.status(500).json({ estado: 0, mensaje: 'Error interno del servidor' });
+        return res.status(500).json({ estado: 0, mensaje: 'Error interno del servidor'+error });
     }
 };
