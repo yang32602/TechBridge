@@ -4,6 +4,7 @@
   },
   "dependencies": {
     "@tailwindcss/line-clamp": "^0.4.4",
-    "minimatch": "^10.0.3"
+    "minimatch": "^10.0.3",
+    "sweetalert2": "^11.22.2"
   }
 }

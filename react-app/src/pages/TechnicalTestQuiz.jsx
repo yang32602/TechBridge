@@ -3,13 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { StudentSidebar } from "../components";
 import { HiClock, HiShieldCheck, HiEye, HiCode } from "react-icons/hi";
 import { getQuestionsByTestId } from "../data/questions";
+import Swal from "sweetalert2";
 import "../assets/technical-quiz.css";
 
 // Configuración del quiz
 const QUIZ_CONFIG = {
-  INITIAL_TIME: 3578, // 59:38 en segundos
+  INITIAL_TIME: 1200, // 20min
   TIMER_INTERVAL: 1000,
-  DETECTED_CHANGES_INITIAL: 1,
+  DETECTED_CHANGES_INITIAL: 0,
 };
 
 const TechnicalTestQuiz = () => {
@@ -22,7 +23,7 @@ const TechnicalTestQuiz = () => {
   const [timeLeft, setTimeLeft] = useState(QUIZ_CONFIG.INITIAL_TIME);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [detectedChanges] = useState(QUIZ_CONFIG.DETECTED_CHANGES_INITIAL);
+  const [detectedChanges, setDetectedChanges] = useState(QUIZ_CONFIG.DETECTED_CHANGES_INITIAL);
 
   // Formatear tiempo en minutos y segundos
   const formatTime = (seconds) => {
@@ -33,10 +34,26 @@ const TechnicalTestQuiz = () => {
 
   // Finalizar examen y redirigir
   const handleFinishExam = useCallback(() => {
-    navigate(`/technical-test-result/${testId}`, {
-      state: { answers, totalQuestions: questions.length },
+    // Calcular puntuación
+    let correctAnswers = 0;
+    questions.forEach((question, index) => {
+      if (answers[index] === question.correctAnswer) {
+        correctAnswers++;
+      }
     });
-  }, [navigate, testId, answers, questions.length]);
+
+    const score = Math.round((correctAnswers / questions.length) * 100);
+
+    navigate(`/technical-test-result/${testId}`, {
+      state: {
+        answers,
+        totalQuestions: questions.length,
+        correctAnswers,
+        score,
+        isPerfectScore: score === 100
+      },
+    });
+  }, [navigate, testId, answers, questions]);
 
   // Temporizador de cuenta regresiva
   useEffect(() => {
@@ -53,6 +70,43 @@ const TechnicalTestQuiz = () => {
 
     return () => clearInterval(timer);
   }, [handleFinishExam]);
+
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setDetectedChanges((prev) => prev + 1);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (detectedChanges > 0 && detectedChanges < 3) {
+      Swal.fire({
+        icon: "warning",
+        title: "¡Cuidado!",
+        text: `Se detectó un cambio de pestaña. Cambios detectados: ${detectedChanges}`,
+        confirmButtonText: "Entendido",
+        timer: 3000,
+      });
+    }
+
+    if (detectedChanges >= 3) {
+      Swal.fire({
+        icon: "error",
+        title: "Demasiados cambios de pestaña",
+        text: "Has cambiado de pestaña demasiadas veces. El quiz será finalizado.",
+        confirmButtonText: "Finalizar",
+      }).then(() => {
+        handleFinishExam();
+      });
+    }
+  }, [detectedChanges]);
+
 
   // Guardar respuesta seleccionada
   const handleAnswerChange = (questionIndex, answer) => {
@@ -163,9 +217,29 @@ const TechnicalTestQuiz = () => {
                   {currentQuestionData.options.map((option, index) => (
                     <div
                       key={index}
-                      className={`option-item ${
-                        answers[currentQuestion] === index ? "selected" : ""
-                      }`}
+                      className={`option-item ${answers[currentQuestion] === index ? "selected" : ""
+                        }`}
+                    >
+                      <input
+                        type="radio"
+                        name={`question-${currentQuestion}`}
+                        id={`option-${index}`}
+                        checked={answers[currentQuestion] === index}
+                        onChange={() =>
+                          handleAnswerChange(currentQuestion, index)
+                        }
+                      />
+                      <label htmlFor={`option-${index}`}>{option}</label>
+                    </div>
+                  ))}
+                </div>
+              ) : currentQuestionData.type === "true-false" ? (
+                <div className="true-false-options">
+                  {["Verdadero", "Falso"].map((option, index) => (
+                    <div
+                      key={option}
+                      className={`option-item ${answers[currentQuestion] === index ? "selected" : ""
+                        }`}
                     >
                       <input
                         type="radio"

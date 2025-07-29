@@ -770,6 +770,65 @@ class ApiService {
       return [];
     }
   }
+
+  // Unlock applicants API methods
+  async unlockStudent(idEmpresa, idEstudiante) {
+    try {
+      console.log("unlockStudent called with:", { idEmpresa, idEstudiante });
+      const response = await this.request("/empresa-estudiante/desbloquearEstudiante", {
+        method: "POST",
+        body: JSON.stringify({
+          id_empresa: idEmpresa,
+          id_estudiante: idEstudiante,
+        }),
+      });
+
+      console.log("unlockStudent response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error unlocking student:", error);
+      throw error;
+    }
+  }
+
+  async spendPoints(idEmpresa, puntos) {
+    try {
+      console.log("spendPoints called with:", { idEmpresa, puntos });
+      const response = await this.request("/puntos/puntosGastos", {
+        method: "POST",
+        body: JSON.stringify({
+          id_empresa: idEmpresa,
+          puntos: puntos,
+        }),
+      });
+
+      console.log("spendPoints response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error spending points:", error);
+      throw error;
+    }
+  }
+
+  // Badge/Insignia API methods
+  async assignBadgeToStudent(idUsuario, idInsignia) {
+    try {
+      console.log("assignBadgeToStudent called with:", { idUsuario, idInsignia });
+      const response = await this.request("/insignias/insignias-estudiante", {
+        method: "POST",
+        body: JSON.stringify({
+          id_usuario: idUsuario,
+          id_insignia: idInsignia,
+        }),
+      });
+
+      console.log("assignBadgeToStudent response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error assigning badge to student:", error);
+      throw error;
+    }
+  }
 }
 
 export default new ApiService();

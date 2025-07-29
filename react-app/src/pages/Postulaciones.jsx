@@ -155,173 +155,183 @@ const Postulaciones = () => {
       <CompanySidebar activeSection="job-posts" />
       <div className="postulaciones-container">
         {!selectedVacante ? (
-        // Stage 1: Show company's vacantes
-        <>
-          <div className="postulaciones-header">
-            <h1 className="postulaciones-title">Postulaciones</h1>
-            <p className="postulaciones-subtitle">
-              Revisa las vacantes de tu empresa y los candidatos que se han postulado
-            </p>
-          </div>
-
-          <div className="vacantes-grid">
-            {currentVacantes.length > 0 ? (
-              currentVacantes.map((vacante) => (
-                <div 
-                  key={vacante.id_vacante} 
-                  className="vacante-card clickable"
-                  onClick={() => handleVacanteClick(vacante)}
-                >
-                  <div className="vacante-header">
-                    <h3 className="vacante-title">{vacante.titulo}</h3>
-                    <div className="view-icon">
-                      <FiChevronRight />
-                    </div>
-                  </div>
-
-                  <div className="vacante-location">
-                    <FiMapPin className="icon" />
-                    <span>{vacante.ubicacion}</span>
-                  </div>
-
-                  <p className="vacante-description">{vacante.descripcion}</p>
-
-                  <div className="vacante-date">
-                    <FiCalendar className="icon" />
-                    <span>Publicado: {formatDate(vacante.fecha_publicacion)}</span>
-                  </div>
-
-                  <div className="click-hint">
-                    Haz clic para ver postulantes
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="no-results">
-                <p>No has creado ninguna vacante aún</p>
-              </div>
-            )}
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="pagination-wrapper">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="pagination-btn"
-                title="Página anterior"
-              >
-                <FiChevronLeft />
-              </button>
-
-              <div className="pagination-numbers">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (pageNum) => (
-                    <button
-                      key={pageNum}
-                      onClick={() => setCurrentPage(pageNum)}
-                      className={`pagination-number ${currentPage === pageNum ? "active" : ""}`}
-                    >
-                      {pageNum}
-                    </button>
-                  ),
-                )}
-              </div>
-
-              <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
-                className="pagination-btn"
-                title="Página siguiente"
-              >
-                <FiChevronRight />
-              </button>
+          // Stage 1: Show company's vacantes
+          <>
+            <div className="postulaciones-header">
+              <h1 className="postulaciones-title">Postulaciones</h1>
+              <p className="postulaciones-subtitle">
+                Revisa las vacantes de tu empresa y los candidatos que se han postulado
+              </p>
             </div>
-          )}
-        </>
-      ) : (
-        // Stage 2: Show students applied to selected vacante
-        <>
-          <div className="aplicantes-header">
-            <button 
-              onClick={handleBackToVacantes}
-              className="back-button"
-            >
-              <FiArrowLeft className="icon" />
-              Volver a vacantes
-            </button>
-            <h1 className="aplicantes-title">
-              Postulantes para: {selectedVacante.titulo}
-            </h1>
-            <p className="aplicantes-subtitle">
-              {aplicantesVacante.length} estudiante{aplicantesVacante.length !== 1 ? 's' : ''} 
-              {aplicantesVacante.length !== 1 ? ' se han postulado' : ' se ha postulado'} para esta vacante
-            </p>
-          </div>
 
-          {loadingAplicantes ? (
-            <div className="loading-state">Cargando postulantes...</div>
-          ) : (
-            <div className="aplicantes-grid">
-              {aplicantesVacante.length > 0 ? (
-                aplicantesVacante.map((estudiante) => (
-                  <div key={estudiante.id_usuario} className="aplicante-card">
-                    <div className="aplicante-info">
-                      <div className="aplicante-name-section">
-                        <FiUser className="icon" />
-                        <h3 className="aplicante-name">{estudiante.nombre_completo}</h3>
-                      </div>
-
-                      <div className="aplicante-contact">
-                        <div className="contact-item">
-                          <FiMail className="icon" />
-                          <span>{estudiante.correo}</span>
-                        </div>
-                        {estudiante.telefono && (
-                          <div className="contact-item">
-                            <FiPhone className="icon" />
-                            <span>{estudiante.telefono}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Student Badges */}
-                      <div className="student-badges-section">
-                        <h4 className="badges-title">Badges</h4>
-                        <div className="student-badges-grid-small">
-                          {studentBadges[estudiante.id_usuario] && studentBadges[estudiante.id_usuario].length > 0 ? (
-                            studentBadges[estudiante.id_usuario].map((badge, index) => (
-                              <div key={index} className={`student-badge-small ${badge.tipo || 'default'}`}>
-                                {badge.nombre || badge.title || 'Badge'}
-                              </div>
-                            ))
-                          ) : (
-                            <div className="no-badges-small">Sin badges</div>
-                          )}
-                        </div>
+            <div className="vacantes-grid">
+              {currentVacantes.length > 0 ? (
+                currentVacantes.map((vacante) => (
+                  <div
+                    key={vacante.id_vacante}
+                    className="vacante-card clickable"
+                    onClick={() => handleVacanteClick(vacante)}
+                  >
+                    <div className="vacante-header">
+                      <h3 className="vacante-title">{vacante.titulo}</h3>
+                      <div className="view-icon">
+                        <FiChevronRight />
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => handleViewProfile(estudiante)}
-                      className="view-profile-btn"
-                    >
-                      Ver perfil
-                    </button>
+                    <div className="vacante-location">
+                      <FiMapPin className="icon" />
+                      <span>{vacante.ubicacion}</span>
+                    </div>
+
+                    <p className="vacante-description">{vacante.descripcion}</p>
+
+                    <div className="vacante-date">
+                      <FiCalendar className="icon" />
+                      <span>Publicado: {formatDate(vacante.fecha_publicacion)}</span>
+                    </div>
+
+                    <div className="click-hint">
+                      Haz clic para ver postulantes
+                    </div>
                   </div>
                 ))
               ) : (
                 <div className="no-results">
-                  <p>Ningún estudiante se ha postulado para esta vacante aún</p>
+                  <p>No has creado ninguna vacante aún</p>
                 </div>
               )}
             </div>
-          )}
-        </>
-      )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="pagination-wrapper">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="pagination-btn"
+                  title="Página anterior"
+                >
+                  <FiChevronLeft />
+                </button>
+
+                <div className="pagination-numbers">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (pageNum) => (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`pagination-number ${currentPage === pageNum ? "active" : ""}`}
+                      >
+                        {pageNum}
+                      </button>
+                    ),
+                  )}
+                </div>
+
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="pagination-btn"
+                  title="Página siguiente"
+                >
+                  <FiChevronRight />
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          // Stage 2: Show students applied to selected vacante
+          <>
+            <div className="aplicantes-header">
+              <button
+                onClick={handleBackToVacantes}
+                className="back-button"
+              >
+                <FiArrowLeft className="icon" />
+                Volver a vacantes
+              </button>
+              <h1 className="aplicantes-title">
+                Postulantes para: {selectedVacante.titulo}
+              </h1>
+              <p className="aplicantes-subtitle">
+                {aplicantesVacante.length} estudiante{aplicantesVacante.length !== 1 ? 's' : ''}
+                {aplicantesVacante.length !== 1 ? ' se han postulado' : ' se ha postulado'} para esta vacante
+              </p>
+            </div>
+
+            {loadingAplicantes ? (
+              <div className="loading-state">Cargando postulantes...</div>
+            ) : (
+              <div className="aplicantes-grid">
+                {aplicantesVacante.length > 0 ? (
+                  aplicantesVacante.map((estudiante) => (
+                    <div key={estudiante.id_usuario} className="aplicante-card">
+                      <div className="aplicante-info">
+                        <div className="aplicante-name-section">
+                          <FiUser className="icon" />
+                          <h3 className="aplicante-name">{estudiante.nombre_completo}</h3>
+                        </div>
+
+                        <div className="aplicante-contact">
+                          <div className="contact-item">
+                            <FiMail className="icon" />
+                            <span>{estudiante.correo}</span>
+                          </div>
+                          {estudiante.telefono && (
+                            <div className="contact-item">
+                              <FiPhone className="icon" />
+                              <span>{estudiante.telefono}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="student-badges-section">
+                          <h4 className="badges-title">Badges</h4>
+                          <div className="student-badges-grid-small">
+                            {studentBadges[estudiante.id_usuario] && studentBadges[estudiante.id_usuario].length > 0 ? (
+                              <>
+                                {studentBadges[estudiante.id_usuario]
+                                  .slice(0, 3)
+                                  .map((badge, index) => (
+                                    <div key={index} className={`student-badge-small ${badge.tipo || 'default'}`}>
+                                      {badge.nombre || badge.title || 'Badge'}
+                                    </div>
+                                  ))}
+
+                                {studentBadges[estudiante.id_usuario].length > 3 && (
+                                  <div className="student-badge-small more-badges">
+                                    +{studentBadges[estudiante.id_usuario].length - 3}
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <div className="no-badges-small">Sin badges</div>
+                            )}
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <button
+                        onClick={() => handleViewProfile(estudiante)}
+                        className="view-profile-btn"
+                      >
+                        Ver perfil
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="no-results">
+                    <p>Ningún estudiante se ha postulado para esta vacante aún</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

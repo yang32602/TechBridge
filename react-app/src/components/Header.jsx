@@ -95,10 +95,7 @@ const Header = () => {
           </Link>
           <Link to="/vacantes" className="nav-item">
             Vacantes
-          </Link>
-          <Link to="/comunidad" className="nav-item">
-            Comunidad
-          </Link>
+          </Link>         
           <Link to="/contacto" className="nav-item">
             Contacto
           </Link>

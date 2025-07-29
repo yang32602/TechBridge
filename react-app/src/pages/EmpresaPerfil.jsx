@@ -650,35 +650,35 @@ const EmpresaPerfil = () => {
               <div className="tech-stack-grid">
                 <div className="tech-item">
                   <img
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/html5"
+                    src="https://emaillistvalidation.com/blog/content/images/2023/09/HTML5_logo_and_wordmark.svg.png"
                     alt="HTML5"
                   />
                   <span>HTML 5</span>
                 </div>
                 <div className="tech-item">
                   <img
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/css3"
+                    src="https://th.bing.com/th/id/R.7b457240e4d8e8c126e7a32a59b45092?rik=%2bRVFTCYajtr9Hg&riu=http%3a%2f%2froarytubbs.com%2fwp-content%2fuploads%2f2016%2f07%2fcss3-logo.png&ehk=aQnQzJk3cGDGGE3VWOg3E1xFPU8vdUYcK5b8roNFgcg%3d&risl=&pid=ImgRaw&r=0"
                     alt="CSS3"
                   />
                   <span>CSS 3</span>
                 </div>
                 <div className="tech-item">
                   <img
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/javascript"
+                    src="https://mseeeen.msen.jp/static/dff36bad692fa63eb3583a4c8983e3c1/82c11/javascript-map-function.png"
                     alt="JavaScript"
                   />
                   <span>JavaScript</span>
                 </div>
                 <div className="tech-item">
                   <img
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/ruby"
+                    src="https://cdn.icon-icons.com/icons2/2415/PNG/512/ruby_original_wordmark_logo_icon_146364.png"
                     alt="Ruby"
                   />
                   <span>Ruby</span>
                 </div>
                 <div className="tech-item">
                   <img
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/mixpanel"
+                    src="https://assets-global.website-files.com/5ecbeb8d7557e7f636691721/65834e7669a30c48bec769fe_Mixpanel_logo.png"
                     alt="Mixpanel"
                   />
                   <span>Mixpanel</span>

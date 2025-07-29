@@ -538,3 +538,78 @@
     font-size: 18px;
   }
 }
+
+/* Badge Notification Styles */
+.badge-notification {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+  animation: badgeSlideIn 0.6s ease-out;
+}
+
+@keyframes badgeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.badge-notification-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  color: white;
+}
+
+.badge-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+  animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.badge-message h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.badge-message p {
+  margin: 0;
+  font-size: 1rem;
+  opacity: 0.95;
+}
+
+/* Badge Notification Mobile Styles */
+@media (max-width: 768px) {
+  .badge-notification-content {
+    padding: 16px 20px;
+  }
+
+  .badge-icon {
+    font-size: 2rem;
+  }
+
+  .badge-message h3 {
+    font-size: 1.125rem;
+  }
+
+  .badge-message p {
+    font-size: 0.875rem;
+  }
+}

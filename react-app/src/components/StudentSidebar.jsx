@@ -82,14 +82,8 @@ const StudentSidebar = ({ activeSection = "" }) => {
       id: "contact",
       icon: HiChat,
       label: "Contáctanos",
-      onClick: () => {},
-    },
-    {
-      id: "help",
-      icon: HiQuestionMarkCircle,
-      label: "Centro de Ayuda",
-      onClick: () => {},
-    },
+      onClick: () => navigate("/contacto"),
+    }
   ];
 
   return (

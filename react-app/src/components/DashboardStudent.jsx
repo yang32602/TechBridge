@@ -34,17 +34,7 @@ const DashboardStudent = () => {
         <div className="student-dashboard-header">
           <div className="student-header-content">
             <h1>Dashboard</h1>
-            <div className="student-header-actions">
-              <button className="student-btn-primary">
-                <HiSearch className="btn-icon" />
-                Test de Orientación
-              </button>
-              <button
-                className="student-btn-secondary"
-                onClick={handleLogoClick}
-              >
-                Regresar a inicio
-              </button>
+            <div className="student-header-actions">                   
             </div>
           </div>
         </div>

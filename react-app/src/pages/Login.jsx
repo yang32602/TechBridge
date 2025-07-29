@@ -4,7 +4,7 @@ import logoImage from "../assets/Logo.png";
 import ApiService from "../services/api";
 import { useAuth } from "../hooks/useAuth";
 // React Icons
-import { FaGoogle, FaCheck } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa";
 
 const Login = () => {
   const location = useLocation();
@@ -149,21 +149,6 @@ const Login = () => {
               ? "Obten más oportunidades"
               : "Impulsa tu empresa"}
           </h1>
-
-          {activeTab === "postulantes" && (
-            <button className="google-button">
-              <FaGoogle size={20} />
-              Iniciar sesión con Google
-            </button>
-          )}
-
-          {activeTab === "postulantes" && (
-            <div className="divider-section">
-              <div className="divider-line"></div>
-              <span>O iniciar sesión con email</span>
-              <div className="divider-line"></div>
-            </div>
-          )}
 
           {error && (
             <div

@@ -4,7 +4,7 @@ import logoImage from "../assets/Logo.png";
 import ApiService from "../services/api";
 import { useAuth } from "../hooks/useAuth";
 // React Icons
-import { FaGoogle, FaCheck } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa";
 
 const Register = () => {
   const location = useLocation();
@@ -136,17 +136,15 @@ const Register = () => {
         <div className="auth-form">
           <div className="user-type-tabs">
             <button
-              className={`tab-button ${
-                activeTab === "postulantes" ? "active" : ""
-              }`}
+              className={`tab-button ${activeTab === "postulantes" ? "active" : ""
+                }`}
               onClick={() => handleTabChange("postulantes")}
             >
               Postulantes
             </button>
             <button
-              className={`tab-button ${
-                activeTab === "empresas" ? "active" : ""
-              }`}
+              className={`tab-button ${activeTab === "empresas" ? "active" : ""
+                }`}
               onClick={() => handleTabChange("empresas")}
             >
               Empresas
@@ -158,21 +156,6 @@ const Register = () => {
               ? "Obten más oportunidades"
               : "Impulsa tu empresa"}
           </h1>
-
-          {activeTab === "postulantes" && (
-            <button className="google-button">
-              <FaGoogle size={20} />
-              Registrarse con Google
-            </button>
-          )}
-
-          {activeTab === "postulantes" && (
-            <div className="divider-section">
-              <div className="divider-line"></div>
-              <span>O registrarse con email</span>
-              <div className="divider-line"></div>
-            </div>
-          )}
 
           {error && (
             <div
@@ -255,30 +238,28 @@ const Register = () => {
               />
             </div>
 
-            {activeTab === "empresas" && (
-              <div className="checkbox-group">
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    name="terms"
-                    checked={formData.terms}
-                    onChange={handleInputChange}
-                  />
-                  <span className="checkmark">
-                    {formData.terms && <FaCheck size={12} color="white" />}
-                  </span>
-                  Al crear una cuenta estás de acuerdo con nuestros{" "}
-                  <a href="#" className="link">
-                    términos de uso
-                  </a>{" "}
-                  y con nuestra{" "}
-                  <a href="#" className="link">
-                    declaración de privacidad
-                  </a>
-                  .
-                </label>
-              </div>
-            )}
+            <div className="checkbox-group">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  name="terms"
+                  checked={formData.terms}
+                  onChange={handleInputChange}
+                />
+                <span className="checkmark">
+                  {formData.terms && <FaCheck size={12} color="white" />}
+                </span>
+                Al crear una cuenta estás de acuerdo con nuestros{" "}
+                <Link to="/terminos" className="link">
+                  términos de uso
+                </Link>{" "}
+                y con nuestra{" "}
+                <Link to="/privacidad" className="link">
+                  declaración de privacidad
+                </Link>
+                .
+              </label>
+            </div>
 
             <button type="submit" className="submit-button" disabled={loading}>
               {loading ? "Creando cuenta..." : "Crear cuenta"}

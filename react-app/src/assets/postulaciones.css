@@ -267,6 +267,11 @@
   text-transform: capitalize;
 }
 
+.student-badge-small.more-badges {
+ background: #e2e8f0;
+  color: #64748b;
+}
+
 .student-badge-small.js-advanced {
   background: linear-gradient(135deg, #f59e0b, #d97706);
 }

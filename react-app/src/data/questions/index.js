@@ -2,6 +2,11 @@
 import { javascriptBasicQuestions } from "./javascript-basic";
 import { frontendBasicQuestions } from "./frontend-basic";
 import { reactAdvancedQuestions } from "./react-advanced";
+import { pythonBasicQuestions } from "./python-basic";
+import { apiNodeJSQuestions } from "./node-Js";
+import { sqlQuestions } from "./sql";
+import { webSecurityQuestions } from "./web-security";
+import { algorithmQuestions } from "./algorithm";
 
 // Preguntas por defecto para tests que no tienen preguntas específicas
 const defaultQuestions = [
@@ -92,11 +97,11 @@ export const questionsBanks = {
   1: javascriptBasicQuestions, // JavaScript Básico
   2: frontendBasicQuestions, // Frontend Básico
   3: reactAdvancedQuestions, // React Avanzado
-  4: defaultQuestions, // Node.js API (placeholder)
-  5: defaultQuestions, // Python Básico (placeholder)
-  6: defaultQuestions, // Base de Datos SQL (placeholder)
-  7: defaultQuestions, // Algoritmos (placeholder)
-  8: defaultQuestions, // Seguridad Web (placeholder)
+  4: apiNodeJSQuestions, // Node.js API (placeholder)
+  5: pythonBasicQuestions, // Python Básico (placeholder)
+  6: sqlQuestions, // Base de Datos SQL (placeholder)
+  7: algorithmQuestions, // Algoritmos (placeholder)
+  8: webSecurityQuestions, // Seguridad Web (placeholder)
   default: defaultQuestions, // Fallback
 };
 

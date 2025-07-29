@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { StudentSidebar } from "../components";
+import { useAuth } from "../hooks/useAuth";
+import apiService from "../services/api";
 import {
   HiCheckCircle,
   HiXCircle,
@@ -8,6 +10,7 @@ import {
   HiClock,
   HiTrendingUp,
   HiAcademicCap,
+  HiBadgeCheck,
 } from "react-icons/hi";
 import "../assets/technical-result.css";
 
@@ -15,23 +18,76 @@ const TechnicalTestResult = () => {
   const { testId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
-  const { answers = {}, totalQuestions = 4 } = location.state || {};
+  const {
+    answers = {},
+    totalQuestions = 4,
+    correctAnswers = 0,
+    score: passedScore = null,
+    isPerfectScore = false
+  } = location.state || {};
+
+  const [badgeAwarded, setBadgeAwarded] = useState(false);
+  const [badgeName, setBadgeName] = useState("");
+  const [isAwardingBadge, setIsAwardingBadge] = useState(false);
+
+  // 测试ID到徽章ID和名称的映射
+  const testBadgeMapping = {
+    1: { id: 1, name: "JavaScript Básico" },
+    2: { id: 2, name: "Frontend Básico" },
+    3: { id: 3, name: "React Avanzado" },
+    4: { id: 4, name: "Node.js API" },
+    5: { id: 5, name: "Python Básico" },
+    6: { id: 6, name: "SQL" },
+    7: { id: 7, name: "Algoritmos" },
+    8: { id: 8, name: "Seguridad Web" },
+  };
+
+  // 授予徽章的效果
+  useEffect(() => {
+    const awardBadge = async () => {
+      if (isPerfectScore && user && testBadgeMapping[testId] && !isAwardingBadge) {
+        setIsAwardingBadge(true);
+        try {
+          // 获取学生ID
+          const studentData = await apiService.getStudentByUserId(user.id);
+          if (!studentData) {
+            console.error("No student data found for user:", user.id);
+            return;
+          }
+
+          const badgeInfo = testBadgeMapping[testId];
+
+          // 授予徽章
+          const response = await apiService.assignBadgeToStudent(user.id, badgeInfo.id);
+
+          if (response && response.estado === 1) {
+            setBadgeAwarded(true);
+            setBadgeName(response.nombre || badgeInfo.name);
+          }
+        } catch (error) {
+          console.error("Error awarding badge:", error);
+        } finally {
+          setIsAwardingBadge(false);
+        }
+      }
+    };
+
+    awardBadge();
+  }, [isPerfectScore, user, testId, isAwardingBadge]);
 
   const handleReturnToTests = () => {
     navigate("/technical-tests");
   };
 
-  // Calcular puntuación (lógica simplificada)
-  const calculateScore = () => {
+  // Usar la puntuación pasada o calcular una por defecto
+  const score = passedScore !== null ? passedScore : (() => {
     const answeredQuestions = Object.keys(answers).length;
-    // Puntuación mock: dar algunos puntos por preguntas contestadas
     const baseScore = (answeredQuestions / totalQuestions) * 70;
-    const bonusScore = Math.random() * 30; // Bonus aleatorio para demo
+    const bonusScore = Math.random() * 30;
     return Math.min(Math.round(baseScore + bonusScore), 100);
-  };
-
-  const score = calculateScore();
+  })();
   const answeredQuestions = Object.keys(answers).length;
   const completionRate = Math.round((answeredQuestions / totalQuestions) * 100);
 
@@ -68,6 +124,21 @@ const TechnicalTestResult = () => {
 
         {/* Contenido de Resultados */}
         <div className="result-content">
+          {/* Notificación de Insignia */}
+          {badgeAwarded && (
+            <div className="badge-notification">
+              <div className="badge-notification-content">
+                <div className="badge-icon">
+                  <HiBadgeCheck />
+                </div>
+                <div className="badge-message">
+                  <h3>🎉 ¡Felicidades!</h3>
+                  <p>Has obtenido la insignia <strong>{badgeName}</strong></p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Tarjeta de Puntuación */}
           <div className="score-card">
             <div className="score-header">

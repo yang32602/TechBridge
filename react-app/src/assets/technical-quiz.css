@@ -240,7 +240,7 @@
 }
 
 /* Multiple Choice Options */
-.multiple-choice-options {
+.multiple-choice-options, .true-false-options{
   display: flex;
   flex-direction: column;
   gap: 16px;

@@ -227,7 +227,7 @@ const ProfileStudent = () => {
     setSaving(true);
     try {
       // Update student field via API
-      await ApiService.updateStudentField(studentDetails.id, field, editForm[field]);
+      await ApiService.updateStudentField(studentDetails.id_usuario, field, editForm[field]);
 
       // Update local state
       setStudentDetails(prev => ({ ...prev, [field]: editForm[field] }));

@@ -8,15 +8,33 @@ import {
   HiChevronLeft,
   HiChevronRight,
   HiSearch,
+  HiX,
+  HiClock,
+  HiClipboardList,
+  HiBadgeCheck,
 } from "react-icons/hi";
 import "../assets/technical-tests.css";
 
 const TechnicalTests = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTest, setSelectedTest] = useState(null);
 
   const handleTestClick = (testId) => {
-    navigate(`/technical-test-quiz/${testId}`);
+    const test = technicalTests.find(t => t.id === testId);
+    setSelectedTest(test);
+    setShowModal(true);
+  };
+
+  const handleStartTest = () => {
+    setShowModal(false);
+    navigate(`/technical-test-quiz/${selectedTest.id}`);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedTest(null);
   };
 
   const technicalTests = [
@@ -25,80 +43,112 @@ const TechnicalTests = () => {
       title: "JavaScript Básico",
       icon: "📗",
       language: "JavaScript",
-      score: "0.0",
-      date: "13 July, 2021",
+      score: "8.0",
+      date: "24 July, 2025",
       difficulty: "Básico",
-      points: "5 pts",
+      points: "100 pts",
+      duration: "20 minutos",
+      questionCount: 10,
+      badgeName: "JavaScript Básico",
+      description: "Evalúa conocimientos básicos de JavaScript incluyendo variables, funciones y sintaxis fundamental."
     },
     {
       id: 2,
       title: "Frontend - Básico",
       icon: "🎨",
       language: "Frontend",
-      score: "0.0",
-      date: "13 July, 2021",
+      score: "8.0",
+      date: "24 July, 2025",
       difficulty: "Básico",
-      points: "8 pts",
+      points: "100 pts",
+      duration: "20 minutos",
+      questionCount: 10,
+      badgeName: "Frontend Básico",
+      description: "Cubre HTML, CSS y conceptos básicos de desarrollo frontend."
     },
     {
       id: 3,
       title: "React Avanzado",
       icon: "⚛️",
       language: "React",
-      score: "0.0",
-      date: "15 July, 2021",
+      score: "8.0", 
+      date: "24 July, 2025",
       difficulty: "Avanzado",
-      points: "15 pts",
+      points: "100 pts",
+      duration: "20 minutos",
+      questionCount: 10,
+      badgeName: "React Avanzado",
+      description: "Examina conceptos avanzados de React como hooks, context, y optimización."
     },
     {
       id: 4,
       title: "Desarrollo API Node.js",
       icon: "🟢",
       language: "Node.js",
-      score: "0.0",
-      date: "16 July, 2021",
+      score: "8.0",
+      date: "24 July, 2025",
       difficulty: "Intermedio",
-      points: "12 pts",
+      points: "100 pts",
+      duration: "20 minutos",
+      questionCount: 10,
+      badgeName: "Node.js API",
+      description: "Evalúa habilidades en desarrollo de APIs con Node.js y Express."
     },
     {
       id: 5,
       title: "Programación Python Básica",
       icon: "🐍",
       language: "Python",
-      score: "0.0",
-      date: "18 July, 2021",
+      score: "8.0",
+      date: "24 July, 2025",
       difficulty: "Básico",
-      points: "6 pts",
+      points: "100 pts",
+      duration: "20 minutos",
+      questionCount: 10,
+      badgeName: "Python Básico",
+      description: "Fundamentos de programación en Python incluyendo sintaxis y estructuras de datos."
     },
     {
       id: 6,
       title: "Diseño de Base de Datos SQL",
       icon: "🗃️",
       language: "SQL",
-      score: "0.0",
-      date: "20 July, 2021",
+      score: "8.0",
+      date: "24 July, 2025",
       difficulty: "Intermedio",
-      points: "10 pts",
+      points: "100 pts",
+      duration: "20 minutos",
+      questionCount: 10,
+      badgeName: "SQL",
+      description: "Evalúa conocimientos de diseño de bases de datos relacionales y consultas SQL."
     },
     {
       id: 7,
       title: "Algoritmos y Estructuras de Datos",
       icon: "🔢",
       language: "Algoritmos",
-      score: "0.0",
-      date: "22 July, 2021",
+      score: "8.0",
+      date: "24 July, 2025",
       difficulty: "Avanzado",
-      points: "20 pts",
+      points: "100 pts",
+      duration: "20 minutos",
+      questionCount: 10,
+      badgeName: "Algoritmos",
+      description: "Examina comprensión de algoritmos fundamentales y estructuras de datos."
     },
     {
       id: 8,
       title: "Seguridad Web Básica",
       icon: "🔒",
       language: "Seguridad",
-      score: "0.0",
-      date: "24 July, 2021",
+      score: "8.0",
+      date: "24 July, 2025",
       difficulty: "Intermedio",
-      points: "8 pts",
+      points: "100 pts",
+      duration: "20 minutos",
+      questionCount: 10,
+      badgeName: "Seguridad Web",
+      description: "Cubre conceptos básicos de seguridad web y mejores prácticas."
     },
   ];
 
@@ -134,11 +184,7 @@ const TechnicalTests = () => {
                   <HiFilter />
                   <span>Filtrar</span>
                 </button>
-              </div>
-              <div className="tests-view-divider"></div>
-              <div className="tests-view-tab">
-                <span>Vista Pipeline</span>
-              </div>
+              </div>             
             </div>
           </div>
         </div>
@@ -211,23 +257,13 @@ const TechnicalTests = () => {
           </div>
 
           {/* Pagination */}
-          <div className="tests-pagination">
-            <div className="pagination-info">
-              <span>Ver</span>
-              <select className="page-size-select">
-                <option value="1">1</option>
-                <option value="5">5</option>
-                <option value="10">10</option>
-              </select>
-              <span>elementos por página</span>
-            </div>
+          <div className="tests-pagination">       
             <div className="pagination-controls">
               <button className="pagination-btn">
                 <HiChevronLeft />
               </button>
               <div className="pagination-numbers">
                 <button className="pagination-number active">1</button>
-                <button className="pagination-number">2</button>
               </div>
               <button className="pagination-btn">
                 <HiChevronRight />
@@ -236,6 +272,82 @@ const TechnicalTests = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de Información del Test */}
+      {showModal && selectedTest && (
+        <div className="test-modal-overlay">
+          <div className="test-modal">
+            <div className="modal-header">
+              <div className="modal-title">
+                <span className="test-icon-large">{selectedTest.icon}</span>
+                <h2>{selectedTest.title}</h2>
+              </div>
+              <button className="modal-close-btn" onClick={handleCloseModal}>
+                <HiX />
+              </button>
+            </div>
+
+            <div className="modal-content">
+              <p className="test-description">{selectedTest.description}</p>
+
+              <div className="test-info-grid">
+                <div className="info-item">
+                  <div className="info-icon">
+                    <HiClock />
+                  </div>
+                  <div className="info-content">
+                    <span className="info-label">Duración</span>
+                    <span className="info-value">{selectedTest.duration}</span>
+                  </div>
+                </div>
+
+                <div className="info-item">
+                  <div className="info-icon">
+                    <HiClipboardList />
+                  </div>
+                  <div className="info-content">
+                    <span className="info-label">Preguntas</span>
+                    <span className="info-value">{selectedTest.questionCount} preguntas</span>
+                  </div>
+                </div>
+
+                <div className="info-item">
+                  <div className="info-icon">
+                    <HiBadgeCheck />
+                  </div>
+                  <div className="info-content">
+                    <span className="info-label">Insignia</span>
+                    <span className="info-value">{selectedTest.badgeName}</span>
+                  </div>
+                </div>
+
+                <div className="info-item">
+                  <div className="info-icon">
+                    <HiStar />
+                  </div>
+                  <div className="info-content">
+                    <span className="info-label">Puntos</span>
+                    <span className="info-value">{selectedTest.points}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="modal-note">
+                <strong>Nota:</strong> Obtendrás la insignia "{selectedTest.badgeName}" si logras una puntuación perfecta.
+              </div>
+            </div>
+
+            <div className="modal-actions">
+              <button className="modal-btn-cancel" onClick={handleCloseModal}>
+                Cancelar
+              </button>
+              <button className="modal-btn-start" onClick={handleStartTest}>
+                Comenzar Prueba
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

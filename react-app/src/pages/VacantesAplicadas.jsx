@@ -124,7 +124,22 @@ const VacantesAplicadas = () => {
                   className="company-name clickable-company"
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigate(`/empresa-perfil/${vacante.id_empresa}`, {
+                    console.log("VacantesAplicadas: Navigating to empresa-perfil with data:", {
+                      id_empresa: vacante.id_empresa,
+                      empresa_id: vacante.empresa_id,
+                      fullVacante: vacante
+                    });
+
+                    // 尝试多个可能的企业ID字段
+                    const empresaId = vacante.id_empresa || vacante.empresa_id || vacante.company_id;
+
+                    if (!empresaId) {
+                      console.error("No se encontró ID de empresa en el objeto vacante:", vacante);
+                      alert("Error: No se pudo encontrar la información de la empresa");
+                      return;
+                    }
+
+                    navigate(`/empresa-perfil/${empresaId}`, {
                       state: { readOnly: true, from: "vacantes-aplicadas" }
                     });
                   }}

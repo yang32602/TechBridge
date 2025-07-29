@@ -3,6 +3,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
 import { CompanySidebar } from "../components";
 import { HiSparkles, HiStar, HiLightningBolt, HiCheckCircle, HiXCircle } from "react-icons/hi";
+import { FaCcPaypal } from "react-icons/fa";
 import api from "../services/api";
 import "../assets/comprar-puntos.css";
 
@@ -246,9 +247,7 @@ const ComprarPuntos = () => {
           <div className="payment-methods">
             <span>Métodos de pago disponibles:</span>
             <div className="payment-icons">
-              <div className="payment-icon">💳</div>
-              <div className="payment-icon">🏦</div>
-              <div className="payment-icon">��</div>
+              <FaCcPaypal  className="payment-icon"/>       
             </div>
           </div>
         </div>

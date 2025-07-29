@@ -27,10 +27,7 @@ const Footer = () => {
             </Link>
             <Link to="/contacto" className="footer-link">
               Contactenos
-            </Link>
-            <Link to="/comunidad" className="footer-link">
-              Comunidad
-            </Link>
+            </Link>          
           </div>
         </div>
 

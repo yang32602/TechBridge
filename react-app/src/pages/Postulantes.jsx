@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { FiSearch, FiMapPin, FiChevronDown, FiChevronLeft, FiChevronRight} from "react-icons/fi";
+import { FiSearch, FiMapPin, FiChevronDown, FiChevronLeft, FiChevronRight, FiUnlock, FiLock} from "react-icons/fi";
+import { HiSparkles } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import apiService from "../services/api";
@@ -9,10 +10,13 @@ const Postulantes = () => {
   const [applicants, setApplicants] = useState([]);
   const [filteredApplicants, setFilteredApplicants] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("Todos"); // 新的状态筛选器
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [studentBadges, setStudentBadges] = useState({});
+  const [userBalance, setUserBalance] = useState(0);
+  const [companyData, setCompanyData] = useState(null);
+  const [unlockingStudents, setUnlockingStudents] = useState(new Set()); // 追踪正在解锁的学生
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -58,6 +62,12 @@ const Postulantes = () => {
           clearTimeout(timeout);
           return;
         }
+
+        setCompanyData(companyData);
+
+        // Get company balance
+        const balance = await apiService.getCompanyTechPoints(companyData.id);
+        setUserBalance(balance);
 
         // Use the company id (id_empresa) instead of user id (id_usuario)
         const data = await apiService.getCompanyApplicants(companyData.id);
@@ -124,16 +134,16 @@ const Postulantes = () => {
       });
     }
 
-    if (locationFilter) {
-      filtered = filtered.filter(
-        (applicant) =>
-          applicant.pais?.toLowerCase() === locationFilter.toLowerCase(),
-      );
+    // 根据状态筛选
+    if (statusFilter === "Desbloqueados") {
+      filtered = filtered.filter(applicant => applicant.desbloqueado !== null);
+    } else if (statusFilter === "No desbloqueados") {
+      filtered = filtered.filter(applicant => applicant.desbloqueado === null);
     }
 
     setFilteredApplicants(filtered);
     setCurrentPage(1);
-  }, [searchTerm, locationFilter, applicants, stableStudentBadges]);
+  }, [searchTerm, statusFilter, applicants, stableStudentBadges]);
 
   const totalPages = Math.ceil(filteredApplicants.length / applicantsPerPage);
   const currentApplicants = filteredApplicants.slice(
@@ -154,6 +164,96 @@ const Postulantes = () => {
     navigate(`/profile-student/${applicant.id_usuario}`, {
       state: { readOnly: true },
     });
+  };
+
+  const handleUnlockStudent = async (applicant) => {
+    if (!companyData || userBalance < 50) {
+      alert("Puntos insuficientes");
+      navigate("/comprar-puntos");
+      return;
+    }
+
+    if (unlockingStudents.has(applicant.id_usuario)) {
+      return; // 正在解锁中，避免重复请求
+    }
+
+    setUnlockingStudents(prev => new Set(prev).add(applicant.id_usuario));
+
+    try {
+      console.log("Attempting to unlock student:", {
+        companyId: companyData.id,
+        studentId: applicant.id_usuario
+      });
+
+      // 先解锁学生，如果成功再扣除积分
+      // 使用 applicant.id_estudiante 而不是 applicant.id_usuario，因为数据库关联的是estudiantes表的ID
+      const studentId = applicant.id_estudiante || applicant.id_usuario;
+      const unlockResponse = await apiService.unlockStudent(companyData.id, studentId);
+      console.log("Unlock response:", unlockResponse);
+
+      // 解锁成功后扣除积分
+      const spendResponse = await apiService.spendPoints(companyData.id, 50);
+      console.log("Spend points response:", spendResponse);
+
+      // 更新余额
+      setUserBalance(prev => prev - 50);
+
+      // 重新获取申请者数据以确保从数据库获取最新的解锁状态
+      try {
+        const updatedData = await apiService.getCompanyApplicants(companyData.id);
+        setApplicants(updatedData);
+      } catch (refetchError) {
+        console.error("Error refetching applicants after unlock:", refetchError);
+        // 如果重新获取失败，至少更新本地状态
+        const unlockedTimestamp = new Date().toISOString();
+        setApplicants(prev =>
+          prev.map(app =>
+            app.id_usuario === applicant.id_usuario
+              ? { ...app, desbloqueado: unlockedTimestamp }
+              : app
+          )
+        );
+      }
+
+      // 添加解锁动画效果
+      const cardElement = document.querySelector(`[data-student-id="${applicant.id_usuario}"]`);
+      if (cardElement) {
+        cardElement.classList.add('unlock-animation');
+        setTimeout(() => {
+          cardElement.classList.remove('unlock-animation');
+        }, 600);
+      }
+
+      console.log("Student unlocked successfully:", applicant.id_usuario);
+
+    } catch (error) {
+      console.error("Error unlocking student:", error);
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack,
+        companyId: companyData.id,
+        studentUserId: applicant.id_usuario,
+        studentId: applicant.id_estudiante
+      });
+
+      // 提供更具体的错误信息
+      let errorMessage = "Error al desbloquear el estudiante. Inténtalo de nuevo.";
+      if (error.message && error.message.includes('fetch')) {
+        errorMessage = "Error de conexión. Verifica tu conexión a internet e inténtalo de nuevo.";
+      } else if (error.message && error.message.includes('400')) {
+        errorMessage = "Error en los datos enviados. Por favor contacta al soporte.";
+      } else if (error.message && error.message.includes('500')) {
+        errorMessage = "Error del servidor. Por favor inténtalo más tarde.";
+      }
+
+      alert(errorMessage);
+    } finally {
+      setUnlockingStudents(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(applicant.id_usuario);
+        return newSet;
+      });
+    }
   };
 
   // Generate random avatar color based on name
@@ -182,10 +282,6 @@ const Postulantes = () => {
     return firstInitial + secondInitial || "U";
   };
 
-  const locations = [
-    ...new Set(applicants.map((app) => app.ubicacion).filter(Boolean)),
-  ];
-
   if (loading) {
     return (
       <div className="postulantes-container">
@@ -197,10 +293,18 @@ const Postulantes = () => {
   return (
     <div className="postulantes-container">
       <div className="postulantes-header">
-        <h1 className="postulantes-title">Postulantes</h1>
-        <p className="postulantes-subtitle">
-          Encuentra a los mejores candidatos para tu empresa
-        </p>
+        <div className="header-top">
+          <div className="header-left">
+            <h1 className="postulantes-title">Postulantes</h1>
+            <p className="postulantes-subtitle">
+              Encuentra a los mejores candidatos para tu empresa
+            </p>
+          </div>
+          <div className="balance-display">
+            <HiSparkles className="balance-icon" />
+            <span>Balance Actual: {userBalance.toLocaleString()} TechPoints</span>
+          </div>
+        </div>
       </div>
 
       <div className="search-filters-section">
@@ -215,19 +319,16 @@ const Postulantes = () => {
           />
         </div>
 
-        <div className="location-filter-wrapper">
-          <FiMapPin className="location-icon" />
+        <div className="status-filter-wrapper">
+          <FiLock className="location-icon" />
           <select
-            value={locationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
             className="location-select"
           >
-            <option value="">Todas las ubicaciones</option>
-            {locations.map((location) => (
-              <option key={location} value={location}>
-                {location}
-              </option>
-            ))}
+            <option value="Todos">Todos</option>
+            <option value="Desbloqueados">Desbloqueados</option>
+            <option value="No desbloqueados">No desbloqueados</option>
           </select>
           <FiChevronDown className="select-arrow" />
         </div>
@@ -236,17 +337,21 @@ const Postulantes = () => {
       <div className="applicants-grid">
         {currentApplicants.length > 0 ? (
           currentApplicants.map((applicant) => (
-            <div key={applicant.id_usuario} className="applicant-card">
+            <div
+              key={applicant.id_usuario}
+              data-student-id={applicant.id_usuario}
+              className={`applicant-card ${applicant.desbloqueado === null ? 'locked' : 'unlocked'}`}
+            >
               <div className="applicant-image-wrapper">
                 {applicant.foto_perfil ? (
                   <img
                     src={applicant.foto_perfil}
                     alt={`${applicant.nombre} ${applicant.apellido}`}
-                    className="applicant-image"
+                    className={`applicant-image ${applicant.desbloqueado === null ? 'blurred' : ''}`}
                   />
                 ) : (
                   <div
-                    className="applicant-image-default"
+                    className={`applicant-image-default ${applicant.desbloqueado === null ? 'blurred' : ''}`}
                     style={{
                       backgroundColor: getAvatarColor(
                         applicant.nombre_completo,
@@ -256,14 +361,23 @@ const Postulantes = () => {
                     {getInitials(applicant.nombre_completo)}
                   </div>
                 )}
+                {applicant.desbloqueado === null && (
+                  <div className="lock-overlay">
+                    <FiLock className="lock-icon" />
+                  </div>
+                )}
               </div>
 
               <div className="applicant-info">
-                <h3 className="applicant-name">{applicant.nombre_completo}</h3>
+                <h3 className={`applicant-name ${applicant.desbloqueado === null ? 'blurred-text' : ''}`}>
+                  {applicant.desbloqueado === null ? '••••••••••' : applicant.nombre_completo}
+                </h3>
 
                 <div className="applicant-location">
                   <FiMapPin className="location-icon-small" />
-                  <span>{applicant.pais || "Ubicación no especificada"}</span>
+                  <span className={applicant.desbloqueado === null ? 'blurred-text' : ''}>
+                    {applicant.desbloqueado === null ? '••••••••••' : (applicant.pais || "Ubicación no especificada")}
+                  </span>
                 </div>
 
                 <div className="applicant-badges">
@@ -282,12 +396,23 @@ const Postulantes = () => {
                 </div>
               </div>
 
-              <button
-                onClick={() => handleViewProfile(applicant)}
-                className="view-profile-btn"
-              >
-                Ver perfil
-              </button>
+              {applicant.desbloqueado !== null ? (
+                <button
+                  onClick={() => handleViewProfile(applicant)}
+                  className="view-profile-btn"
+                >
+                  Ver perfil
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleUnlockStudent(applicant)}
+                  className="unlock-btn"
+                  disabled={unlockingStudents.has(applicant.id_usuario)}
+                >
+                  <FiUnlock className="unlock-icon" />
+                  {unlockingStudents.has(applicant.id_usuario) ? "Desbloqueando..." : "Desbloquear (50 pts)"}
+                </button>
+              )}
             </div>
           ))
         ) : (
