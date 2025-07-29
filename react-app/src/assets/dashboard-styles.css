@@ -446,6 +446,8 @@
 }
 
 .company-greeting-section {
+  display: flex;
+  justify-content: space-between;
   background: white;
   padding: 32px;
   border-bottom: 1px solid #e9ecef;

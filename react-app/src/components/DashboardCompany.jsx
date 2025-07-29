@@ -33,43 +33,7 @@ const DashboardCompany = () => {
 
       {/* Main Content */}
       <div className="company-dashboard-main">
-        {/* Header */}
-        <div className="company-dashboard-header">
-          <div className="company-header-content">
-            <div className="company-info">
-              <div className="company-logo">
-                <HiOfficeBuilding
-                  style={{ width: "37px", height: "44px", color: "#56CDAD" }}
-                />
-              </div>
-              <div className="company-details">
-                <span className="company-type">Company</span>
-                <div className="company-name">
-                  <span>Nomad</span>
-                  <HiChevronDown />
-                </div>
-              </div>
-            </div>
-
-            <div className="company-header-actions">
-              <div className="company-notification-icon">
-                <HiBell />
-                <div className="company-notification-dot"></div>
-              </div>
-              <button className="company-btn-primary">
-                <HiPlus />
-                Publicar Vacante
-              </button>
-              <button
-                className="company-btn-secondary"
-                onClick={handleLogoClick}
-              >
-                Regresar a inicio
-              </button>
-            </div>
-          </div>
-        </div>
-
+        
         {/* Greeting Section */}
         <div className="company-greeting-section">
           <div className="company-greeting-content">
@@ -79,6 +43,14 @@ const DashboardCompany = () => {
               empresa.
             </p>
           </div>
+          <div className="company-header-actions">         
+              <button
+                className="company-btn-secondary"
+                onClick={handleLogoClick}
+              >
+                Regresar a inicio
+              </button>
+            </div>
         </div>
 
         {/* Stats Cards */}

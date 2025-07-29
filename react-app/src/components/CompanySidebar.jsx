@@ -47,8 +47,7 @@ const CompanySidebar = ({ activeSection = "dashboard" }) => {
       id: "messages",
       icon: HiChat,
       label: "Mensajes",
-      onClick: () => {},
-      badge: 1,
+      onClick: () => {}
     },
     {
       id: "company-profile",

@@ -287,20 +287,6 @@
   margin: 24px 0;
 }
 
-.company-notification-badge {
-  background: #ff6550;
-  color: white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-  margin-left: auto;
-}
-
 .company-sidebar-footer {
   padding: 0 32px;
 }
