@@ -17,6 +17,9 @@ import empresaEstudianteRoutes from './src/routes/empresaEstudiante.routes.js';
 import puntosRoutes from './src/routes/puntos.routes.js';
 import vacantesRoutes from './src/routes/vacantes.routes.js';
 import techpointsRoutes from './src/routes/techPoints.routes.js';
+import insigniasRoutes from './src/routes/insignias.routes.js';
+
+//parte mobile
 import usuariosMobile from './src/routes/usuariosMobile.routes.js';
 import admin from 'firebase-admin'; 
 
@@ -74,7 +77,7 @@ app.use('/api/empresa-estudiante', empresaEstudianteRoutes);
 app.use('/api/puntos', puntosRoutes);
 app.use('/api/vacantes', vacantesRoutes);
 app.use('/api/techpoint', techpointsRoutes);
-
+app.use('/api/insignias', insigniasRoutes);
 // Servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
