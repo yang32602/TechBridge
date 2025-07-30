@@ -650,7 +650,7 @@ const EmpresaPerfil = () => {
               <div className="tech-stack-grid">
                 <div className="tech-item">
                   <img
-                    src="https://emaillistvalidation.com/blog/content/images/2023/09/HTML5_logo_and_wordmark.svg.png"
+                    src="https://mir-s3-cdn-cf.behance.net/project_modules/max_632_webp/9b9e475876156.56024e92e0c5a.png"
                     alt="HTML5"
                   />
                   <span>HTML 5</span>
