@@ -49,6 +49,7 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
+    navigate("/");
   };
 
   const handleAvatarClick = () => {

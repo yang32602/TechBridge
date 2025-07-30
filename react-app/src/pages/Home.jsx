@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 // React Icons
 import {
   HiCheckCircle,
@@ -108,7 +109,9 @@ const Home = () => {
             </div>
           </div>
 
-          <button className="create-account-btn">Crear cuenta</button>
+          <Link to="/register">
+            <button className="create-account-btn">Crear cuenta</button>
+          </Link>
         </div>
       </section>
 
