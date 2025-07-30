@@ -187,19 +187,43 @@ const Vacantes = () => {
   };
 
   const handleDeleteVacante = async (idVacante) => {
-    if (!window.confirm("¿Estás seguro de que quieres eliminar esta vacante?")) {
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará la vacante permanentemente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (!result.isConfirmed) {
       return;
     }
 
     try {
       await apiService.deleteVacante(idVacante);
 
-      // Remove from local state
+      // Actualiza el estado local
       setVacantes(prev => prev.filter(v => v.id_vacante !== idVacante));
       setFilteredVacantes(prev => prev.filter(v => v.id_vacante !== idVacante));
+
+      // Éxito
+      Swal.fire({
+        title: 'Eliminado',
+        text: 'La vacante ha sido eliminada correctamente.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
     } catch (error) {
       console.error("Error deleting vacante:", error);
-      alert("Error al eliminar la vacante. Inténtalo de nuevo.");
+      Swal.fire({
+        title: 'Error',
+        text: 'Hubo un problema al eliminar la vacante. Inténtalo de nuevo.',
+        icon: 'error',
+      });
     }
   };
 
