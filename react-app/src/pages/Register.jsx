@@ -68,14 +68,20 @@ const Register = () => {
           setLoading(false);
           return;
         }
-        response = await ApiService.registerCompany(formData);
+        response = await ApiService.registerCompany({
+          nombre_empresa: formData.companyName,
+          ruc: formData.ruc,
+          correo: formData.email,
+          contrasena: formData.password
+        });
       }
 
       if (response.estado === 1) {
         console.log("Register response:", response); // Debug log
 
-        // Get user ID from register response
-        const userId = response.data;
+        // Get user ID and empresa ID from register response
+        const userId = response.id_usuario;
+        const empresaId = response.id_empresa;
 
         const userData = {
           email: formData.email,
@@ -85,6 +91,7 @@ const Register = () => {
               ? formData.fullName
               : formData.companyName,
           id: userId,
+          id_empresa: activeTab === "empresas" ? empresaId : undefined,
           realName:
             activeTab === "postulantes"
               ? formData.fullName

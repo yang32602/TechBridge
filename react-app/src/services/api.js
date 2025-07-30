@@ -40,9 +40,9 @@ class ApiService {
     return this.request("/usuarios/empresaRegister", {
       method: "POST",
       body: JSON.stringify({
-        correo: userData.email,
-        contrasena: userData.password,
-        nombre: userData.companyName,
+        correo: userData.correo || userData.email,
+        contrasena: userData.contrasena || userData.password,
+        nombre_empresa: userData.nombre_empresa || userData.companyName,
         ruc: userData.ruc,
       }),
     });
@@ -741,7 +741,7 @@ class ApiService {
       const response = await this.request("/empresas/actualizar", {
         method: "PATCH",
         body: JSON.stringify({
-          id_usuario: empresaId, // Backend expects id_usuario, not id_empresa
+          id_empresa: empresaId, 
           campo: field,
           valor: value,
         }),

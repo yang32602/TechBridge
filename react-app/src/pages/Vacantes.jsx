@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { FiSearch, FiMapPin, FiTrash2, FiPlus, FiCalendar, FiBriefcase, FiArrowRight, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import apiService from "../services/api";
 import "../assets/vacantes.css";
 
@@ -390,9 +391,24 @@ const Vacantes = () => {
                     </button>
                   ) : (
                     <button
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.stopPropagation();
-                        handlePostular(vacante);
+                        try {
+                          await handlePostular(vacante);
+                          await Swal.fire({
+                            icon: "success",
+                            title: "¡Postulación exitosa!",
+                            text: "Te has postulado correctamente a la vacante.",
+                            confirmButtonColor: "#3085d6",
+                          });
+                        } catch (error) {
+                          await Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "No se pudo postular, inténtalo de nuevo.",
+                            confirmButtonColor: "#d33",
+                          });
+                        }
                       }}
                       className="postular-btn"
                     >

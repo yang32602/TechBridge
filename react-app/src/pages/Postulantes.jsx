@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { FiSearch, FiMapPin, FiChevronDown, FiChevronLeft, FiChevronRight, FiUnlock, FiLock} from "react-icons/fi";
+import { FiSearch, FiMapPin, FiChevronDown, FiChevronLeft, FiChevronRight, FiUnlock, FiLock } from "react-icons/fi";
 import { HiSparkles } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import Swal from "sweetalert2";
 import apiService from "../services/api";
 import "../assets/postulantes.css";
 
@@ -168,13 +169,23 @@ const Postulantes = () => {
 
   const handleUnlockStudent = async (applicant) => {
     if (!companyData || userBalance < 50) {
-      alert("Puntos insuficientes");
-      navigate("/comprar-puntos");
+      Swal.fire({
+        icon: "warning",
+        title: "Puntos insuficientes",
+        text: "Necesitas al menos 50 puntos para continuar.",
+        confirmButtonText: "Comprar puntos",
+        confirmButtonColor: "#3085d6",
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/comprar-puntos");
+        }
+      });
       return;
     }
 
     if (unlockingStudents.has(applicant.id_usuario)) {
-      return; // 正在解锁中，避免重复请求
+      return;
     }
 
     setUnlockingStudents(prev => new Set(prev).add(applicant.id_usuario));

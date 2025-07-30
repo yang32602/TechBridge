@@ -14,6 +14,7 @@ import {
   FiAward
 } from "react-icons/fi";
 import { useAuth } from "../hooks/useAuth";
+import Swal from "sweetalert2";
 import apiService from "../services/api";
 import "../assets/vacante-detail.css";
 
@@ -177,34 +178,45 @@ const VacanteDetail = () => {
     });
   };
 
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      // Determinar qué campos han cambiado
-      const changedFields = [];
-      Object.keys(editForm).forEach(field => {
-        if (editForm[field] !== (vacante[field] || "")) {
-          changedFields.push({ campo: field, valor: editForm[field] });
-        }
-      });
-
-      // Actualizar cada campo que ha cambiado
-      for (const change of changedFields) {
-        await apiService.updateVacante(vacante.id_vacante, change.campo, change.valor);
+ const handleSave = async () => {
+  setSaving(true);
+  try {
+    // Determinar qué campos han cambiado
+    const changedFields = [];
+    Object.keys(editForm).forEach(field => {
+      if (editForm[field] !== (vacante[field] || "")) {
+        changedFields.push({ campo: field, valor: editForm[field] });
       }
+    });
 
-      // Actualizar el estado local
-      setVacante(prev => ({ ...prev, ...editForm }));
-      setIsEditing(false);
-      
-      alert("Vacante actualizada exitosamente");
-    } catch (error) {
-      console.error("Error updating vacante:", error);
-      alert("Error al actualizar la vacante. Inténtalo de nuevo.");
-    } finally {
-      setSaving(false);
+    // Actualizar cada campo que ha cambiado
+    for (const change of changedFields) {
+      await apiService.updateVacante(vacante.id_vacante, change.campo, change.valor);
     }
-  };
+
+    // Actualizar el estado local
+    setVacante(prev => ({ ...prev, ...editForm }));
+    setIsEditing(false);
+
+    await Swal.fire({
+      icon: "success",
+      title: "Vacante actualizada",
+      text: "La vacante se actualizó exitosamente.",
+      confirmButtonColor: "#3085d6",
+    });
+  } catch (error) {
+    console.error("Error updating vacante:", error);
+
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Error al actualizar la vacante. Inténtalo de nuevo.",
+      confirmButtonColor: "#d33",
+    });
+  } finally {
+    setSaving(false);
+  }
+};
 
   const handleInputChange = (field, value) => {
     setEditForm(prev => ({ ...prev, [field]: value }));
