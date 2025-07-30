@@ -28,4 +28,4 @@ router.post('/empresaLogin', usuarioController.autenticacionEmpresa);
 // Cambio de contraseña recibe el correo y la contrasena para cambiarla
 router.post('/cambio', usuarioController.cambioContrasenaUsuario);
 
-export default router;
+export default router; 

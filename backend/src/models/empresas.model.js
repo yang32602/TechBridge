@@ -30,15 +30,19 @@ export const getEmpresaPorID = async (id_empresa) => {
 
 //sirve para insertar empresa
 export const insertEmpresas = async (empresaData, id_usuario) => {
-    const { nombre, ruc} = empresaData;
+    const { nombre_empresa, ruc} = empresaData;
     const sql = `
         INSERT INTO empresas (nombre, ruc,id_usuario)
         VALUES (?, ?, ?)
     `;
+
+    const idNombreEmpresa = `SELECT id, nombre FROM empresas WHERE id_usuario = ? `
     try {
-        const [result] = await db.query(sql, [nombre,ruc,id_usuario]);
+
+        const [result] = await db.query(sql, [nombre_empresa,ruc,id_usuario]);
         console.log('Empresa insertada');
-        return result.insertId;
+        const [rows] = await db.query(idNombreEmpresa,[id_usuario])
+        return rows[0].id;
     } catch (error) {
         console.error('Error insertando la empresa');
         throw error;
